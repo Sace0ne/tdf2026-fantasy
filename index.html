@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Tour de France Fantasy 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#111;color:#f0f0f0;min-height:100vh}
+:root{--y:#FFCD00;--card:#1e1e1e;--bdr:#2a2a2a;--inp:#252525}
+.app{max-width:920px;margin:0 auto;padding-bottom:4rem}
+/* HEADER */
+.hdr{background:#FFCD00;padding:1.25rem 1.5rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.hdr-t{font-size:26px;font-weight:700;color:#111;line-height:1.1;letter-spacing:-.5px}
+.hdr-d{font-size:11px;color:#444;margin-top:6px;background:rgba(0,0,0,.12);display:inline-block;padding:3px 10px;border-radius:20px}
+/* NAV */
+.nav{display:flex;background:#0d0d0d;border-bottom:2px solid #FFCD00;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nb{padding:11px 13px;font-size:11.5px;font-weight:500;color:#aaa;cursor:pointer;border:none;background:transparent;white-space:nowrap;flex-shrink:0;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
+.nb:hover{color:#FFCD00}
+.nb.active{color:#FFCD00;border-bottom-color:#FFCD00}
+/* SECTIONS */
+.sec{padding:1.25rem 1.25rem 0}
+.sec-title{font-size:16px;font-weight:500;color:#FFCD00;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:.875rem}
+.card-title{font-size:13px;font-weight:500;color:#ccc;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+/* INPUTS */
+input[type=text],input[type=number]{background:#252525;border:0.5px solid #444;border-radius:8px;color:#f0f0f0;font-size:13px;padding:8px 11px;width:100%;font-family:inherit;outline:none}
+input[type=text]:focus,input[type=number]:focus{border-color:#FFCD00}
+input:disabled{opacity:.45;cursor:not-allowed}
+/* PLAYER TABS */
+.ptabs{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.ptab{padding:9px 22px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;background:#3a3a3a;border:2px solid #666;color:#fff;transition:all .15s;display:inline-block}
+.ptab:hover{background:#4a4a4a;border-color:#aaa}
+.ptab.active{background:#FFCD00;color:#111;border-color:#FFCD00}
+/* SAVE BUTTON */
+.save-btn{display:inline-flex;align-items:center;gap:8px;background:#FFCD00;color:#111;border:none;border-radius:9px;padding:12px 28px;font-size:14px;font-weight:800;cursor:pointer;margin-top:.75rem;transition:opacity .15s}
+.save-btn:hover{opacity:.88}
+.save-btn:disabled{background:#404040;color:#888;border:2px solid #555;cursor:not-allowed;opacity:1}
+/* DEADLINE BANNER */
+.dl{display:inline-flex;align-items:center;gap:6px;background:#1f1800;border:0.5px solid #3d3000;border-radius:6px;padding:5px 11px;font-size:12px;color:#c8a020;margin-bottom:1rem}
+/* VIEWING BANNERS */
+.viewing-banner{display:flex;align-items:center;gap:8px;background:#0d1a0d;border:1px solid #1a4a1a;border-radius:8px;padding:8px 14px;font-size:12px;color:#3daa68;margin-bottom:1rem}
+.own-banner{background:#1a1400;border-color:#3d3000;color:#c8a020}
+/* WHO AM I */
+.who-wrap{background:#1a1400;border:1px solid #3d3000;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.who-label{font-size:12px;color:#c8a020;margin-bottom:8px}
+.who-tabs{display:flex;gap:10px;flex-wrap:wrap}
+/* STAGE CARDS */
+.sc{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:10px;overflow:hidden;margin-bottom:12px}
+.sc.locked{border-color:#3a1a1a}
+.sc.hidden-pick{border-color:#1a1a2a;background:#13131a}
+.sc.joker-active{border-color:#8800cc;background:#1a0d22}
+.sc-header{padding:.9rem 1.1rem .75rem}
+.sc.locked .sc-header{background:#1a1212}
+.sc.joker-active .sc-header{background:#1a0d22}
+.sn{font-size:10px;font-weight:600;color:#FFCD00;text-transform:uppercase;letter-spacing:.8px}
+.sr{font-size:14px;font-weight:500;color:#e8e8e8;margin-top:2px}
+.sm{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.sd{font-size:11px;color:#888}
+.st{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.sprint{background:#0d2b1a;color:#3daa68}
+.mountain{background:#1f0f0f;color:#c85050}
+.hilly{background:#1f1c0a;color:#c4982a}
+.tt{background:#0d0d20;color:#5080c8}
+.transition{background:#1a1a1a;color:#aaa}
+/* STAGE PROFILE IMAGES */
+.stage-imgs{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid #2a2a2a}
+.stage-imgs.single{grid-template-columns:1fr}
+.img-box{background:#0d0d0d}
+.img-box+.img-box{border-left:0.5px solid #2a2a2a}
+.img-lbl{font-size:9px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.6px;padding:4px 10px;background:#0a0a0a;border-bottom:0.5px solid #1a1a1a}
+.img-box img{width:100%;height:auto;display:block}
+/* STAGE INPUT AREA */
+.sia{padding:.9rem 1.1rem;border-top:0.5px solid #2a2a2a;display:flex;align-items:center;gap:10px}
+.sc.locked .sia{background:#1a1212}
+.sc.joker-active .sia{background:#1a0d22}
+.siw{flex:1}
+/* JOKER BUTTON */
+.jbtn{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;border:2px solid #333;background:#1a1a1a;cursor:pointer;font-size:28px;line-height:1;flex-shrink:0;transition:all .2s;user-select:none;-webkit-tap-highlight-color:transparent;position:relative}
+.jbtn:hover{border-color:#555;transform:scale(1.05)}
+.jbtn:active{transform:scale(.93)}
+.jbtn.off{opacity:.3;filter:grayscale(80%)}
+.jbtn.on{opacity:1;border-color:#cc44ff;background:#2d0a40;box-shadow:0 0 0 3px rgba(180,50,255,.25),0 0 14px rgba(180,50,255,.2)}
+.jbtn.on::after{content:'ON';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;color:#cc44ff;letter-spacing:1px;background:#1a1a1a;padding:0 3px;border-radius:3px}
+.jbtn.used{opacity:.15;cursor:not-allowed;filter:grayscale(100%)}
+.jlabel{font-size:11px;color:#cc44ff;font-weight:700;background:#2d0a40;border:1px solid #8800cc;border-radius:6px;padding:3px 8px;white-space:nowrap}
+/* STATUS BADGES */
+.dns-badge{display:inline-flex;align-items:center;gap:6px;background:#2a1010;border:0.5px solid #5a2020;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:600;color:#c05050;width:100%}
+.hidden-badge{display:inline-flex;align-items:center;gap:6px;background:#131320;border:0.5px solid #2a2a4a;border-radius:6px;padding:8px 14px;font-size:12px;color:#555;width:100%}
+.locked-pt{background:#181818;border:0.5px solid #333;border-radius:8px;padding:8px 12px;font-size:13px;color:#777;font-style:italic;width:100%}
+/* REST DAY */
+.rdcard{background:#151515;border:0.5px dashed #2a2a2a;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+/* LEADERBOARD */
+.lbcard{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden;margin-bottom:1rem}
+.lbrow{display:flex;align-items:center;padding:14px 1.25rem;border-bottom:0.5px solid #2a2a2a;gap:12px}
+.lbrow:last-child{border-bottom:none}
+.lbpos{font-size:18px;font-weight:700;width:32px;flex-shrink:0}
+.lbpos.p1{color:#FFCD00}.lbpos.p2{color:#bbb}.lbpos.p3{color:#c4874a}
+.lbname{font-size:15px;font-weight:500;flex:1;color:#f0f0f0}
+.lbpts{font-size:22px;font-weight:700;color:#FFCD00}
+.lbptsl{font-size:10px;color:#888}
+/* ALL PICKS TABLE */
+.sbs-wrap{overflow-x:auto;border-radius:10px;border:0.5px solid #2a2a2a}
+.sbs{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.sbs th{padding:8px 10px;text-align:left;background:#0d0d0d;color:#FFCD00;font-weight:500;font-size:11px;border-bottom:1px solid #2a2a2a}
+.sbs td{padding:8px 10px;border-bottom:0.5px solid #2a2a2a;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ccc}
+.sbs tr:last-child td{border-bottom:none}
+.sbs tr:hover td{background:#1a1a1a}
+.rl{font-size:12px;display:flex;align-items:center;gap:6px;color:#ccc}
+.pc{color:#ddd}.pc.jk{color:#cc44ff;font-weight:500}
+.lk{color:#555;font-size:11px}.ok{color:#3daa68;font-weight:500}
+.dns-cell{color:#c05050;font-size:11px;font-weight:600}
+.pp{background:#1f1800;color:#FFCD00;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px}
+.rr td{background:#0f0f0f;color:#555;font-size:11px;font-style:italic}
+/* SCORE ROWS */
+.sbrow{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:0.5px solid #2a2a2a;color:#ccc}
+.sbrow:last-child{border-bottom:none}
+.sbrow.tot{font-weight:600;color:#FFCD00;font-size:14px}
+/* POINTS TABLE */
+.prow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid #2a2a2a}
+.prow:last-child{border-bottom:none}
+.pbadge{background:#FFCD00;color:#111;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;min-width:34px;text-align:center;flex-shrink:0}
+.plabel{font-size:13px;color:#ccc;flex:1}
+/* PRIVACY RULES */
+.priv-item{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid #2a2a2a;font-size:13px;color:#ccc;line-height:1.6}
+.priv-item:last-child{border-bottom:none}
+.priv-icon{flex-shrink:0;margin-top:1px;font-size:16px}
+/* LOCK NOTICE */
+.lock-notice{display:inline-flex;align-items:center;gap:6px;background:#1a1a1a;border:0.5px solid #444;border-radius:6px;padding:6px 12px;font-size:12px;color:#888;margin-bottom:.75rem}
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1}
+@media(max-width:640px){
+  .hdr-t{font-size:21px}
+  .nb{padding:10px 10px;font-size:10.5px}
+  .ptab{padding:8px 15px;font-size:12px}
+  .stage-imgs{grid-template-columns:1fr}
+  .jbtn{width:46px;height:46px;font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-t">Le Tour de France</div>
+    <div class="hdr-t" style="font-size:18px;color:#333;margin-top:2px">Fantasy 2026</div>
+    <div class="hdr-d">4–26 July · Barcelona → Paris · 21 Stages</div>
+  </div>
+  <svg width="56" height="56" viewBox="0 0 56 56">
+    <circle cx="28" cy="28" r="26" fill="#111" stroke="#FFCD00" stroke-width="2"/>
+    <text x="28" y="22" text-anchor="middle" fill="#FFCD00" font-size="8.5" font-weight="700" font-family="sans-serif">TOUR DE</text>
+    <text x="28" y="33" text-anchor="middle" fill="#FFCD00" font-size="8.5" font-weight="700" font-family="sans-serif">FRANCE</text>
+    <text x="28" y="44" text-anchor="middle" fill="#FFCD00" font-size="7.5" font-family="sans-serif">2026</text>
+  </svg>
+</div>
+<!-- NAV -->
+<div class="nav">
+  <button class="nb active" onclick="showTab('leaderboard',this)">🏆 Leaderboard</button>
+  <button class="nb" onclick="showTab('pretour',this)">🎽 Pre-tour</button>
+  <button class="nb" onclick="showTab('stages',this)">🚴 Stages</button>
+  <button class="nb" onclick="showTab('picks',this)">👁️ All Picks</button>
+  <button class="nb" onclick="showTab('results',this)">✏️ Results</button>
+  <button class="nb" onclick="showTab('rules',this)">📋 Rules</button>
+</div>
+<!-- LEADERBOARD -->
+<div id="tab-leaderboard" class="sec">
+  <div class="sec-title">🏆 Leaderboard</div>
+  <div class="lbcard" id="lb-rows"></div>
+  <div class="card" style="margin-top:.75rem">
+    <div class="card-title">📊 Points Breakdown</div>
+    <div id="lb-breakdown"></div>
+  </div>
+</div>
+<!-- PRE-TOUR -->
+<div id="tab-pretour" class="sec" style="display:none">
+  <div class="sec-title">🎽 Pre-tour Selections</div>
+  <div class="dl">⏰ Deadline: 10:00 on 4 July 2026 · Picks hidden until then</div>
+  <div class="ptabs" id="pt-tabs"></div>
+  <div id="pt-form"></div>
+  <div id="pt-save-wrap" style="padding-bottom:1.5rem">
+    <button class="save-btn" id="pt-save-btn" onclick="savePretour()">💾 Save Selections</button>
+  </div>
+</div>
+<!-- STAGES -->
+<div id="tab-stages" class="sec" style="display:none">
+  <div class="sec-title">🚴 Stage picks</div>
+  <div class="dl">⏰ Deadline: 10:00 each stage day · Stage 21: 09:45 if leading · Picks lock at deadline</div>
+  <div class="who-wrap">
+    <div class="who-label">👤 Who are you? Select your name to enter or view your own Picks.</div>
+    <div class="who-tabs" id="who-tabs"></div>
+  </div>
+  <div style="margin-bottom:1rem">
+    <div style="font-size:11px;color:#666;margin-bottom:8px">Viewing picks of:</div>
+    <div class="ptabs" id="st-tabs"></div>
+  </div>
+  <div id="st-banner"></div>
+  <div id="st-list"></div>
+</div>
+<!-- ALL PICKS -->
+<div id="tab-picks" class="sec" style="display:none">
+  <div class="sec-title">👁️ All picks — side by side</div>
+  <div class="dl">🔒 Pre-tour hidden until 04 Jul 10:00 · Stage Picks revealed after each deadline</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:.75rem 1.1rem .5rem;font-size:11px;color:#FFCD00;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #2a2a2a">Pre-tour picks</div>
+    <div class="sbs-wrap" style="border:none;border-radius:0"><table class="sbs" id="picks-pretour"></table></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:.5rem">
+    <div style="padding:.75rem 1.1rem .5rem;font-size:11px;color:#FFCD00;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #2a2a2a">Stage picks</div>
+    <div class="sbs-wrap" style="border:none;border-radius:0"><table class="sbs" id="picks-stages"></table></div>
+  </div>
+</div>
+<!-- RESULTS -->
+<div id="tab-results" class="sec" style="display:none">
+  <div class="sec-title">✏️ Enter results</div>
+  <div class="dl">⏰ Update daily at ~19:00</div>
+  <div class="card"><div class="card-title">Final classifications</div><div id="res-classifications"></div></div>
+  <div class="card"><div class="card-title">Daily stage winners</div><div id="r-stages"></div></div>
+  <div style="padding-bottom:1.5rem">
+    <button class="save-btn" onclick="saveResults()">💾 Save &amp; recalculate scores</button>
+  </div>
+</div>
+<!-- RULES -->
+<div id="tab-rules" class="sec" style="display:none">
+  <div class="sec-title">📋 Rules</div>
+  <div class="card"><div class="card-title">Points system</div><div id="rules-pts"></div></div>
+  <div class="card">
+    <div class="card-title">⏰ Deadlines</div>
+    <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
+      <div>Pre-tour Picks must be entered before <strong style="color:#FFCD00">10:00 on 4 July</strong>. Fields lock at the deadline — any empty field at that point is recorded as no selection.</div>
+      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is not accepted.</div>
+      <div>If 1 or 2 players are tied for the lead going into Stage 21, those players must submit by <strong style="color:#FFCD00">09:45 on 26 July</strong>.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🃏 The Joker</div>
+    <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
+      <div>Each player has one Joker for the entire tour. Tap the 🃏 button next to a stage input to activate it — it glows purple when active. Tap again to deactivate.</div>
+      <div>If your Joker pick is correct → <strong style="color:#FFCD00">2 points</strong> instead of 1.</div>
+      <div>If you DNS the stage where your Joker is set → Joker is <strong style="color:#c05050">cancelled and lost</strong>.</div>
+      <div>Players may select the same riders as each other — no restrictions.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔒 Privacy &amp; pick visibility</div>
+    <div class="priv-item"><span class="priv-icon">✏️</span><span>A player can <strong style="color:#FFCD00">change their stage pick any number of times</strong> before the deadline. The most recent entry is what counts. Once the deadline passes the field locks and no further changes are possible.</span></div>
+    <div class="priv-item"><span class="priv-icon">🔒</span><span><strong style="color:#FFCD00">Before the deadline</strong> — a player's stage pick is visible only to themselves. If another player views that player's stages, they see "Pick hidden until the deadline".</span></div>
+    <div class="priv-item"><span class="priv-icon">🔓</span><span><strong style="color:#FFCD00">After the deadline</strong> — the pick is revealed to all three players automatically in the Stages tab and the All Picks table.</span></div>
+    <div class="priv-item"><span class="priv-icon">🎽</span><span><strong style="color:#FFCD00">Pre-tour picks</strong> — all pre-tour selections remain hidden from other players until 10:00 on 4 July, at which point all selections are revealed simultaneously.</span></div>
+    <div class="priv-item"><span class="priv-icon">🚫</span><span><strong style="color:#FFCD00">No editing other players' picks</strong> — the app only allows a player to edit their own picks. Attempts to enter a pick under another player's name are blocked.</span></div>
+    <div class="priv-item"><span class="priv-icon">🏮</span><span><strong style="color:#FFCD00">DNS (Did Not Sign-in)</strong> — if a stage pick field is empty when the deadline passes, a DNS is recorded automatically. A DNS scores 0 points. If a Joker was active on that stage it is cancelled and cannot be used again.</span></div>
+  </div>
+</div>
+</div><!-- end .app -->
+<div id="toast"></div>
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const PLAYERS = ['Suzanne', 'Étienne', 'Räikkönen'];
+const STAGES = [
+  {n:1,  d:'4 Jul',  r:'Barcelona → Barcelona',             dist:'19.7 km', t:'tt',         l:'Team TT'},
+  {n:2,  d:'5 Jul',  r:'Tarragona → Barcelona',             dist:'182 km',  t:'hilly',      l:'Hilly'},
+  {n:3,  d:'6 Jul',  r:'Granollers → Les Angles',           dist:'196 km',  t:'mountain',   l:'Mountain ⛰'},
+  {n:4,  d:'7 Jul',  r:'Carcassonne → Foix',                dist:'182 km',  t:'mountain',   l:'Mountain ⛰'},
+  {n:5,  d:'8 Jul',  r:'Lannemezan → Pau',                  dist:'158 km',  t:'hilly',      l:'Hilly'},
+  {n:6,  d:'9 Jul',  r:'Pau → Gavarnie-Gèdre',             dist:'~160 km', t:'mountain',   l:'Mountain ⛰'},
+  {n:7,  d:'10 Jul', r:'Hagetmau → Bordeaux',               dist:'~170 km', t:'sprint',     l:'Sprint'},
+  {n:8,  d:'11 Jul', r:'Périgueux → Bergerac',              dist:'~170 km', t:'sprint',     l:'Sprint'},
+  {n:9,  d:'12 Jul', r:'Malemort → Ussel',                  dist:'~165 km', t:'transition', l:'Transition'},
+  {n:'R1', d:'13 Jul', r:'Rest Day 1', t:'rest'},
+  {n:10, d:'14 Jul', r:'Aurillac → Le Lioran',              dist:'~165 km', t:'mountain',   l:'Mountain ⛰ — Bastille Day!'},
+  {n:11, d:'15 Jul', r:'Vichy → Nevers',                    dist:'161 km',  t:'sprint',     l:'Sprint'},
+  {n:12, d:'16 Jul', r:'Nevers → Chalon-sur-Saône',         dist:'181 km',  t:'sprint',     l:'Sprint'},
+  {n:13, d:'17 Jul', r:'Dole → Belfort',                    dist:'~175 km', t:'hilly',      l:'Hilly'},
+  {n:14, d:'18 Jul', r:'Mulhouse → Le Markstein',           dist:'~165 km', t:'mountain',   l:'Mountain ⛰'},
+  {n:15, d:'19 Jul', r:'Champagnole → Plateau de Solaison', dist:'~160 km', t:'mountain',   l:'Mountain ⛰'},
+  {n:'R2', d:'20 Jul', r:'Rest Day 2', t:'rest'},
+  {n:16, d:'21 Jul', r:'Évian-les-Bains → Thonon-les-Bains (ITT)', dist:'26 km', t:'tt', l:'Individual TT'},
+  {n:17, d:'22 Jul', r:'Chambéry → Voiron',                 dist:'~175 km', t:'hilly',      l:'Hilly'},
+  {n:18, d:'23 Jul', r:'Voiron → Orcières-Merlette',        dist:'~160 km', t:'mountain',   l:'Mountain ⛰'},
+  {n:19, d:'24 Jul', r:"Gap → Alpe d'Huez",                 dist:'128 km',  t:'mountain',   l:'Mountain ⛰'},
+  {n:20, d:'25 Jul', r:"Le Bourg-d'Oisans → Alpe d'Huez",  dist:'171 km',  t:'mountain',   l:'👑 Queen Stage'},
+  {n:21, d:'26 Jul', r:'Thoiry → Paris (Montmartre + Champs-Élysées)', dist:'~130 km', t:'sprint', l:'Sprint 🎊'},
+];
+const RACE_STAGES = STAGES.filter(s => s.t !== 'rest');
+// ProCyclingStats image URLs
+const PCS = {
+  1:  'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-1-profile-6d690a4faee04bd1fea9.jpg',
+  2:  'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-2-profile-5c74061917de4827dc0c.jpg',
+  3:  'https://www.procyclingstats.com/images/profiles/ap/db/tour-de-france-2026-stage-3-sprint-c13005abe4518f19daad.jpg',
+  4:  'https://www.procyclingstats.com/images/profiles/ap/bc/tour-de-france-2026-stage-4-profile-35986ac960631721e2d5.jpg',
+  5:  'https://www.procyclingstats.com/images/profiles/ap/aa/tour-de-france-2026-stage-5-profile-5943fe8c039647794dee.jpg',
+  6:  'https://www.procyclingstats.com/images/profiles/ap/bf/tour-de-france-2026-stage-6-profile-65c08b44de5ee9a730f2.jpg',
+  7:  'https://www.procyclingstats.com/images/profiles/ap/db/tour-de-france-2026-stage-7-profile-d7c1672ca766f63f9784.jpg',
+  8:  'https://www.procyclingstats.com/images/profiles/ap/cc/tour-de-france-2026-stage-8-profile-57b38f045c59d8e2530c.jpg',
+  9:  'https://www.procyclingstats.com/images/profiles/ap/fb/tour-de-france-2026-stage-9-profile-5c6317cc4eb4ab75fe63.jpg',
+  10: 'https://www.procyclingstats.com/images/profiles/ap/bb/tour-de-france-2026-stage-10-profile-e8eb101c724f0d318fd1.jpg',
+  11: 'https://www.procyclingstats.com/images/profiles/ap/ac/tour-de-france-2026-stage-11-profile-16933ab1f33688ab5753.jpg',
+  12: 'https://www.procyclingstats.com/images/profiles/ap/ec/tour-de-france-2026-stage-12-profile-a109448692d8c0ca0fb1.jpg',
+  13: 'https://www.procyclingstats.com/images/profiles/ap/ac/tour-de-france-2026-stage-13-profile-458b9b9aad09922717db.jpg',
+  14: 'https://www.procyclingstats.com/images/profiles/ap/af/tour-de-france-2026-stage-14-climb-9115e562433bafb06917.jpg',
+  15: 'https://www.procyclingstats.com/images/profiles/ap/df/tour-de-france-2026-stage-15-profile-2fb31b392e94b9ef2730.jpg',
+  16: 'https://www.procyclingstats.com/images/profiles/ap/ce/tour-de-france-2026-stage-16-profile-00a79feb51859aec8104.jpg',
+  17: 'https://www.procyclingstats.com/images/profiles/ap/df/tour-de-france-2026-stage-17-profile-f834eac6b98279d1cbd9.jpg',
+  18: 'https://www.procyclingstats.com/images/profiles/ap/ef/tour-de-france-2026-stage-18-profile-9a75d76069c37f0e2599.jpg',
+  19: 'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-19-profile-fa6346bb6b8d9b36944a.jpg',
+  20: 'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-20-profile-901c139770b610ff2649.jpg',
+  21: 'https://www.procyclingstats.com/images/profiles/ap/bf/tour-de-france-2026-stage-21-profile-a1e90fcaaf6e8de7f7d7.jpg',
+};
+// letour.fr Last KM URLs (stages without summit finishes)
+const LKM = {
+  2:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/2/71145/0:0,2501:1594-960-0-90/c557e',
+  3:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/3/71148/0:0,723:1082-960-0-90/76635',
+  4:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/4/71144/0:0,702:735-960-0-90/7f0df',
+  5:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/5/71146/0:0,702:455-960-0-90/66694',
+  6:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/6/71147/0:0,2519:2059-960-0-90/a1c4d',
+  7:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/7/71143/0:0,692:446-960-0-90/5fbdd',
+  8:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/8/71154/0:0,692:636-960-0-90/f542c',
+  9:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/9/71151/0:0,702:512-960-0-90/1a8f3',
+  10: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/10/71157/0:0,833:1065-960-0-90/cb675',
+  11: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/11/71152/0:0,702:614-960-0-90/a3db9',
+  12: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/12/71153/0:0,702:891-960-0-90/93d0e',
+  13: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/13/71155/0:0,701:626-960-0-90/89a4a',
+  16: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/16/71156/0:0,701:886-960-0-90/97c13',
+  17: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/17/71149/0:0,787:647-960-0-90/15374',
+  21: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/21/71150/0:0,1302:838-960-0-90/7f973',
+};
+// Deadlines
+const PRETOUR_DL = new Date('2026-07-04T10:00:00+01:00');
+const STAGE_DL = {
+  1:  new Date('2026-07-04T10:00:00+01:00'),
+  2:  new Date('2026-07-05T10:00:00+01:00'),
+  3:  new Date('2026-07-06T10:00:00+01:00'),
+  4:  new Date('2026-07-07T10:00:00+01:00'),
+  5:  new Date('2026-07-08T10:00:00+01:00'),
+  6:  new Date('2026-07-09T10:00:00+01:00'),
+  7:  new Date('2026-07-10T10:00:00+01:00'),
+  8:  new Date('2026-07-11T10:00:00+01:00'),
+  9:  new Date('2026-07-12T10:00:00+01:00'),
+  10: new Date('2026-07-14T10:00:00+01:00'),
+  11: new Date('2026-07-15T10:00:00+01:00'),
+  12: new Date('2026-07-16T10:00:00+01:00'),
+  13: new Date('2026-07-17T10:00:00+01:00'),
+  14: new Date('2026-07-18T10:00:00+01:00'),
+  15: new Date('2026-07-19T10:00:00+01:00'),
+  16: new Date('2026-07-21T10:00:00+01:00'),
+  17: new Date('2026-07-22T10:00:00+01:00'),
+  18: new Date('2026-07-23T10:00:00+01:00'),
+  19: new Date('2026-07-24T10:00:00+01:00'),
+  20: new Date('2026-07-25T10:00:00+01:00'),
+  21: new Date('2026-07-26T09:45:00+01:00'),
+};
+const ptLocked  = () => new Date() >= PRETOUR_DL;
+const stLocked  = n  => new Date() >= STAGE_DL[n];
+const ptRevealed = () => new Date() >= PRETOUR_DL;
+const stRevealed = n  => new Date() >= STAGE_DL[n];
+// ─── PRE-TOUR FIELDS ────────────────────────────────────────────────────────
+const PT_FIELDS = [
+  {id:'gc1', label:'Maillot Jaune',     jersey:'yellow',   pts:6},
+  {id:'gc2', label:'GC 2nd Place',      medal:'silver',    pts:4},
+  {id:'gc3', label:'GC 3rd Place',      medal:'bronze',    pts:2},
+  {id:'pts', label:'Green Jersey',      jersey:'green',    pts:4},
+  {id:'mtn', label:'Polka Dot Jersey',  jersey:'polka',    pts:4},
+  {id:'yth', label:'White Jersey',      jersey:'white',    pts:4},
+  {id:'lan', label:'Lanterne Rouge',    jersey:'lanterne', pts:2},
+  {id:'fre', label:'French Stage Wins', flag:true,         pts:2, num:true},
+];
+const PT_PTS = {gc1:6,gc2:4,gc3:2,pts:4,mtn:4,yth:4,lan:2,fre:2};
+// ─── SVG ICONS ──────────────────────────────────────────────────────────────
+function frFlag(w, h) {
+  w = w||20; h = h||14;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 30 20" style="border-radius:2px;vertical-align:-2px;flex-shrink:0"><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ED2939"/></svg>`;
+}
+function jersey(type, sz) {
+  sz = sz || 28;
+  const j = 'M8,4 L16,2 Q20,6 24,2 L32,4 L38,14 L30,17 L30,38 L10,38 L10,17 L2,14 Z';
+  if (type === 'yellow')   return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="#FFCD00" stroke="#b89000" stroke-width="1.5"/></svg>`;
+  if (type === 'green')    return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="#00A650" stroke="#007030" stroke-width="1.5"/></svg>`;
+  if (type === 'polka')    return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="white" stroke="#ccc" stroke-width="1.5"/><circle cx="14" cy="18" r="3.5" fill="#E30613"/><circle cx="24" cy="13" r="3" fill="#E30613"/><circle cx="20" cy="25" r="3.2" fill="#E30613"/><circle cx="28" cy="22" r="2.8" fill="#E30613"/><circle cx="16" cy="30" r="2.5" fill="#E30613"/></svg>`;
+  if (type === 'white')    return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="white" stroke="#ccc" stroke-width="1.5"/></svg>`;
+  if (type === 'lanterne') return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="#E30613" stroke="#900000" stroke-width="1.5"/><text x="20" y="27" text-anchor="middle" font-size="11">🏮</text></svg>`;
+  return '';
+}
+function medal(color, sz) {
+  sz = sz || 20;
+  const fill = color === 'silver' ? '#C0C0C0' : '#CD7F32';
+  const stk  = color === 'silver' ? '#909090' : '#9a5c1a';
+  const num  = color === 'silver' ? '2' : '3';
+  const tc   = color === 'silver' ? '#444' : '#5a2e00';
+  return `<svg width="${sz}" height="${Math.round(sz*1.7)}" viewBox="0 0 24 40">
+    <rect x="9" y="0" width="6" height="4" fill="#002395"/>
+    <rect x="9" y="4" width="6" height="4" fill="#FFFFFF"/>
+    <rect x="9" y="8" width="6" height="4" fill="#ED2939"/>
+    <line x1="12" y1="12" x2="12" y2="17" stroke="#888" stroke-width="1.5"/>
+    <circle cx="12" cy="28" r="11" fill="${fill}" stroke="${stk}" stroke-width="1.5"/>
+    <text x="12" y="32" text-anchor="middle" font-size="10" font-weight="700" fill="${tc}" font-family="sans-serif">${num}</text>
+  </svg>`;
+}
+function fieldIcon(f, sz) {
+  if (f.jersey) return jersey(f.jersey, sz||24);
+  if (f.medal)  return medal(f.medal,   sz||20);
+  if (f.flag)   return frFlag(sz ? Math.round(sz*.9) : 20, sz ? Math.round(sz*.65) : 14);
+  return '';
+}
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let S = {
+  pretour: {}, stages: {}, jokers: {},
+  results: {gc1:'',gc2:'',gc3:'',pts:'',mtn:'',yth:'',lan:'',fre:'',stages:{}},
+  scores: {},
+  ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
+};
+function load() {
+  try { const d = localStorage.getItem('tdf26'); if (d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
+}
+function save() {
+  try { localStorage.setItem('tdf26', JSON.stringify(S)); } catch(e) {}
+}
+function toast(m, col) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.style.background = col||'#FFCD00'; t.style.color = col?'#fff':'#111';
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
+}
+function norm(s) { return (s||'').toLowerCase().trim(); }
+// ─── DEADLINES ──────────────────────────────────────────────────────────────
+function applyDeadlines() {
+  const now = new Date();
+  PLAYERS.forEach(p => {
+    RACE_STAGES.forEach(st => {
+      if (now >= STAGE_DL[st.n]) {
+        if (!S.stages[p]) S.stages[p] = {};
+        const key = 's' + st.n;
+        if (!S.stages[p][key]) {
+          S.stages[p][key] = 'DNS';
+          if (S.jokers[p] === key) S.jokers[p] = null;
+        }
+      }
+    });
+  });
+  save();
+}
+// ─── TAB SWITCHING ──────────────────────────────────────────────────────────
+function showTab(tab, btn) {
+  applyDeadlines();
+  document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (tab === 'leaderboard') renderLB();
+  if (tab === 'pretour')     renderPT();
+  if (tab === 'stages')      renderST();
+  if (tab === 'picks')       renderPicks();
+  if (tab === 'results')     renderResults();
+  if (tab === 'rules')       renderRules();
+}
+// ─── SCORING ────────────────────────────────────────────────────────────────
+function calcScores() {
+  PLAYERS.forEach(p => {
+    let tot = 0; const bd = [];
+    const pk = S.pretour[p] || {}; const r = S.results;
+    const chk = (pick, res, pts, lbl) => {
+      if (res && norm(pick) === norm(res) && pick && pick !== 'DNS') { tot += pts; bd.push([lbl, pts]); }
+    };
+    chk(pk.gc1, r.gc1, 6, 'Maillot Jaune');
+    chk(pk.gc2, r.gc2, 4, 'GC 2nd Place');
+    chk(pk.gc3, r.gc3, 2, 'GC 3rd Place');
+    chk(pk.pts, r.pts, 4, 'Green Jersey');
+    chk(pk.mtn, r.mtn, 4, 'Polka Dot Jersey');
+    chk(pk.yth, r.yth, 4, 'White Jersey');
+    chk(pk.lan, r.lan, 2, 'Lanterne Rouge');
+    if (r.fre !== '' && pk.fre !== '' && pk.fre !== undefined && pk.fre !== 'DNS' && norm(pk.fre) === norm(r.fre)) {
+      tot += 2; bd.push(['French Stage Wins (exact)', 2]);
+    }
+    const sp = S.stages[p] || {}; const jk = S.jokers[p];
+    RACE_STAGES.forEach(st => {
+      const key = 's' + st.n; const pick = sp[key]; const res = r.stages[key];
+      if (!pick || !res || pick === 'DNS') return;
+      if (norm(pick) === norm(res)) {
+        const pts = jk === key ? 2 : 1; tot += pts;
+        bd.push([jk === key ? `Stage ${st.n} (Joker!)` : `Stage ${st.n} winner`, pts]);
+      }
+    });
+    S.scores[p] = {total: tot, bd};
+  });
+}
+// ─── LEADERBOARD ────────────────────────────────────────────────────────────
+function renderLB() {
+  calcScores();
+  const sorted = [...PLAYERS].sort((a,b) => (S.scores[b]?.total||0) - (S.scores[a]?.total||0));
+  const pc = ['p1','p2','p3'], pl = ['1st','2nd','3rd'];
+  document.getElementById('lb-rows').innerHTML = sorted.map((p,i) => `
+    <div class="lbrow">
+      <div class="lbpos ${pc[i]}">${pl[i]}</div>
+      <div class="lbname">${p}</div>
+      <div style="text-align:right"><div class="lbpts">${S.scores[p]?.total||0}</div><div class="lbptsl">points</div></div>
+    </div>`).join('');
+  document.getElementById('lb-breakdown').innerHTML = PLAYERS.map(p => {
+    const sc = S.scores[p] || {total:0, bd:[]};
+    return `<div style="margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:600;color:#eee;margin-bottom:6px;padding-bottom:4px;border-bottom:0.5px solid #2a2a2a">${p}</div>
+      ${sc.bd.length === 0 ? '<div style="font-size:12px;color:#555">No points yet</div>' :
+        sc.bd.map(([l,v]) => `<div class="sbrow"><span>${l}</span><span style="color:#FFCD00">+${v}</span></div>`).join('') +
+        `<div class="sbrow tot"><span>Total</span><span>${sc.total} pts</span></div>`}
+    </div>`;
+  }).join('<div style="border-top:0.5px solid #2a2a2a;margin:.75rem 0"></div>');
+}
+// ─── PRE-TOUR ───────────────────────────────────────────────────────────────
+function renderPT() {
+  const locked = ptLocked();
+  document.getElementById('pt-tabs').innerHTML = PLAYERS.map(p =>
+    `<button class="ptab ${p===S.ptPlayer?'active':''}" onclick="setPTP('${p}')">${p}</button>`).join('');
+  const p = S.ptPlayer; const pk = S.pretour[p] || {};
+  const btn = document.getElementById('pt-save-btn');
+  if (btn) {
+    btn.disabled = locked;
+    btn.innerHTML = locked ? '🔒 Selections Locked' : '💾 Save Selections';
+  }
+  const wrap = document.getElementById('pt-save-wrap');
+  const ex = wrap && wrap.querySelector('.lock-notice');
+  if (locked && wrap && !ex) {
+    const n = document.createElement('div'); n.className = 'lock-notice';
+    n.innerHTML = '🔒 Pre-tour Selections locked at 10:00 on 4 July';
+    wrap.insertBefore(n, wrap.firstChild);
+  } else if (!locked && ex) { ex.remove(); }
+  document.getElementById('pt-form').innerHTML = PT_FIELDS.map(f => `
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px">
+        <span style="display:inline-flex;align-items:center;flex-shrink:0">${fieldIcon(f,24)}</span>
+        <span>${f.label}</span>
+        <span style="margin-left:auto;background:#1f1800;color:#FFCD00;font-size:10px;padding:2px 7px;border-radius:20px;flex-shrink:0">${f.pts} pts</span>
+        ${locked ? '<span style="font-size:10px;color:#c05050;margin-left:2px">🔒</span>' : ''}
+      </div>
+      ${locked
+        ? `<div class="locked-pt">${pk[f.id] || '<span style="color:#444">No selection made</span>'}</div>`
+        : `<input type="${f.num?'number':'text'}" id="pf-${f.id}" value="${pk[f.id]||''}" placeholder="${f.num?'0–21':'Rider name'}" ${f.num?'min="0" max="21"':''}>`
+      }
+    </div>`).join('');
+}
+function setPTP(p) { S.ptPlayer = p; renderPT(); }
+function savePretour() {
+  if (ptLocked()) { toast('Deadline passed — Selections are locked', '#c05050'); return; }
+  const p = S.ptPlayer; if (!S.pretour[p]) S.pretour[p] = {};
+  PT_FIELDS.forEach(f => { const el = document.getElementById('pf-'+f.id); if (el) S.pretour[p][f.id] = el.value.trim(); });
+  save(); toast('Saved for ' + p + ' ✓');
+}
+// ─── STAGE PROFILE IMAGES ───────────────────────────────────────────────────
+function stageImgHtml(n) {
+  const pcs = PCS[n]; const lkm = LKM[n];
+  if (!pcs && !lkm) return '';
+  const pcsBox = pcs ? `
+    <div class="img-box">
+      <div class="img-lbl">Stage profile · ProCyclingStats</div>
+      <img src="${pcs}" alt="Stage ${n} profile" loading="lazy" onerror="this.closest('.img-box').style.display='none'">
+    </div>` : '';
+  const lkmBox = lkm ? `
+    <div class="img-box">
+      <div class="img-lbl">Last KM · letour.fr</div>
+      <img src="${lkm}" alt="Stage ${n} last km" loading="lazy" onerror="this.closest('.img-box').style.display='none'">
+    </div>` : '';
+  return `<div class="stage-imgs${lkm?'':' single'}">${pcsBox}${lkmBox}</div>`;
+}
+// ─── STAGES ─────────────────────────────────────────────────────────────────
+function renderST() {
+  const me = S.myPlayer, viewing = S.stPlayer, isOwn = me === viewing;
+  document.getElementById('who-tabs').innerHTML = PLAYERS.map(p =>
+    `<button class="ptab ${p===me?'active':''}" onclick="setMyPlayer('${p}')">${p}</button>`).join('');
+  document.getElementById('st-tabs').innerHTML = PLAYERS.map(p =>
+    `<button class="ptab ${p===viewing?'active':''}" onclick="setSTPlayer('${p}')">${p}</button>`).join('');
+  document.getElementById('st-banner').innerHTML = isOwn
+    ? `<div class="viewing-banner own-banner">✏️ You are entering your own Picks as <strong>${me}</strong>. Picks are hidden from other players until each stage deadline.</div>`
+    : `<div class="viewing-banner">👁️ Viewing <strong>${viewing}</strong>'s Picks as <strong>${me}</strong>. Only Picks past their deadline are visible.</div>`;
+  if (!S.stages[viewing]) S.stages[viewing] = {};
+  if (S.jokers[viewing] === undefined) S.jokers[viewing] = null;
+  const jkUsed = S.jokers[viewing] !== null;
+  let html = '';
+  STAGES.forEach(st => {
+    if (st.t === 'rest') {
+      html += `<div class="rdcard" style="color:#555;font-size:13px">😴 <div><strong style="color:#666">${st.d}</strong> — ${st.r}</div></div>`;
+      return;
+    }
+    const key = 's' + st.n;
+    const locked   = stLocked(st.n);
+    const revealed = stRevealed(st.n);
+    const sel    = S.stages[viewing][key] || '';
+    const isDNS  = sel === 'DNS';
+    const isJk   = S.jokers[viewing] === key;
+    const jkDis  = jkUsed && !isJk;
+    const tc = {sprint:'sprint',mountain:'mountain',hilly:'hilly',tt:'tt',transition:'transition'}[st.t]||'transition';
+    const canEdit   = isOwn && !locked;
+    const showHidden = !isOwn && !revealed;
+    const showRev   = !isOwn && revealed;
+    const cardCls = `sc ${locked?'locked':''} ${showHidden?'hidden-pick':''} ${isJk&&canEdit?'joker-active':''}`;
+    html += `<div class="${cardCls}">
+      <div class="sc-header">
+        <div class="sn">Stage ${st.n}</div>
+        <div class="sr">${st.r}</div>
+        <div class="sm">
+          <span class="sd">${st.d}${st.n===21?' · <span style="color:#c05050;font-size:10px">09:45 if leading</span>':''}</span>
+          <span class="sd">${st.dist}</span>
+          <span class="st ${tc}">${st.l}</span>
+          ${showHidden ? '<span style="font-size:10px;color:#555">🔒 Hidden until deadline</span>'
+            : locked ? (isDNS ? '<span style="font-size:10px;color:#c05050;font-weight:600">🔒 DNS</span>'
+                              : '<span style="font-size:10px;color:#3daa68">🔒 Locked</span>')
+                     : '<span style="font-size:10px;color:#555">🔓 Open</span>'}
+          ${isJk && canEdit ? '<span style="font-size:10px;color:#cc44ff;font-weight:700">🃏 JOKER ACTIVE</span>' : ''}
+        </div>
+      </div>
+      ${stageImgHtml(st.n)}
+      <div class="sia">`;
+    if (showHidden) {
+      html += `<div class="hidden-badge">🔒 ${viewing}'s Pick is hidden until the deadline</div>`;
+    } else if (canEdit) {
+      const jc = isJk ? 'jbtn on' : (jkDis ? 'jbtn off used' : 'jbtn off');
+      const jt = isJk ? 'Joker active — tap to deactivate' : (jkDis ? 'Joker already used on another stage' : 'Tap to use your Joker on this stage');
+      html += `<div class="siw"><input type="text" value="${sel==='DNS'?'':sel}" placeholder="Pick a rider…" oninput="updST('${viewing}','${key}',this.value)"></div>
+               <button class="${jc}" onclick="${jkDis?'':("togJk('"+viewing+"','"+key+"')")}" title="${jt}" aria-label="${jt}">🃏</button>`;
+    } else if (locked && isDNS) {
+      html += `<div class="dns-badge">❌ DNS — Did Not Sign-in</div>`;
+    } else if (locked || showRev) {
+      html += `<div style="display:flex;align-items:center;gap:8px;flex:1">
+                 <div class="locked-pt">${sel||'<span style="color:#444">No selection</span>'}</div>
+                 ${isJk ? '<span class="jlabel">🃏 Joker used</span>' : ''}
+               </div>`;
+    }
+    html += `</div></div>`;
+  });
+  document.getElementById('st-list').innerHTML = html;
+}
+function setMyPlayer(p) { S.myPlayer = p; S.stPlayer = p; save(); renderST(); }
+function setSTPlayer(p) { S.stPlayer = p; save(); renderST(); }
+function updST(player, key, val) {
+  if (stLocked(parseInt(key.replace('s','')))) { toast('Deadline passed — this stage is locked', '#c05050'); return; }
+  if (player !== S.myPlayer) { toast('You can only edit your own Picks', '#c05050'); return; }
+  if (!S.stages[player]) S.stages[player] = {};
+  S.stages[player][key] = val; save();
+}
+function togJk(player, key) {
+  if (stLocked(parseInt(key.replace('s','')))) { toast('Deadline passed — cannot change Joker', '#c05050'); return; }
+  if (player !== S.myPlayer) { toast('You can only set your own Joker', '#c05050'); return; }
+  if (S.jokers[player] === key) { S.jokers[player] = null; toast('Joker deactivated', '#555'); }
+  else if (S.jokers[player] === null) { S.jokers[player] = key; toast('🃏 Joker activated!', '#8800cc'); }
+  save(); renderST();
+}
+// ─── ALL PICKS ──────────────────────────────────────────────────────────────
+function renderPicks() {
+  const rev = ptRevealed(); const r = S.results;
+  const cw = Math.floor(52 / PLAYERS.length);
+  let ph = `<thead><tr><th style="width:34%">Category</th>${PLAYERS.map(p=>`<th style="width:${cw}%">${p}</th>`).join('')}</tr></thead><tbody>`;
+  PT_FIELDS.forEach(f => {
+    const res = r[f.id] || ''; const ic = fieldIcon(f, 16);
+    ph += `<tr><td><div class="rl">${ic}<span style="margin-left:${ic?'4px':'0'}">${f.label}</span></div></td>`;
+    PLAYERS.forEach(p => {
+      const pk = (S.pretour[p]||{})[f.id] || '';
+      if (!rev) { ph += `<td class="lk">🔒</td>`; }
+      else { const ok = res && norm(pk) === norm(res) && pk && pk !== 'DNS'; ph += `<td class="${ok?'ok':'pc'}">${pk||'—'}${ok?`<span class="pp">+${PT_PTS[f.id]}</span>`:''}</td>`; }
+    });
+    ph += '</tr>';
+  });
+  ph += '</tbody>'; document.getElementById('picks-pretour').innerHTML = ph;
+  const sw = Math.floor(42 / PLAYERS.length);
+  let sh = `<thead><tr><th style="width:22%">Stage</th>${PLAYERS.map(p=>`<th style="width:${sw}%">${p}</th>`).join('')}<th style="width:20%">Result</th></tr></thead><tbody>`;
+  STAGES.forEach(st => {
+    if (st.t === 'rest') { sh += `<tr class="rr"><td colspan="${PLAYERS.length+2}">Rest day — ${st.d}</td></tr>`; return; }
+    const key = 's' + st.n; const past = stRevealed(st.n); const res = r.stages[key] || '';
+    sh += `<tr><td><span style="color:#FFCD00;font-size:10px;font-weight:600">S${st.n}</span> <span style="color:#888;font-size:10px">${st.d}</span></td>`;
+    PLAYERS.forEach(p => {
+      const pick = (S.stages[p]||{})[key] || ''; const isJk = S.jokers[p] === key; const isDNS = pick === 'DNS';
+      if (!past) { sh += `<td class="lk">🔒</td>`; }
+      else if (isDNS) { sh += `<td class="dns-cell">DNS</td>`; }
+      else { const ok = res && norm(pick) === norm(res) && pick; const pts = ok ? (isJk?2:1) : 0; sh += `<td class="${ok?'ok':isJk&&pick?'pc jk':'pc'}">${pick||'—'}${isJk&&pick?' 🃏':''}${ok?`<span class="pp">+${pts}</span>`:''}</td>`; }
+    });
+    sh += `<td style="color:${res?'#e0e0e0':'#555'};font-size:12px">${res||'—'}</td></tr>`;
+  });
+  sh += '</tbody>'; document.getElementById('picks-stages').innerHTML = sh;
+}
+// ─── RESULTS ────────────────────────────────────────────────────────────────
+function renderResults() {
+  const r = S.results;
+  document.getElementById('res-classifications').innerHTML = PT_FIELDS.map(f => `
+    <div class="card" style="margin-bottom:.75rem">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="display:inline-flex;align-items:center;flex-shrink:0">${fieldIcon(f,24)}</span>
+        <span>${f.label}</span>
+        <span style="margin-left:auto;background:#1f1800;color:#FFCD00;font-size:10px;padding:2px 7px;border-radius:20px;flex-shrink:0">${f.pts} pts</span>
+      </div>
+      <input type="${f.num?'number':'text'}" id="r-${f.id}" value="${r[f.id]||''}" placeholder="${f.num?'0–21':'Rider name'}" ${f.num?'min="0" max="21"':''} oninput="updRes('${f.id}',this.value)">
+    </div>`).join('');
+  document.getElementById('r-stages').innerHTML = RACE_STAGES.map(st => `
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+      <div style="font-size:11px;color:#888">Stage ${st.n} · ${st.d} · ${st.r.split('→').pop().trim()}</div>
+      <input type="text" value="${r.stages['s'+st.n]||''}" placeholder="Stage winner" oninput="updResStage('s${st.n}',this.value)">
+    </div>`).join('');
+}
+function updRes(key, val) { S.results[key] = val; save(); }
+function updResStage(key, val) { S.results.stages[key] = val; save(); }
+function saveResults() {
+  PT_FIELDS.forEach(f => { const el = document.getElementById('r-'+f.id); if (el) S.results[f.id] = el.value.trim(); });
+  calcScores(); save(); toast('Results saved & scores updated ✓'); renderLB();
+}
+// ─── RULES ──────────────────────────────────────────────────────────────────
+function renderRules() {
+  const rows = [
+    {icon: jersey('yellow',22),   label:'Maillot Jaune',              pts:6},
+    {icon: medal('silver',18),    label:'GC 2nd Place',               pts:4},
+    {icon: medal('bronze',18),    label:'GC 3rd Place',               pts:2},
+    {icon: jersey('green',22),    label:'Green Jersey',               pts:4},
+    {icon: jersey('polka',22),    label:'Polka Dot Jersey',           pts:4},
+    {icon: jersey('white',22),    label:'White Jersey',               pts:4},
+    {icon: jersey('lanterne',22), label:'Lanterne Rouge',             pts:2},
+    {icon: frFlag(22,15),         label:'French Stage Wins',          pts:2},
+    {icon: '',                    label:'Stage winner — daily pick',  pts:1},
+    {icon: '🃏',                  label:'Stage winner with Joker active', pts:2},
+  ];
+  document.getElementById('rules-pts').innerHTML = rows.map(row => `
+    <div class="prow">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;flex-shrink:0">
+          ${typeof row.icon === 'string' ? `<span style="font-size:18px">${row.icon}</span>` : row.icon}
+        </span>
+        <span class="plabel">${row.label}</span>
+      </div>
+      <span class="pbadge">${row.pts}</span>
+    </div>`).join('');
+}
+// ─── INIT ───────────────────────────────────────────────────────────────────
+load();
+applyDeadlines();
+calcScores();
+renderLB();
+renderRules();
+setInterval(() => { applyDeadlines(); }, 60000);
+</script>
+</body>
+</html>
