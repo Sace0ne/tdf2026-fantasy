@@ -9,43 +9,53 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#111;color:#f0f0f0;min-height:100vh}
 :root{--y:#FFCD00;--card:#1e1e1e;--bdr:#2a2a2a;--inp:#252525}
 .app{max-width:920px;margin:0 auto;padding-bottom:4rem}
+
 /* HEADER */
 .hdr{background:#FFCD00;padding:1.25rem 1.5rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .hdr-t{font-size:26px;font-weight:700;color:#111;line-height:1.1;letter-spacing:-.5px}
 .hdr-d{font-size:11px;color:#444;margin-top:6px;background:rgba(0,0,0,.12);display:inline-block;padding:3px 10px;border-radius:20px}
+
 /* NAV */
 .nav{display:flex;background:#0d0d0d;border-bottom:2px solid #FFCD00;overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nb{padding:11px 13px;font-size:11.5px;font-weight:500;color:#aaa;cursor:pointer;border:none;background:transparent;white-space:nowrap;flex-shrink:0;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
+.nb{padding:13px 6px;font-size:14px;font-weight:500;color:#aaa;cursor:pointer;border:none;background:transparent;white-space:nowrap;flex:1;text-align:center;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
 .nb:hover{color:#FFCD00}
 .nb.active{color:#FFCD00;border-bottom-color:#FFCD00}
+
 /* SECTIONS */
 .sec{padding:1.25rem 1.25rem 0}
-.sec-title{font-size:16px;font-weight:500;color:#FFCD00;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.sec-title{font-size:18px;font-weight:500;color:#FFCD00;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 .card{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:.875rem}
-.card-title{font-size:13px;font-weight:500;color:#ccc;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card-title{font-size:15px;font-weight:500;color:#ccc;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+
 /* INPUTS */
-input[type=text],input[type=number]{background:#252525;border:0.5px solid #444;border-radius:8px;color:#f0f0f0;font-size:13px;padding:8px 11px;width:100%;font-family:inherit;outline:none}
+input[type=text],input[type=number]{background:#252525;border:0.5px solid #444;border-radius:8px;color:#f0f0f0;font-size:15px;padding:9px 12px;width:100%;font-family:inherit;outline:none}
 input[type=text]:focus,input[type=number]:focus{border-color:#FFCD00}
 input:disabled{opacity:.45;cursor:not-allowed}
+
 /* PLAYER TABS */
 .ptabs{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
-.ptab{padding:9px 22px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;background:#3a3a3a;border:2px solid #666;color:#fff;transition:all .15s;display:inline-block}
+.ptab{padding:9px 22px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;background:#3a3a3a;border:2px solid #666;color:#fff;transition:all .15s;display:inline-block}
 .ptab:hover{background:#4a4a4a;border-color:#aaa}
 .ptab.active{background:#FFCD00;color:#111;border-color:#FFCD00}
+
 /* SAVE BUTTON */
-.save-btn{display:inline-flex;align-items:center;gap:8px;background:#FFCD00;color:#111;border:none;border-radius:9px;padding:12px 28px;font-size:14px;font-weight:800;cursor:pointer;margin-top:.75rem;transition:opacity .15s}
+.save-btn{display:inline-flex;align-items:center;gap:8px;background:#FFCD00;color:#111;border:none;border-radius:9px;padding:13px 30px;font-size:16px;font-weight:800;cursor:pointer;margin-top:.75rem;transition:opacity .15s}
 .save-btn:hover{opacity:.88}
 .save-btn:disabled{background:#404040;color:#888;border:2px solid #555;cursor:not-allowed;opacity:1}
+
 /* DEADLINE BANNER */
-.dl{display:inline-flex;align-items:center;gap:6px;background:#1f1800;border:0.5px solid #3d3000;border-radius:6px;padding:5px 11px;font-size:12px;color:#c8a020;margin-bottom:1rem}
+.dl{display:inline-flex;align-items:center;gap:6px;background:#1f1800;border:0.5px solid #3d3000;border-radius:6px;padding:6px 12px;font-size:13px;color:#c8a020;margin-bottom:1rem}
+
 /* VIEWING BANNERS */
-.viewing-banner{display:flex;align-items:center;gap:8px;background:#0d1a0d;border:1px solid #1a4a1a;border-radius:8px;padding:8px 14px;font-size:12px;color:#3daa68;margin-bottom:1rem}
+.viewing-banner{display:flex;align-items:center;gap:8px;background:#0d1a0d;border:1px solid #1a4a1a;border-radius:8px;padding:9px 15px;font-size:13px;color:#3daa68;margin-bottom:1rem}
 .own-banner{background:#1a1400;border-color:#3d3000;color:#c8a020}
+
 /* WHO AM I */
 .who-wrap{background:#1a1400;border:1px solid #3d3000;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
-.who-label{font-size:12px;color:#c8a020;margin-bottom:8px}
+.who-label{font-size:13px;color:#c8a020;margin-bottom:8px}
 .who-tabs{display:flex;gap:10px;flex-wrap:wrap}
+
 /* STAGE CARDS */
 .sc{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:10px;overflow:hidden;margin-bottom:12px}
 .sc.locked{border-color:#3a1a1a}
@@ -54,28 +64,31 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .sc-header{padding:.9rem 1.1rem .75rem}
 .sc.locked .sc-header{background:#1a1212}
 .sc.joker-active .sc-header{background:#1a0d22}
-.sn{font-size:10px;font-weight:600;color:#FFCD00;text-transform:uppercase;letter-spacing:.8px}
-.sr{font-size:14px;font-weight:500;color:#e8e8e8;margin-top:2px}
+.sn{font-size:11px;font-weight:600;color:#FFCD00;text-transform:uppercase;letter-spacing:.8px}
+.sr{font-size:15px;font-weight:500;color:#e8e8e8;margin-top:2px}
 .sm{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
-.sd{font-size:11px;color:#888}
-.st{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.sd{font-size:13px;color:#888}
+.st{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
 .sprint{background:#0d2b1a;color:#3daa68}
 .mountain{background:#1f0f0f;color:#c85050}
 .hilly{background:#1f1c0a;color:#c4982a}
 .tt{background:#0d0d20;color:#5080c8}
 .transition{background:#1a1a1a;color:#aaa}
+
 /* STAGE PROFILE IMAGES */
 .stage-imgs{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid #2a2a2a}
 .stage-imgs.single{grid-template-columns:1fr}
 .img-box{background:#0d0d0d}
 .img-box+.img-box{border-left:0.5px solid #2a2a2a}
-.img-lbl{font-size:9px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.6px;padding:4px 10px;background:#0a0a0a;border-bottom:0.5px solid #1a1a1a}
+.img-lbl{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.6px;padding:5px 10px;background:#0a0a0a;border-bottom:0.5px solid #1a1a1a}
 .img-box img{width:100%;height:auto;display:block}
+
 /* STAGE INPUT AREA */
 .sia{padding:.9rem 1.1rem;border-top:0.5px solid #2a2a2a;display:flex;align-items:center;gap:10px}
 .sc.locked .sia{background:#1a1212}
 .sc.joker-active .sia{background:#1a0d22}
 .siw{flex:1}
+
 /* JOKER BUTTON */
 .jbtn{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;border:2px solid #333;background:#1a1a1a;cursor:pointer;font-size:28px;line-height:1;flex-shrink:0;transition:all .2s;user-select:none;-webkit-tap-highlight-color:transparent;position:relative}
 .jbtn:hover{border-color:#555;transform:scale(1.05)}
@@ -84,64 +97,90 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .jbtn.on{opacity:1;border-color:#cc44ff;background:#2d0a40;box-shadow:0 0 0 3px rgba(180,50,255,.25),0 0 14px rgba(180,50,255,.2)}
 .jbtn.on::after{content:'ON';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;color:#cc44ff;letter-spacing:1px;background:#1a1a1a;padding:0 3px;border-radius:3px}
 .jbtn.used{opacity:.15;cursor:not-allowed;filter:grayscale(100%)}
-.jlabel{font-size:11px;color:#cc44ff;font-weight:700;background:#2d0a40;border:1px solid #8800cc;border-radius:6px;padding:3px 8px;white-space:nowrap}
+.jlabel{font-size:13px;color:#cc44ff;font-weight:700;background:#2d0a40;border:1px solid #8800cc;border-radius:6px;padding:4px 10px;white-space:nowrap}
+
 /* STATUS BADGES */
-.dns-badge{display:inline-flex;align-items:center;gap:6px;background:#2a1010;border:0.5px solid #5a2020;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:600;color:#c05050;width:100%}
-.hidden-badge{display:inline-flex;align-items:center;gap:6px;background:#131320;border:0.5px solid #2a2a4a;border-radius:6px;padding:8px 14px;font-size:12px;color:#555;width:100%}
-.locked-pt{background:#181818;border:0.5px solid #333;border-radius:8px;padding:8px 12px;font-size:13px;color:#777;font-style:italic;width:100%}
+.dns-badge{display:inline-flex;align-items:center;gap:6px;background:#2a1010;border:0.5px solid #5a2020;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:600;color:#c05050;width:100%}
+.hidden-badge{display:inline-flex;align-items:center;gap:6px;background:#131320;border:0.5px solid #2a2a4a;border-radius:6px;padding:9px 15px;font-size:14px;color:#555;width:100%}
+.locked-pt{background:#181818;border:0.5px solid #333;border-radius:8px;padding:9px 13px;font-size:15px;color:#777;font-style:italic;width:100%}
+
 /* REST DAY */
 .rdcard{background:#151515;border:0.5px dashed #2a2a2a;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+
 /* LEADERBOARD */
 .lbcard{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .lbrow{display:flex;align-items:center;padding:14px 1.25rem;border-bottom:0.5px solid #2a2a2a;gap:12px}
 .lbrow:last-child{border-bottom:none}
-.lbpos{font-size:18px;font-weight:700;width:32px;flex-shrink:0}
+.lbpos{font-size:20px;font-weight:700;width:34px;flex-shrink:0}
 .lbpos.p1{color:#FFCD00}.lbpos.p2{color:#bbb}.lbpos.p3{color:#c4874a}
-.lbname{font-size:15px;font-weight:500;flex:1;color:#f0f0f0}
-.lbpts{font-size:22px;font-weight:700;color:#FFCD00}
-.lbptsl{font-size:10px;color:#888}
+.lbname{font-size:17px;font-weight:500;flex:1;color:#f0f0f0}
+.lbpts{font-size:24px;font-weight:700;color:#FFCD00}
+.lbptsl{font-size:12px;color:#888}
+
 /* ALL PICKS TABLE */
 .sbs-wrap{overflow-x:auto;border-radius:10px;border:0.5px solid #2a2a2a}
 .sbs{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
-.sbs th{padding:8px 10px;text-align:left;background:#0d0d0d;color:#FFCD00;font-weight:500;font-size:11px;border-bottom:1px solid #2a2a2a}
-.sbs td{padding:8px 10px;border-bottom:0.5px solid #2a2a2a;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ccc}
+.sbs th{padding:9px 11px;text-align:left;background:#0d0d0d;color:#FFCD00;font-weight:500;font-size:13px;border-bottom:1px solid #2a2a2a}
+.sbs td{padding:9px 11px;border-bottom:0.5px solid #2a2a2a;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ccc;font-size:13px}
 .sbs tr:last-child td{border-bottom:none}
 .sbs tr:hover td{background:#1a1a1a}
-.rl{font-size:12px;display:flex;align-items:center;gap:6px;color:#ccc}
+.rl{font-size:13px;display:flex;align-items:center;gap:6px;color:#ccc}
 .pc{color:#ddd}.pc.jk{color:#cc44ff;font-weight:500}
-.lk{color:#555;font-size:11px}.ok{color:#3daa68;font-weight:500}
-.dns-cell{color:#c05050;font-size:11px;font-weight:600}
-.pp{background:#1f1800;color:#FFCD00;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px}
-.rr td{background:#0f0f0f;color:#555;font-size:11px;font-style:italic}
+.lk{color:#555;font-size:13px}.ok{color:#3daa68;font-weight:500}
+.dns-cell{color:#c05050;font-size:13px;font-weight:600}
+.pp{background:#1f1800;color:#FFCD00;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;margin-left:4px}
+.rr td{background:#0f0f0f;color:#555;font-size:13px;font-style:italic}
+
 /* SCORE ROWS */
-.sbrow{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:0.5px solid #2a2a2a;color:#ccc}
+.sbrow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:0.5px solid #2a2a2a;color:#ccc}
 .sbrow:last-child{border-bottom:none}
-.sbrow.tot{font-weight:600;color:#FFCD00;font-size:14px}
+.sbrow.tot{font-weight:600;color:#FFCD00;font-size:15px}
+
 /* POINTS TABLE */
-.prow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid #2a2a2a}
+.prow{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:0.5px solid #2a2a2a}
 .prow:last-child{border-bottom:none}
-.pbadge{background:#FFCD00;color:#111;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;min-width:34px;text-align:center;flex-shrink:0}
-.plabel{font-size:13px;color:#ccc;flex:1}
+.pbadge{background:#FFCD00;color:#111;font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px;min-width:36px;text-align:center;flex-shrink:0}
+.plabel{font-size:14px;color:#ccc;flex:1}
+
 /* PRIVACY RULES */
-.priv-item{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid #2a2a2a;font-size:13px;color:#ccc;line-height:1.6}
+.priv-item{display:flex;gap:10px;padding:11px 0;border-bottom:0.5px solid #2a2a2a;font-size:14px;color:#ccc;line-height:1.6}
 .priv-item:last-child{border-bottom:none}
-.priv-icon{flex-shrink:0;margin-top:1px;font-size:16px}
+.priv-icon{flex-shrink:0;margin-top:1px;font-size:18px}
+
 /* LOCK NOTICE */
-.lock-notice{display:inline-flex;align-items:center;gap:6px;background:#1a1a1a;border:0.5px solid #444;border-radius:6px;padding:6px 12px;font-size:12px;color:#888;margin-bottom:.75rem}
+.lock-notice{display:inline-flex;align-items:center;gap:6px;background:#1a1a1a;border:0.5px solid #444;border-radius:6px;padding:7px 13px;font-size:13px;color:#888;margin-bottom:.75rem}
+
 /* TOAST */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1}
+
 @media(max-width:640px){
   .hdr-t{font-size:21px}
-  .nb{padding:10px 10px;font-size:10.5px}
-  .ptab{padding:8px 15px;font-size:12px}
+  .nb{padding:11px 4px;font-size:12px}
+  .ptab{padding:8px 15px;font-size:13px}
   .stage-imgs{grid-template-columns:1fr}
   .jbtn{width:46px;height:46px;font-size:24px}
 }
+
+/* LIVE STANDINGS */
+.ls-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.ls-item{background:#111;border:0.5px solid #3d3000;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ls-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.ls-rider{font-size:14px;font-weight:600;color:#f0f0f0}
+.ls-icon{flex-shrink:0}
+.ls-count{font-size:22px;font-weight:700;color:#FFCD00}
+
+/* WINNING PICK — gold highlight */
+.win-pick{background:rgba(255,205,0,0.12) !important;color:#FFCD00 !important;font-weight:700 !important}
+.win-pick .pp{background:#FFCD00;color:#111}
+
+/* JERSEY BADGE next to name in All Picks */
+.j-badge{display:inline-flex;vertical-align:middle;margin-left:4px}
 </style>
 </head>
 <body>
 <div class="app">
+
 <!-- HEADER -->
 <div class="hdr">
   <div>
@@ -156,6 +195,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <text x="28" y="44" text-anchor="middle" fill="#FFCD00" font-size="7.5" font-family="sans-serif">2026</text>
   </svg>
 </div>
+
 <!-- NAV -->
 <div class="nav">
   <button class="nb active" onclick="showTab('leaderboard',this)">🏆 Leaderboard</button>
@@ -165,15 +205,21 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <button class="nb" onclick="showTab('results',this)">✏️ Results</button>
   <button class="nb" onclick="showTab('rules',this)">📋 Rules</button>
 </div>
+
 <!-- LEADERBOARD -->
 <div id="tab-leaderboard" class="sec">
   <div class="sec-title">🏆 Leaderboard</div>
+  <div class="card" style="margin-bottom:1rem;background:#181410;border-color:#3d3000">
+    <div class="card-title" style="color:#FFCD00">🚴 Live Race Standings</div>
+    <div id="live-standings"><div style="font-size:13px;color:#555">Race not yet started — standings will update daily at 19:00.</div></div>
+  </div>
   <div class="lbcard" id="lb-rows"></div>
   <div class="card" style="margin-top:.75rem">
     <div class="card-title">📊 Points Breakdown</div>
     <div id="lb-breakdown"></div>
   </div>
 </div>
+
 <!-- PRE-TOUR -->
 <div id="tab-pretour" class="sec" style="display:none">
   <div class="sec-title">🎽 Pre-tour Selections</div>
@@ -184,6 +230,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <button class="save-btn" id="pt-save-btn" onclick="savePretour()">💾 Save Selections</button>
   </div>
 </div>
+
 <!-- STAGES -->
 <div id="tab-stages" class="sec" style="display:none">
   <div class="sec-title">🚴 Stage picks</div>
@@ -199,6 +246,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div id="st-banner"></div>
   <div id="st-list"></div>
 </div>
+
 <!-- ALL PICKS -->
 <div id="tab-picks" class="sec" style="display:none">
   <div class="sec-title">👁️ All picks — side by side</div>
@@ -212,6 +260,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="sbs-wrap" style="border:none;border-radius:0"><table class="sbs" id="picks-stages"></table></div>
   </div>
 </div>
+
 <!-- RESULTS -->
 <div id="tab-results" class="sec" style="display:none">
   <div class="sec-title">✏️ Enter results</div>
@@ -222,6 +271,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <button class="save-btn" onclick="saveResults()">💾 Save &amp; recalculate scores</button>
   </div>
 </div>
+
 <!-- RULES -->
 <div id="tab-rules" class="sec" style="display:none">
   <div class="sec-title">📋 Rules</div>
@@ -253,11 +303,15 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="priv-item"><span class="priv-icon">🏮</span><span><strong style="color:#FFCD00">DNS (Did Not Sign-in)</strong> — if a stage pick field is empty when the deadline passes, a DNS is recorded automatically. A DNS scores 0 points. If a Joker was active on that stage it is cancelled and cannot be used again.</span></div>
   </div>
 </div>
+
 </div><!-- end .app -->
 <div id="toast"></div>
+
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
+
 const PLAYERS = ['Suzanne', 'Étienne', 'Räikkönen'];
+
 const STAGES = [
   {n:1,  d:'4 Jul',  r:'Barcelona → Barcelona',             dist:'19.7 km', t:'tt',         l:'Team TT'},
   {n:2,  d:'5 Jul',  r:'Tarragona → Barcelona',             dist:'182 km',  t:'hilly',      l:'Hilly'},
@@ -284,6 +338,7 @@ const STAGES = [
   {n:21, d:'26 Jul', r:'Thoiry → Paris (Montmartre + Champs-Élysées)', dist:'~130 km', t:'sprint', l:'Sprint 🎊'},
 ];
 const RACE_STAGES = STAGES.filter(s => s.t !== 'rest');
+
 // ProCyclingStats image URLs
 const PCS = {
   1:  'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-1-profile-6d690a4faee04bd1fea9.jpg',
@@ -308,6 +363,7 @@ const PCS = {
   20: 'https://www.procyclingstats.com/images/profiles/ap/ae/tour-de-france-2026-stage-20-profile-901c139770b610ff2649.jpg',
   21: 'https://www.procyclingstats.com/images/profiles/ap/bf/tour-de-france-2026-stage-21-profile-a1e90fcaaf6e8de7f7d7.jpg',
 };
+
 // letour.fr Last KM URLs (stages without summit finishes)
 const LKM = {
   2:  'https://img.aso.fr/core_app/img-cycling-tdf-jpg/2/71145/0:0,2501:1594-960-0-90/c557e',
@@ -326,6 +382,7 @@ const LKM = {
   17: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/17/71149/0:0,787:647-960-0-90/15374',
   21: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/21/71150/0:0,1302:838-960-0-90/7f973',
 };
+
 // Deadlines
 const PRETOUR_DL = new Date('2026-07-04T10:00:00+01:00');
 const STAGE_DL = {
@@ -351,11 +408,14 @@ const STAGE_DL = {
   20: new Date('2026-07-25T10:00:00+01:00'),
   21: new Date('2026-07-26T09:45:00+01:00'),
 };
+
 const ptLocked  = () => new Date() >= PRETOUR_DL;
 const stLocked  = n  => new Date() >= STAGE_DL[n];
 const ptRevealed = () => new Date() >= PRETOUR_DL;
 const stRevealed = n  => new Date() >= STAGE_DL[n];
+
 // ─── PRE-TOUR FIELDS ────────────────────────────────────────────────────────
+
 const PT_FIELDS = [
   {id:'gc1', label:'Maillot Jaune',     jersey:'yellow',   pts:6},
   {id:'gc2', label:'GC 2nd Place',      medal:'silver',    pts:4},
@@ -367,11 +427,14 @@ const PT_FIELDS = [
   {id:'fre', label:'French Stage Wins', flag:true,         pts:2, num:true},
 ];
 const PT_PTS = {gc1:6,gc2:4,gc3:2,pts:4,mtn:4,yth:4,lan:2,fre:2};
+
 // ─── SVG ICONS ──────────────────────────────────────────────────────────────
+
 function frFlag(w, h) {
   w = w||20; h = h||14;
   return `<svg width="${w}" height="${h}" viewBox="0 0 30 20" style="border-radius:2px;vertical-align:-2px;flex-shrink:0"><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ED2939"/></svg>`;
 }
+
 function jersey(type, sz) {
   sz = sz || 28;
   const j = 'M8,4 L16,2 Q20,6 24,2 L32,4 L38,14 L30,17 L30,38 L10,38 L10,17 L2,14 Z';
@@ -382,6 +445,7 @@ function jersey(type, sz) {
   if (type === 'lanterne') return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40"><path d="${j}" fill="#E30613" stroke="#900000" stroke-width="1.5"/><text x="20" y="27" text-anchor="middle" font-size="11">🏮</text></svg>`;
   return '';
 }
+
 function medal(color, sz) {
   sz = sz || 20;
   const fill = color === 'silver' ? '#C0C0C0' : '#CD7F32';
@@ -397,19 +461,23 @@ function medal(color, sz) {
     <text x="12" y="32" text-anchor="middle" font-size="10" font-weight="700" fill="${tc}" font-family="sans-serif">${num}</text>
   </svg>`;
 }
+
 function fieldIcon(f, sz) {
   if (f.jersey) return jersey(f.jersey, sz||24);
   if (f.medal)  return medal(f.medal,   sz||20);
   if (f.flag)   return frFlag(sz ? Math.round(sz*.9) : 20, sz ? Math.round(sz*.65) : 14);
   return '';
 }
+
 // ─── STATE ──────────────────────────────────────────────────────────────────
+
 let S = {
   pretour: {}, stages: {}, jokers: {},
   results: {gc1:'',gc2:'',gc3:'',pts:'',mtn:'',yth:'',lan:'',fre:'',stages:{}},
   scores: {},
   ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
 };
+
 function load() {
   try { const d = localStorage.getItem('tdf26'); if (d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
 }
@@ -422,7 +490,9 @@ function toast(m, col) {
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
 }
 function norm(s) { return (s||'').toLowerCase().trim(); }
+
 // ─── DEADLINES ──────────────────────────────────────────────────────────────
+
 function applyDeadlines() {
   const now = new Date();
   PLAYERS.forEach(p => {
@@ -439,7 +509,9 @@ function applyDeadlines() {
   });
   save();
 }
+
 // ─── TAB SWITCHING ──────────────────────────────────────────────────────────
+
 function showTab(tab, btn) {
   applyDeadlines();
   document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
@@ -453,7 +525,17 @@ function showTab(tab, btn) {
   if (tab === 'results')     renderResults();
   if (tab === 'rules')       renderRules();
 }
+
+
+// ─── LIVE STANDINGS DATA ─────────────────────────────────────────────────────
+// Updated daily by Cowork at 19:00. Cowork writes to localStorage key 'tdf26-live'.
+// Fields: gc1, gc2, gc3, green, polka, white, lanterne, frenchWins, lastUpdated
+function loadLive() {
+  try { const d = localStorage.getItem('tdf26-live'); return d ? JSON.parse(d) : null; } catch(e) { return null; }
+}
+
 // ─── SCORING ────────────────────────────────────────────────────────────────
+
 function calcScores() {
   PLAYERS.forEach(p => {
     let tot = 0; const bd = [];
@@ -483,9 +565,12 @@ function calcScores() {
     S.scores[p] = {total: tot, bd};
   });
 }
+
 // ─── LEADERBOARD ────────────────────────────────────────────────────────────
+
 function renderLB() {
   calcScores();
+  renderLiveStandings();
   const sorted = [...PLAYERS].sort((a,b) => (S.scores[b]?.total||0) - (S.scores[a]?.total||0));
   const pc = ['p1','p2','p3'], pl = ['1st','2nd','3rd'];
   document.getElementById('lb-rows').innerHTML = sorted.map((p,i) => `
@@ -504,7 +589,44 @@ function renderLB() {
     </div>`;
   }).join('<div style="border-top:0.5px solid #2a2a2a;margin:.75rem 0"></div>');
 }
+
+
+// ─── LIVE STANDINGS ──────────────────────────────────────────────────────────
+
+function renderLiveStandings() {
+  const el = document.getElementById('live-standings');
+  if (!el) return;
+  const live = loadLive();
+  if (!live) { el.innerHTML = '<div style="font-size:13px;color:#555">Race not yet started — standings will update daily at 19:00.</div>'; return; }
+  const j = (type, sz) => jersey(type, sz||22);
+  const flag = frFlag(20,14);
+  const rows = [
+    {icon: j('yellow'),   label: 'Maillot Jaune',    val: live.gc1      || '—'},
+    {icon: j('green'),    label: 'Green Jersey',      val: live.green    || '—'},
+    {icon: j('polka'),    label: 'Polka Dot Jersey',  val: live.polka    || '—'},
+    {icon: j('white'),    label: 'White Jersey',      val: live.white    || '—'},
+    {icon: j('lanterne'), label: 'Lanterne Rouge',    val: live.lanterne || '—'},
+    {icon: flag,          label: 'French Stage Wins', val: live.frenchWins !== undefined ? live.frenchWins : '—'},
+    {icon: '<span style="font-size:18px;font-weight:700;color:#aaa">2</span>', label: 'GC 2nd Place', val: live.gc2 || '—'},
+    {icon: '<span style="font-size:18px;font-weight:700;color:#c4874a">3</span>', label: 'GC 3rd Place', val: live.gc3 || '—'},
+  ];
+  el.innerHTML = `
+    <div class="ls-grid">
+      ${rows.map(r => `
+        <div class="ls-item">
+          <div class="ls-icon">${r.icon}</div>
+          <div>
+            <div class="ls-label">${r.label}</div>
+            <div class="ls-rider">${r.val}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    ${live.lastUpdated ? `<div style="font-size:11px;color:#444;margin-top:8px;text-align:right">Last updated: ${live.lastUpdated}</div>` : ''}
+  `;
+}
+
 // ─── PRE-TOUR ───────────────────────────────────────────────────────────────
+
 function renderPT() {
   const locked = ptLocked();
   document.getElementById('pt-tabs').innerHTML = PLAYERS.map(p =>
@@ -543,7 +665,9 @@ function savePretour() {
   PT_FIELDS.forEach(f => { const el = document.getElementById('pf-'+f.id); if (el) S.pretour[p][f.id] = el.value.trim(); });
   save(); toast('Saved for ' + p + ' ✓');
 }
+
 // ─── STAGE PROFILE IMAGES ───────────────────────────────────────────────────
+
 function stageImgHtml(n) {
   const pcs = PCS[n]; const lkm = LKM[n];
   if (!pcs && !lkm) return '';
@@ -559,7 +683,9 @@ function stageImgHtml(n) {
     </div>` : '';
   return `<div class="stage-imgs${lkm?'':' single'}">${pcsBox}${lkmBox}</div>`;
 }
+
 // ─── STAGES ─────────────────────────────────────────────────────────────────
+
 function renderST() {
   const me = S.myPlayer, viewing = S.stPlayer, isOwn = me === viewing;
   document.getElementById('who-tabs').innerHTML = PLAYERS.map(p =>
@@ -590,6 +716,7 @@ function renderST() {
     const showHidden = !isOwn && !revealed;
     const showRev   = !isOwn && revealed;
     const cardCls = `sc ${locked?'locked':''} ${showHidden?'hidden-pick':''} ${isJk&&canEdit?'joker-active':''}`;
+
     html += `<div class="${cardCls}">
       <div class="sc-header">
         <div class="sn">Stage ${st.n}</div>
@@ -607,6 +734,7 @@ function renderST() {
       </div>
       ${stageImgHtml(st.n)}
       <div class="sia">`;
+
     if (showHidden) {
       html += `<div class="hidden-badge">🔒 ${viewing}'s Pick is hidden until the deadline</div>`;
     } else if (canEdit) {
@@ -626,14 +754,17 @@ function renderST() {
   });
   document.getElementById('st-list').innerHTML = html;
 }
+
 function setMyPlayer(p) { S.myPlayer = p; S.stPlayer = p; save(); renderST(); }
 function setSTPlayer(p) { S.stPlayer = p; save(); renderST(); }
+
 function updST(player, key, val) {
   if (stLocked(parseInt(key.replace('s','')))) { toast('Deadline passed — this stage is locked', '#c05050'); return; }
   if (player !== S.myPlayer) { toast('You can only edit your own Picks', '#c05050'); return; }
   if (!S.stages[player]) S.stages[player] = {};
   S.stages[player][key] = val; save();
 }
+
 function togJk(player, key) {
   if (stLocked(parseInt(key.replace('s','')))) { toast('Deadline passed — cannot change Joker', '#c05050'); return; }
   if (player !== S.myPlayer) { toast('You can only set your own Joker', '#c05050'); return; }
@@ -641,22 +772,39 @@ function togJk(player, key) {
   else if (S.jokers[player] === null) { S.jokers[player] = key; toast('🃏 Joker activated!', '#8800cc'); }
   save(); renderST();
 }
+
 // ─── ALL PICKS ──────────────────────────────────────────────────────────────
+
 function renderPicks() {
   const rev = ptRevealed(); const r = S.results;
   const cw = Math.floor(52 / PLAYERS.length);
   let ph = `<thead><tr><th style="width:34%">Category</th>${PLAYERS.map(p=>`<th style="width:${cw}%">${p}</th>`).join('')}</tr></thead><tbody>`;
+  const live = loadLive();
+  // Map field id to live standings rider name for jersey badge
+  const liveMap = live ? {
+    gc1: live.gc1, pts: live.green, mtn: live.polka, yth: live.white,
+    lan: live.lanterne, gc2: live.gc2, gc3: live.gc3,
+    fre: live.frenchWins !== undefined ? String(live.frenchWins) : null
+  } : {};
   PT_FIELDS.forEach(f => {
     const res = r[f.id] || ''; const ic = fieldIcon(f, 16);
     ph += `<tr><td><div class="rl">${ic}<span style="margin-left:${ic?'4px':'0'}">${f.label}</span></div></td>`;
     PLAYERS.forEach(p => {
       const pk = (S.pretour[p]||{})[f.id] || '';
       if (!rev) { ph += `<td class="lk">🔒</td>`; }
-      else { const ok = res && norm(pk) === norm(res) && pk && pk !== 'DNS'; ph += `<td class="${ok?'ok':'pc'}">${pk||'—'}${ok?`<span class="pp">+${PT_PTS[f.id]}</span>`:''}</td>`; }
+      else {
+        const ok = res && norm(pk) === norm(res) && pk && pk !== 'DNS';
+        // Check if player pick matches current live jersey holder
+        const liveHolder = liveMap[f.id];
+        const hasJersey = liveHolder && pk && norm(pk) === norm(liveHolder) && f.jersey && f.id !== 'gc2' && f.id !== 'gc3';
+        const jerseyBadge = hasJersey ? `<span class="j-badge">${jersey(f.jersey, 16)}</span>` : '';
+        ph += `<td class="${ok?'ok':'pc'}">${pk||'—'}${jerseyBadge}${ok?`<span class="pp">+${PT_PTS[f.id]}</span>`:''}</td>`;
+      }
     });
     ph += '</tr>';
   });
   ph += '</tbody>'; document.getElementById('picks-pretour').innerHTML = ph;
+
   const sw = Math.floor(42 / PLAYERS.length);
   let sh = `<thead><tr><th style="width:22%">Stage</th>${PLAYERS.map(p=>`<th style="width:${sw}%">${p}</th>`).join('')}<th style="width:20%">Result</th></tr></thead><tbody>`;
   STAGES.forEach(st => {
@@ -667,13 +815,15 @@ function renderPicks() {
       const pick = (S.stages[p]||{})[key] || ''; const isJk = S.jokers[p] === key; const isDNS = pick === 'DNS';
       if (!past) { sh += `<td class="lk">🔒</td>`; }
       else if (isDNS) { sh += `<td class="dns-cell">DNS</td>`; }
-      else { const ok = res && norm(pick) === norm(res) && pick; const pts = ok ? (isJk?2:1) : 0; sh += `<td class="${ok?'ok':isJk&&pick?'pc jk':'pc'}">${pick||'—'}${isJk&&pick?' 🃏':''}${ok?`<span class="pp">+${pts}</span>`:''}</td>`; }
+      else { const ok = res && norm(pick) === norm(res) && pick; const pts = ok ? (isJk?2:1) : 0; sh += `<td class="${ok?'win-pick':isJk&&pick?'pc jk':'pc'}">${pick||'—'}${isJk&&pick?' 🃏':''}${ok?`<span class="pp">+${pts}</span>`:''}</td>`; }
     });
     sh += `<td style="color:${res?'#e0e0e0':'#555'};font-size:12px">${res||'—'}</td></tr>`;
   });
   sh += '</tbody>'; document.getElementById('picks-stages').innerHTML = sh;
 }
+
 // ─── RESULTS ────────────────────────────────────────────────────────────────
+
 function renderResults() {
   const r = S.results;
   document.getElementById('res-classifications').innerHTML = PT_FIELDS.map(f => `
@@ -697,7 +847,9 @@ function saveResults() {
   PT_FIELDS.forEach(f => { const el = document.getElementById('r-'+f.id); if (el) S.results[f.id] = el.value.trim(); });
   calcScores(); save(); toast('Results saved & scores updated ✓'); renderLB();
 }
+
 // ─── RULES ──────────────────────────────────────────────────────────────────
+
 function renderRules() {
   const rows = [
     {icon: jersey('yellow',22),   label:'Maillot Jaune',              pts:6},
@@ -722,12 +874,15 @@ function renderRules() {
       <span class="pbadge">${row.pts}</span>
     </div>`).join('');
 }
+
 // ─── INIT ───────────────────────────────────────────────────────────────────
+
 load();
 applyDeadlines();
 calcScores();
 renderLB();
 renderRules();
+renderLiveStandings();
 setInterval(() => { applyDeadlines(); }, 60000);
 </script>
 </body>
