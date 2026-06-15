@@ -240,10 +240,50 @@ input:disabled{opacity:.45;cursor:not-allowed}
 /* ═══════════════════════════════════════════════════════
    SPOILER SHIELD
 ═══════════════════════════════════════════════════════ */
-.spoiler-btn{padding:12px 10px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;white-space:nowrap;flex:1;text-align:center;border-bottom:2px solid transparent;margin-bottom:-2px;color:#aaa;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px}
+.spoiler-btn{padding:12px 6px 12px 2px;font-size:15px;font-weight:700;cursor:pointer;border:none;background:transparent;white-space:nowrap;flex:0 0 auto;text-align:center;border-bottom:2px solid transparent;margin-bottom:-2px;color:#666;transition:all .2s;display:flex;align-items:center;justify-content:center}
 .spoiler-btn:hover{color:#FFCD00}
 .spoiler-btn.shield-on{color:#c05050;border-bottom-color:#c05050}
 .spoiler-blocked{background:#1a1010;border:0.5px solid #3a1a1a;border-radius:6px;padding:7px 12px;font-size:12px;color:#c05050;text-align:center;font-weight:500}
+
+/* ═══════════════════════════════════════════════════════
+   PODIUM
+═══════════════════════════════════════════════════════ */
+.podium-wrap{display:flex;align-items:flex-end;justify-content:center;gap:0;margin:1rem 0 0;height:200px;position:relative}
+.podium-col{display:flex;flex-direction:column;align-items:center;flex:1;max-width:140px;position:relative}
+.podium-names{position:absolute;bottom:100%;left:-60px;right:-60px;display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:flex-end;gap:6px;padding-bottom:8px;transition:bottom 1.5s cubic-bezier(.34,1.56,.64,1)}
+.podium-player{display:flex;flex-direction:column;align-items:center;gap:2px}
+.podium-name-tag{background:#1e1e1e;border:1.5px solid #FFCD00;border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:700;color:#FFCD00;white-space:nowrap;text-align:center}
+.podium-pts{font-size:11px;color:#888;font-weight:500;text-align:center}
+.podium-step{width:100%;background:#FFCD00;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#111;transition:height .8s ease}
+.podium-step.p1{height:100px}
+.podium-step.p2{height:70px}
+.podium-step.p3{height:50px}
+.podium-pos{font-size:11px;font-weight:700;color:#111;margin-top:4px;opacity:.7}
+.podium-pre .podium-names{bottom:110% !important}
+
+/* ═══════════════════════════════════════════════════════
+   MEDIA CENTRE
+═══════════════════════════════════════════════════════ */
+.media-input-wrap{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.media-sender{background:#252525;border:0.5px solid #444;border-radius:8px;color:#f0f0f0;font-size:14px;padding:9px 12px;font-family:inherit;outline:none;flex-shrink:0}
+.media-sender:focus{border-color:#FFCD00}
+.media-input{background:#252525;border:0.5px solid #444;border-radius:8px;color:#f0f0f0;font-size:14px;padding:9px 12px;font-family:inherit;outline:none;flex:1;min-width:0}
+.media-input:focus{border-color:#FFCD00}
+.media-post-btn{background:#FFCD00;color:#111;border:none;border-radius:8px;padding:9px 20px;font-size:14px;font-weight:800;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.media-post-btn:hover{opacity:.88}
+.media-feed{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto}
+.media-msg{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:10px;padding:.9rem 1.1rem}
+.media-msg.from-admin{border-color:#3d3000;background:#181410}
+.media-msg-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.media-sender-tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:#FFCD00;color:#111}
+.media-sender-tag.admin{background:#c8a020;color:#111}
+.media-sender-tag.etienne{background:#3daa68;color:#fff}
+.media-sender-tag.raikkonenp{background:#5080c8;color:#fff}
+.media-timestamp{font-size:11px;color:#555;margin-left:auto}
+.media-text{font-size:14px;color:#e0e0e0;line-height:1.5}
+.media-empty{font-size:13px;color:#555;text-align:center;padding:2rem}
+.media-clear-btn{background:transparent;border:0.5px solid #333;border-radius:6px;padding:5px 12px;font-size:12px;color:#555;cursor:pointer;margin-top:.5rem}
+.media-clear-btn:hover{border-color:#c05050;color:#c05050}
 </style>
 </head>
 <body>
@@ -268,10 +308,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <div class="nav">
   <button class="nb active" onclick="showTab('home',this)">🏠 Home</button>
   <button class="nb" onclick="showTab('leaderboard',this)">🏆 Leaderboard</button>
-  <button class="nb" onclick="showTab('pretour',this)">🎽 Pre-tour</button>
+  <button class="nb" onclick="showTab('pretour',this)">🎽 Pre-Tour</button>
   <button class="nb" onclick="showTab('stages',this)">🚴 Stages</button>
-  <button class="nb" onclick="showTab('picks',this)">👁️ All Picks</button>
-  <button class="nb spoiler-btn" id="spoiler-btn" onclick="toggleSpoiler(this)" title="Spoiler Shield">🛡️</button>
+  <button class="nb" onclick="showTab('picks',this)">👁️ All Picks</button><button class="nb spoiler-btn" id="spoiler-btn" onclick="toggleSpoiler(this)" title="Spoiler Shield — click to activate">🛡️</button>
+  <button class="nb" onclick="showTab('media',this)">📢 Media</button>
   <button class="nb" onclick="showTab('results',this)">✏️ Results</button>
   <button class="nb" onclick="showTab('rules',this)">📋 Rules</button>
 </div>
@@ -383,6 +423,30 @@ input:disabled{opacity:.45;cursor:not-allowed}
   </div>
 </div>
 
+<!-- MEDIA CENTRE -->
+<div id="tab-media" class="sec" style="display:none">
+  <div class="sec-title">📢 Media Centre</div>
+  <div class="dl">💬 Post updates, announcements, requests and what you fancy — visible on this device</div>
+  <div class="card">
+    <div class="card-title">Post a message</div>
+    <div class="media-input-wrap">
+      <select class="media-sender" id="media-sender">
+        <option value="Admin">📋 Admin</option>
+        <option value="Suzanne">Suzanne</option>
+        <option value="Étienne">Étienne</option>
+        <option value="Räikkönen">Räikkönen</option>
+      </select>
+      <input class="media-input" id="media-input" type="text" placeholder="Type your message…" maxlength="300" onkeydown="if(event.key==='Enter')postMedia()">
+      <button class="media-post-btn" onclick="postMedia()">Post</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Messages</div>
+    <div class="media-feed" id="media-feed"></div>
+    <button class="media-clear-btn" onclick="clearMedia()">Clear all messages</button>
+  </div>
+</div>
+
 <!-- RESULTS -->
 <div id="tab-results" class="sec" style="display:none">
   <div class="sec-title">✏️ Enter results</div>
@@ -418,11 +482,19 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card">
     <div class="card-title">🛡️ Spoiler Shield</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
-      <div>The <strong style="color:#FFCD00">🛡️ Spoiler Shield</strong> button sits in the navigation bar between All Picks and Results. Tap it to activate — it turns red when on.</div>
+      <div>The <strong style="color:#FFCD00">🛡️ Spoiler Shield</strong> button sits flush against the 👁️ All Picks tab in the navigation bar, so it is clear they are associated. Tap it to activate — it turns red when on.</div>
       <div><strong style="color:#FFCD00">When active</strong> — stage results and picks in the All Picks table are hidden from the moment of activation onwards. Past results (stages already revealed before activation) remain fully visible.</div>
       <div><strong style="color:#FFCD00">When deactivated</strong> — all results become visible simultaneously, including any stages that accumulated while the shield was active.</div>
       <div>The Spoiler Shield only hides stage results in All Picks. It does not affect the Leaderboard, Points Breakdown, or Live Race Standings — simply avoid clicking those tabs if you do not want to see them.</div>
-      <div>The shield resets if the page is refreshed — reactivate it after loading if needed.</div>
+      <div>The shield <strong style="color:#FFCD00">persists across page loads and browser restarts</strong> — it remains active until you explicitly tap the button to deactivate it. Refreshing the page will not turn it off.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📢 Media Centre</div>
+    <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
+      <div>The <strong style="color:#FFCD00">📢 Media</strong> tab is a shared message board for all three players on this device. Use it for admin announcements, game updates, feature requests, technical notices, and player banter.</div>
+      <div>Select your name from the dropdown, type your message, and tap <strong style="color:#FFCD00">Post</strong>. Messages are stored locally and visible to whoever opens the app on this device.</div>
+      <div>Admin posts are used to notify players of changes such as new Last KM images being added, scoring corrections, or rule clarifications.</div>
     </div>
   </div>
   <div class="card">
@@ -656,6 +728,7 @@ function showTab(tab, btn) {
   if (tab === 'pretour')     renderPT();
   if (tab === 'stages')      renderST();
   if (tab === 'picks')       renderPicks();
+  if (tab === 'media')       renderMedia();
   if (tab === 'results')     renderResults();
   if (tab === 'rules')       renderRules();
 }
@@ -730,33 +803,83 @@ function renderLB() {
 function renderLiveStandings() {
   const el = document.getElementById('live-standings');
   if (!el) return;
+
+  // ── PODIUM (always shown, uses fantasy scores) ─────────────────────────
+  calcScores();
+  const sorted = [...PLAYERS].sort((a,b) => (S.scores[b]?.total||0) - (S.scores[a]?.total||0));
+  const raceStarted = new Date() >= STAGE1_DT;
+
+  // Group players by score for tied podium steps
+  const groups = [];
+  sorted.forEach(p => {
+    const pts = S.scores[p]?.total || 0;
+    const last = groups[groups.length - 1];
+    if (last && last.pts === pts) { last.players.push(p); }
+    else { groups.push({pts, players:[p]}); }
+  });
+
+  // Build podium HTML — up to 3 steps
+  const stepHeights = ['p1','p2','p3'];
+  const stepLabels = ['1st','2nd','3rd'];
+  // Pad groups to 3
+  while (groups.length < 3) groups.push({pts:0, players:[]});
+
+  // Classic podium order: 2nd LEFT, 1st CENTRE (tallest), 3rd RIGHT
+  const displayOrder = [1, 0, 2]; // indices into groups: 2nd, 1st, 3rd
+  const displayHeights = ['p2', 'p1', 'p3'];
+  const displayLabels = ['2nd', '1st', '3rd'];
+
+  const podiumCols = displayOrder.map((gi, di) => {
+    const g = groups[gi] || {pts:0, players:[]};
+    const nameTagsHtml = g.players.map(p =>
+      `<div class="podium-player"><div class="podium-name-tag">${p}</div><div class="podium-pts">${g.pts > 0 ? g.pts + ' pts' : '—'}</div></div>`
+    ).join('');
+    const floatStyle = !raceStarted ? 'bottom:120%;' : '';
+    return `<div class="podium-col">
+      <div class="podium-names" style="${floatStyle}">${nameTagsHtml}</div>
+      <div class="podium-step ${displayHeights[di]}">
+        <span class="podium-pos">${displayLabels[di]}</span>
+      </div>
+    </div>`;
+  });
+
+  let html = `<div class="podium-wrap">${podiumCols.join('')}</div>`;
+
+  // ── LIVE RACE STANDINGS (jersey leaders) ──────────────────────────────
   const live = loadLive();
-  if (!live) { el.innerHTML = '<div style="font-size:13px;color:#555">Race not yet started — standings will update daily at 19:00.</div>'; return; }
-  const j = (type, sz) => jersey(type, sz||22);
-  const flag = frFlag(20,14);
-  const rows = [
-    {icon: j('yellow'),   label: 'Maillot Jaune',    val: live.gc1      || '—'},
-    {icon: j('green'),    label: 'Green Jersey',      val: live.green    || '—'},
-    {icon: j('polka'),    label: 'Polka Dot Jersey',  val: live.polka    || '—'},
-    {icon: j('white'),    label: 'White Jersey',      val: live.white    || '—'},
-    {icon: j('lanterne'), label: 'Lanterne Rouge',    val: live.lanterne || '—'},
-    {icon: flag,          label: 'French Stage Wins', val: live.frenchWins !== undefined ? live.frenchWins : '—'},
-    {icon: '<span style="font-size:18px;font-weight:700;color:#aaa">2</span>', label: 'GC 2nd Place', val: live.gc2 || '—'},
-    {icon: '<span style="font-size:18px;font-weight:700;color:#c4874a">3</span>', label: 'GC 3rd Place', val: live.gc3 || '—'},
-  ];
-  el.innerHTML = `
-    <div class="ls-grid">
-      ${rows.map(r => `
-        <div class="ls-item">
-          <div class="ls-icon">${r.icon}</div>
-          <div>
-            <div class="ls-label">${r.label}</div>
-            <div class="ls-rider">${r.val}</div>
-          </div>
-        </div>`).join('')}
-    </div>
-    ${live.lastUpdated ? `<div style="font-size:11px;color:#444;margin-top:8px;text-align:right">Last updated: ${live.lastUpdated}</div>` : ''}
-  `;
+  if (live) {
+    const j = (type, sz) => jersey(type, sz||22);
+    const flag = frFlag(20,14);
+    const rows = [
+      {icon: j('yellow'),   label: 'Maillot Jaune',    val: live.gc1      || '—'},
+      {icon: j('green'),    label: 'Green Jersey',      val: live.green    || '—'},
+      {icon: j('polka'),    label: 'Polka Dot Jersey',  val: live.polka    || '—'},
+      {icon: j('white'),    label: 'White Jersey',      val: live.white    || '—'},
+      {icon: j('lanterne'), label: 'Lanterne Rouge',    val: live.lanterne || '—'},
+      {icon: flag,          label: 'French Stage Wins', val: live.frenchWins !== undefined ? live.frenchWins : '—'},
+      {icon: '<span style="font-size:18px;font-weight:700;color:#aaa">2</span>', label: 'GC 2nd Place', val: live.gc2 || '—'},
+      {icon: '<span style="font-size:18px;font-weight:700;color:#c4874a">3</span>', label: 'GC 3rd Place', val: live.gc3 || '—'},
+    ];
+    html += `
+      <div style="margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid #2a2a2a">
+        <div style="font-size:11px;color:#FFCD00;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem">Race Jerseys &amp; Standings</div>
+        <div class="ls-grid">
+          ${rows.map(r => `
+            <div class="ls-item">
+              <div class="ls-icon">${r.icon}</div>
+              <div>
+                <div class="ls-label">${r.label}</div>
+                <div class="ls-rider">${r.val}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+        ${live.lastUpdated ? `<div style="font-size:11px;color:#444;margin-top:8px;text-align:right">Last updated: ${live.lastUpdated}</div>` : ''}
+      </div>`;
+  } else {
+    html += `<div style="font-size:13px;color:#555;text-align:center;padding:.75rem 0;border-top:0.5px solid #2a2a2a;margin-top:1rem">Race jerseys will appear here from Stage 1</div>`;
+  }
+
+  el.innerHTML = html;
 }
 
 // ─── PRE-TOUR ───────────────────────────────────────────────────────────────
@@ -1018,21 +1141,56 @@ function renderRules() {
 
 // ─── SPOILER SHIELD ──────────────────────────────────────────────────────────
 
-let spoilerActivatedAt = null; // timestamp when shield was activated
+const SPOILER_KEY = 'tdf26-spoiler';
+
+// Load persisted spoiler state from localStorage
+function loadSpoilerState() {
+  try {
+    const d = localStorage.getItem(SPOILER_KEY);
+    return d ? JSON.parse(d) : null;
+  } catch(e) { return null; }
+}
+
+function saveSpoilerState(activatedAt) {
+  try {
+    if (activatedAt === null) {
+      localStorage.removeItem(SPOILER_KEY);
+    } else {
+      localStorage.setItem(SPOILER_KEY, JSON.stringify({activatedAt}));
+    }
+  } catch(e) {}
+}
+
+// spoilerActivatedAt persists across page loads via localStorage
+let spoilerActivatedAt = null;
+
+function initSpoiler() {
+  const saved = loadSpoilerState();
+  if (saved && saved.activatedAt) {
+    spoilerActivatedAt = saved.activatedAt;
+    const btn = document.getElementById('spoiler-btn');
+    if (btn) {
+      btn.classList.add('shield-on');
+      btn.title = 'Spoiler Shield ON — click to deactivate';
+    }
+  }
+}
 
 function toggleSpoiler(btn) {
   if (spoilerActivatedAt === null) {
     spoilerActivatedAt = new Date().getTime();
+    saveSpoilerState(spoilerActivatedAt);
     btn.classList.add('shield-on');
     btn.title = 'Spoiler Shield ON — click to deactivate';
-    toast('🛡️ Spoiler Shield activated — stage results hidden from this point', '#c05050');
+    toast('🛡️ Spoiler Shield activated — results hidden from this point', '#c05050');
   } else {
     spoilerActivatedAt = null;
+    saveSpoilerState(null);
     btn.classList.remove('shield-on');
     btn.title = 'Spoiler Shield — click to activate';
     toast('🛡️ Spoiler Shield deactivated — all results now visible', '#3daa68');
   }
-  // If currently on All Picks tab, refresh it
+  // Refresh All Picks if currently visible
   if (document.getElementById('tab-picks').style.display !== 'none') renderPicks();
 }
 
@@ -1040,14 +1198,21 @@ function isSpoilerBlocked(stageNum) {
   if (spoilerActivatedAt === null) return false;
   const dl = STAGE_DL[stageNum];
   if (!dl) return false;
-  // Block if the stage deadline is AFTER the spoiler was activated
-  // (past results — deadline before activation — remain visible)
+  // Block only stages whose deadline falls AFTER the shield was activated
+  // Past results (deadline before activation) always remain visible
   return dl.getTime() > spoilerActivatedAt;
 }
 
 // ─── HOME PAGE ───────────────────────────────────────────────────────────────
 
 const STAGE1_DT = new Date('2026-07-04T10:00:00+01:00');
+
+// Preload Brighton & Hove badge image
+(function() {
+  const img = new Image();
+  img.onload = function() { window._bhafcBadge = img; };
+  img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAABYCAYAAABxlTA0AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAym0lEQVR4nM29d3wc1dX//753ZlerLlm2JHdbNrgbQ7Ah2JhuSCAh9NADISTkoSRP8iWUEJJAEiCEEAgQAw7FMdiUELrtUGwwxuDem1zlIsnqu5J2d+be8/tjdteSuwM8+Z3Xay1pd/bOvZ85c87nlLlWgPDfFqVQKgRiEAxKQKUmpjq8Okp60hrwO/yttBP8Lhbk/wdL478GsAKlQCyKACgFqFAEFSnEZnXFDxVAuBicXNCR4HilAAMmAaYVkjFCyQZINKISDZBsxwfsHuf4b8n/AcDpU+jU34JSGsRkNNPJL8fkVWDy+0FeT8jpgVtQQElxiK6FWXTLzyc/J4yEFA4OkjS0tEdpjHnUNiepa2rDa26AWAO010J0HaGWDUisGj+1OqWCe0BEMue1/wcIfKXDB0tyAINWGqsUYg0u4ETy8bqOwhaNhIJe5Jf3ZuSAYo4ZlM+JFeUM6FNAj5JcyvIj4FgU4b3GTxqPpphhe1MLlVUNLFzXxOdrq1m6qYGGmnpo2oJuWEqofiVee2NgcpTColCShli+Ug37ygBWKT0RBLRCCWixuHnlJMq/Dl2GkdO9JyeO7MN5X+/PqUeVc0SPXNgDyMZWj+LcEL5v2LSzgfLSfEJKU9vcSp+uuaBCdLbQls01Lcxetp3XPt3Ke0traN1RhapfSrjmM/yWbSjAKAcRUNivFOKvFGAB0AqsJStShN/7ZEzX0fTo34tLTzmC750+kOH9Skibj7pYgumfrmP04FIEzfV/eZ+WWJLvjuvHbVeM5+Sbn+eowX259fLRXHzXq8z+y+VoLMYoQlqxYlsDZYUu3QqLMvNYW1XHCx+u5Zn3NlG1cRtO3SKcbXPxW7cDCqscEP+rgAAA98saSKEDTVCScv+Bc9ECbu/xJHqdSrfevbjhm0fyw7NH0qNrIQBtcZ/2eJK7npzBW8tqObpXIceN6MUvJs7l9GMruPLUYZx2y0t865QRlJbl8fcZlVT06kp+totGYUXhOJrlW2v54UPTyc/J4/nbz6YkN4zCMKh3V35zVVdu/PYonn53DQ+/3ZvaLkfh7vwAtfUDxPqICqPEAAb5klXuSwNYlJAhVspBxCecV4KpuIBk6QiuOmMQd1x2LIN6FQOCsT710Tau/d0M/njzyfzoguNp1ks5pl8xR5QXU9PQxOiKQfQvzaVXrwhrqxpwdB63X9GdByfPof+RfdAKxApaKxZVNrBtl+GCrxeRHwnhaEFw8K3F9z0KC7O5/dKjufTU/vxx6nwmvtsVv8sIwhtexGuuBcdFbAgtHl8m59AHP+RQRXCAEArEJ9J9GMnhN9HjmDN55Vdn8NytZ6TAtTz29lLueW4upYUFtEiSyR+sY+SAMi48oYJX5mxBgMsmjOTWpz7h5sfn0hprZ+ywnjTuquHSEwbz3bMHE2/aCSgcx2F1VR0T3/yMIweUEskOUbmlOmANSXC15pqHZjBzTiUg9CvrwmO3nMlb957FkFFjSQ67mUiPr6OMj1I2wza+TJEv5+WIgxIHJVkDTxfGPyBn3/2ObK9rEhGR5qQvsxdXSV1zuyyurJaKK5+Tqx96W0796RQZet3z0hCLS21Lm4y6/u+ypa5RRKy8+PEa+dUzn8iGHU0i1sqaHTXSGvekKe7JysqtkvA88XxfNu5slm/c9qqc+tMXxD31AVlZ1SC+MSJi5J0Fm6X8golirZWFq7bLH6fOkUTSExErtY0tcvnvZgrj/yxZR5wrGiWB61BfEiapmOc/eSkQhSsQEpQSRVi0QsJDvi2c+pjc9vQc8YwnIiLb6lrkm7f9Q8b/6AV57K3PRETk27/+l5x/1z/FNyLn3DlNJs9aKVZElm3aIe3tCTlcqWuJytsL1suT0xdKcywu1hppSyTkxFumybE/mCy3Pj1bxtzwstw/ba6IiFjPS33TyL0vzhPOekyyhl0kjqOFlKJonBTg//nrP7bBggJlcFJWRrRPaMilJHpM4OH/OZpbzj2KdDw16d2VdC/twZ9/OYbTb32J5lbDr684kZseeRfPGp77+Vk4IQcFjOjXHRFh3Y4WVm3awZqqFrbVt1IfS9LeHkdpCLs5FOeH6V+awxG9ChnapxuDexfzza8NBMA3BiuKuauqKIrEmfnnq/ifR96hpa2Jn118IT96dDorltVy8TnDuPncUdz53ePoXZLNdX/JwtX5yKrnMVZA2S/s8L6gk1MBjxSFO+givF4nMfHnX+P600eQ9Ax/eWUB55xyJCMHdGXGp5/iqeOYcOwQPliwgdsuPp7Hf3IaYR0nUlSAIMxdvplX5m7i/WXVrNvWSLwlASYE6GCxKuUylA/WD3INSpNVkM0RPfMZP7yU74w9knFH9SZbw/Ej+jB6UHdc47FqUyN//ckZ3P3MR6zf1MjvfnIav5g4gyO7deGsE/pz1RkjycuGS+9zca0gq57BioMRgS/g9r4AwIJCY8QSGfgN2nuO47GbR3P96SMACIcc3JDinJ9NZclzP+S1T9Zz1s/+SX6Ow48vOg6xMLJ/ObFEnBf/vZinZ6zi87Ut0B6HSBYqFMLJy8JJL05UJvkjBHkJ0UEklvCFFZUtrFi9i8f/tYYRA0u57qwjuGbCIApycokn49x73XjGDunOTx6ZydsPXUmfogj5OV3ZGW9jxZZanHCI88eNZNLPXK6+v52wacSu+Rco5wtp8WGwvnSixYIolHLR4hHqcSzxIy7hVz8Yz28uHwMI909dQFuyjd9cdRI/eeIDPluzjQ8fvIxPV1dTXpzNkN4lADz77+X8ceoiVlXWQygbFYkQUj4GBdakjL1KX889Lq6AaBQKhUG0g9YOWB+vLQnWYWBvl1svOZrvn30sWoFvLDc9PoNoc5JwVg4rNtcw/aFLOeG6ifzt5+dw8lF9APjz64v430fnkbv+edq2fgbaSSWMHJT4h6XPh0erlSIV+SIihAp6khx+Axedezwv3XoqrUmfu56aTdRzWFpZy/UTjuC6bx/Dhb+exrfGDODqbx4LCKu2N/CLJ2bx1seVEC4iFNFBwGolsO1fUBwloML4CQOJGKeN6c4D/3Mqx/TrRiyR4InXF7GzIcofrj2VB/61lFUbdvLi7ecwd+V2juxZQNeiPK5/9COemraI8OrH8RsqEa1B0hnQQ4f40AFWABotDigf5WRjR36PoV8by+yHzqcoJ0xLIsnoH07mirOHs2NXgnc/Xs1VEwZy+5WnorHkhEO8PLuSGx/+kNqmJKH8LMSAER3Y1S9JRLk4NokLiJNDMhojv1B4+KaTuPb04ZnjttVHmfCzl7nm3KOZ+fk6dm6P8vofz2dAWRfa4klOue1NFnz8OXrlI5ikRWMwmMMyGYceaAhBBkoJVgS39ylklQ/h0VvGUZIXodUIjrIse+pqXnxrDQtWbmHyXd9hZP8eRFQA7n0vfsrFv36X2jiE88IY42MwKMxhwHcIi7I+Vis8BcbEcQsitCYcvn/v+9zxzFx8wBjLqs01bK2L8uZHGzjvxCGseP461mxt4oOFm8iJhHn8lhPJ7jMI1eebKEliFQFBPQw5LCcnSiFiyMrvRqLsZG45/2ucMqwP0WSSK+5+k50tCZ699QzmP3kZF/52Gi1tLVxy6jAAfj7pY/70zOfo4kIUPp7ViHJQkqJDX4Jp6DBTkFQiB1DGQ7saNz+XP0yaT0Mswd9uOoVTj+7Pp3+9ghH9Ap/wy0kf8upH2ynKSzKlbwlf61/KbRcP5a6/NpFVu4hEy2ZQ7mElhw7LBmul0WKR4VfSd/QZfPqXC+iWF+Hq+96hvLQLWhxeeW8Zp43uzWP/O4HmWCsl+fn86h/zuOdvcwkX5+OJRlkPUV9ilH6ooiCkIdkQ48Yrj+fRH54AwJbaBn7w4EzWbKrhyvNOoE9pPutXb+OBG08nlowz9mdvs2r2O+iVz+BzeBWSQ1+l0ohYdPFATNeR3PbdUZTm52CxDOpXwiuzFrFuSx1//fW5LNzYjPUNJfn5TPz3Cu6Z+BlucSGeBGP810TAsxq3Sxf++vwnPPjaAgBcR7G93mPyvZdSV72dsUeWcOdVX8dYn4KsCPdcNgJbNgrVdQRKOvDxQ5BD1mClFA6CGXYVI8afzbyHzyfsOoj1cZ0Qs5dv5+5Js1lX1cRTvzibs8f05dP11Zx28yskiKAdH5uq0chXkFA5VBEcQmIQbREvwfT7v8Ppo/oyfWEl095Zyt9/+R3aPEtu2MEIKGsQrTn5F28xZ/p09IonsbvpxEHlwACnPlWpykRWYS8SI29i4h1nc/1Zw/CNxXXAGHAcTXN7kvfmV3L++CG0JXxO/OlkFq9JEs518GyHdOZ/VRRKLMp1Me1JBvbMYt6jl9ElP0JVc5zeBQ5KhRAb8FFjfFzH5ZVPKrnol28QXvYYXsMmlFIZynYgqA9J10UFBSCvyxj6DiznonEVGPFxHA1oHEdjrEd+dogLxg9Fofjzy5+zeHkD4bwsfGPZXWr8b4sgSmGNwc0JU7mhmd+/MBcF9CnU2JTfVzpYs6MVVoRvju7H0CG98UrHEEmNIYdQbDogwCr9bRHccC62aDDnjR1AcV42xnYOCbQOIcZgjGFjTRMPvrwKnd8FY7yUSfiKi9f/gVjfoAvzeeJf61iypRYRJ0jydBClLNYIOWGXS0+qQAqHQKQY7KFRy4NqsFI6CEsL++GWlXPRuAEAOCkKlDlOBJNKgD/02mKaG+M4bhKjAgOjD9FmBUFwpkuCL0frUyVYsYGTyhRkFS7Q3h7n/pcWo5SzF281BKUpgAtO6EdBt3ISxcODGSp90NkdAOAUT0WhAa9wEEOP6MWYASVYEZw9RhYRQo7DtoYWpvx7HTonC2MVSoLw92COTVIGX2NxMATF9eCVLq8f6lh7S8pOqhCoUGrcoKJsxcPJzeWfH21i1bZdaEfTUYkdQLuCtcLgXsWMGtITW9g39X1nn2frKAcA2KYmZnHcbMjtyUkjy3HdEMb6qcTPbjES6MW0D9fRtKsNJ+QghxH1KEApB0cHNl3p1OSVwnHCQWsVLkE6/PCoXtqWuo7F1QZRDlZAlIO4uWSHwG9pZ8r7GwAQu+f4GmstSmlOO7oM8vvghnNQkjwon9/vp4ogqYMIktMVCvty6rDSzGd72lStFUaEVz7aCKHIAfju7u/tXrjCEYtNCl4sSbK5FRNrQxkfm/Twm5qxiTjacVEph7t/2T2+VgrX0Wir8NuEZFOSZKwd5SfIVgnES2BaWog1tGJ9l5c/XosRwXE01kqKJQRnUzr4eeKwbqjCckxuj1TK58AAHyRUdlD42Jwu5HTrxsh+xamJdz7KiqCVYnlVA4srG9BZGoMNnKTSCDZF9FxQGu34KFH4vsK2eeB5qCyHgT1yOfaIUkYP6saR/UopK+lC0ksye9Emnpu+mnWbmyE3i5ArGCNYnNTyTcbAiHJwUCgNfiKJafdx8xzGDCvm5JE9OH5Id/qUdyE7W9PQnGRr9S6WbdzFvDWNLFmzg3fnbeCMY/uRFUpDIymTEQA5tF8JpaWF7MrphW6sxB6Epu0X4OBLihCQzOlJRWkevboVYMWilQbRGf9jraAdxbzlW0nEfMIFYTxRiAawKBxcFYBu/CQmmgQMeYU5jB5SwhnH9uakUX0Y2b8reZGsveYydlA5N5w7iqfeXMKD05axq8HiFGTj2CRWJHObajSOtiTbEuAJ/frk892TB3LhSUfytQHFoPZov+oBDCnnslOCP6NJn41ba5m3ZgthrSgqzKNHlzwKc3JACcZ4lOXnUNGriJrscsKZS/sfABygHCS9cYup6FFM2HUx1qQS0LsPCyyJ8PnqKpQKtNlRFo3GNw426ZFM+qCE0q7ZHHfcEZwzpgenjerDgB7FnU5pjMFi0MrNdAcZaynODnHrJV/n/PFDuOPpj3n5vXUQ6YITMWB8HMIk43GMMQwfXMxN3x7GxeOHUJQbyYybNIbssAAuOxtaeemj9bzx6Uaq6+L06VHA8YO6Mm5EHyq6FWBEaIl7LFtXSyRLU9G9kJKiQgAGdi/g03B+ytke2B8cAOBUUsPREC6if7csRAL6pzqGDUqlAg5YviOOKId43IcEYNtR2VDRuxsnDS/jrGN7M25EOT2KC9KXBWt9fKPBEVylAyeH6hTvO8pBEHzjM7B7ES/d9S2eG7OcW5+aQ22Djw47JFtbGDa0hP93wUguPmUo2aEQkC6AQtjRZDuKbU2tPPnPeTw9fQ07q+PgGHBdVm2OMn3GOsoHrOTte88kkUigjIKQoiEap3JLLW7Y4dzxIzmiPBeyChAnAn57Zi2HDzCgnCzIyqd7l2yUglCoMzVJ+JZk0mNbfROV2+rJyXPo3z2XQf1KOG5QKeOGdmdE/xLy07e+tSQTFhRoR6G1Q9hNa4LBWAiiQ5uatM7QspDjYEWwxnL1mSMYO6oXN/3pAxZuqOPBn53OxacMJuK6WLF4vgkcqA4ulmd9/vbaUu6buogd1a2QHSZUFAmYjghaWUx2Pr4I/cu7UJybQzKZJJrwaYv7tPYoZPP2JhDoXVIIWfkQSgO8fzkAwEHuQKkscLMp65JHfUsrc9fVkRcR2qLN+KKwVoEOkaUNL91xFr27F9GvOEIoFNn3sFoT7mBmPWtp9320UkRCDk6KYFuxeCjCiqBvLBXYaAXKdTC+z8CyIl6/71zenrOWwoL8VBrRImhCbmAWEsYya/FmfvXc53y+oh4iDm5RHtYKvknf3kGPmwWao0m21LVSlJON64YoCYcpyQcoYHCvMgDyszU4OSjn4On0Ax4hENSitCYvJ0TcM8xfVskJI3szuE9PuhTmUZAX2QfdFpLWEm2N0xCLU9MQp7ohyo66drbtaqamMUF1c5LGaCutcYNnBUdrirKFkX2LOfekoZx5bF+y8FN81e1EhpRYtBskkFzgvPHD+GzNDqb9exVDK7pwzBG9sEqB1qzftI1HX1vA/MomcA3hcBa+FaRTZBnkFJTSeEmPtvZ40EcsBsEJqCpgjBByNTnZWRAK7ebAB8gE7Bfg9HdEOeAE1dqeJQX87OLjWbmplmXb61Cb6zE2iYtHfatlxsIttPiK+kbDzoY2WlvbibYZ/KQDJhmk+LQbaKOyKXVUQTouYcCHefO3889PN3DLhSP43inD6NmtKCBCHQMbFfiAkFKIuBgjHDe4B8MqurF84w6S1pAdchFgyMC+vPWH3mypjXH3i/N47rV1gXkIaYwxKXgDj6IIboKkbzrhQIp7SwpPJ6V0h5IXPiBNy1yYlJ0SgdzcXE4Y0S99apKeQSlYuKmW7//+QzB5lJRphvUtoinPpS7m0RCLk0xkYZN+4CXFBwkeegm5iuKiMEN75TP+mP6cPqo7IytKSSQ82hNJ0C6OGOh0nzjBzJQBpdBoPBHywoqvD+6bWYEK9I+kJ5QVR3j2lgmcNLgnP33kfZqjApE8cCyu8hCr0DaCdSxOOorcTyQq6Y6zQ8ivHNREKDEglvZESomMDW6/FB0LhYLehNKCbPK7FtPW6vPyH77NKYO6I0C03aOhpZ2alnYaWqK0xn2SvsJ1ID/i0K0on+5d8+helEOn1ElOBxuu9hXzK8DNfCOkguWkg54011EIze1x7nnmI+64ajzXnDmMY4ZW8LtJb7F4xWq2tJThkYuOxDGextEhcrPCu0/RIYedhrM96YPvodIZtQPgfHArbZLgxWloS2Te0h1DudT583MiZIddok3tuMbHWMFYS0G2S0F2Af3KCoCy/ZxEsGLwjUUpF6V1ZkmH206qOxyfvgML8yLcf/2ZKNNIU+0yRua28tJFM2k+diobGnrx0OfjmLJ+JNpxyAs5FOVndRih0zQBaG43AXuwBy9+HsCIBNkbZZPgtbOjMbqvU2ZsY1FumB7FEWhX/Pnl+Tg6KDH5FnwrAeDGYozBT7083yfp+Xi+YIwGFQqsESbVSPTFUpVWgpDaUZrsbE0kr52irCit295i24pXaG7uQre8Op44ezoXD96AjQslRRG6FUYAs2c+izTCtY1RSMYD5TuIHJAHKzRiPEg0s6MuGCzwq9LhmCBUDmlNRXmEJXnCa7O38vupn3LHd78OWDxfUmwk1RkkFkcp2CfN2b2qIKpL3exaCEKQDo8qpHU0leMVUYhYrChCjoNWCu0oBMvyDdXMXtPE4socVm8bz6aq3sTaQIxDaX4zEVzA0L+0iLysCFbSAKu9ZraprgUSLSmAD1xMOKCJUATlEhLNbNjRAuLj6JTDU2l4U8keFKOOKOOfszaTk5fPnU8uoKaxlbuvGkuX3OzUiDal8S4GYfWWWpZUNrC1uhWjDeXFOVSU5TOgRxd6do0QckJ7UUDfmg752tQvonG1RmsAjZM6bkllAzPmbeb1+etYuqGeZEwHc3AcCBcF96/ApqbClH+JMmpAVxQBJXPczlXEtPlZvyMG7c1Y4wVM4gDO7iCBhg00KFnLxupmdrXE6FZYEFSHO2Tz0yceO7w7SodIYHCzc3hk6gremLeVK04dxMkje9GrWzaxdsN7i7bw6idbWbahlkSsI0MwEFLk5kXoW5rH0D5FHD2gC6MGdmVwn2706JpPxNlfkluoamhlxcYa3ltSzaxFVSzZ1IRtS4LroLJyCRUICh9D8AxJwP4EcNCOg+fAuJE9gPT7u1OjQaesoiWRYGNVCyped0hFsIOzCEC1baW2tpmVVVFOLiwKCp6iMvY3bStHH1FGr54FVNW0EnJc3MJsNu9Mcu+kJdwbWkQ42yHpA60m6ADJjhAqFBzxEBwsEQRFa8KyamMLq9bW88rM9eA65ORn0bs0i/49CulfXkSP4nyyQprGljY218XYUFVH5bYoDY0eeAIRDRGHUEE2YjVG2aBpxLrA7k4iUYKyIbxkO9265jB2eO9gTdrt5G8kxUk27oyytaYJJ7E1BXDqrvjPAA6GCMXqSDTW8vnqXZw8vDciqhOlUipoDc3PjnDW6F489eoydL5LwoIOhwiFNQZIikK5ECoKY7BYEXyj8AjvZg2YgMNHNCo7glJgLbR5lrWbWlm7Pgp2K2DSahVMwHUg7OLkZaVK6i7WWoxNBk9ASVByCrqqOvh2cdCuwTZ5nHRSP7oV5GCsBKYQAvBEY4ygXcWiNTX49fW4bTtSNPaLlO1FIUpjkzFo3cqsZdWAxdX7MOsph3Dt6YPRYRcv1SwoYkhKUFLSKXLuWRuYmVT3eMe6m6T4qxUwVvBN0GyotcKJuLj5YUJF2bhFebjF+bhFubiFOTg5YbSjsCm2Ym0C6NiipVIJ+c5L1hKUxXBDfG/CkRnV6rQwAZ3S0n8v3Qmxnai25tRYB05XHgBglamcChYdW8+nq2pZXxtFa71XHt/RCrE+xw3uzklHdce2tqJ15+G/SOFeJEW7Ukkas8drd4ln9/wPXpFWaC3Y1gSjhhZz5lH9sNbuNW+rLI6r2RltZfbyalRsLSJBUumL9UUoi7KpVGFjJU07dzBj/pZg4mZPkh1onVJw28Wjvpxq+1cugtUhxLPcdtEIXNfBiN956iIY6wGamYuq2Ll5J27jKvzg6weVAwYaVsDiY5TCj+2C5k1M/Wh9UGHVe/RFANpx8I1lwugKvjmuP6YliuO4fNn9v19ElEhgupQmpA0m6jH+2F5ceOIQjLWEdGiPb2iUcgHh1Q/XQ8tWVLS2U8R4IDmgBkvq38D1WNyGhcxbWsvHK3aitd67CyZNa0T44/XjyCsIYX0LOswXeVLny5Sg5SnoifAli3A4zh9+eHyQIYO92hF8EVztsGRTA+8tqMZpWIRJtd+m+ysOJIfWh5nelaRuJaZmM4++tTKYyz4OdRyNEWFory7c84Ox2GgDrhZQX9pj0V9IJBVdhLTGNtdx2/dGc8KgHljfpEDe475PtR889uZK2qurcGoXBWlcEeQgFWU4jP5gURrfTxLa9TFvzN3A/HXVQS+E3fsUWms8Y7jl20dz6dnDSDa2EnJg94NY/y0DHZSmwq4i2dTGWeMruOuSE4LmRCdIrHdMUdpUIWBFVR0vfrCW0K45JL04Vrk4YlGHsJbDeEbDYlUIqVmAt2Mjd01ZDFistQgmoDodluHo4CpP/OmZnDCqnGRTkiwn0GSd5qT/R5IifggOEQ2JlgTDBnXhuV+cjaMCCqgVoFQq2ZSijBJk8+6duojW7Zuhej7pbRrSFcODebrD6uNXBFsDZO94jxmfVDJ1TiUh18EYHyV78sugtJ8fhpd/ezZHDcuhvcUSUYIoi/0/e4QgeFZDiSXkKOIxn4H98nnz3m9RWhDCWIvu0C0UXAyNsRbH0by3eAsvv7eJcO2/8ZMxgrDeHhK4cFgAp6uvGlOzBL1rKXdO+pyaaDtKhbF7PBgi2iIafNH0KMpjxh8u4oRRXWhvjOG44b26g746ERzx0aEsvJYoRx2Rx/QHzqN/WQHtVmWKrB2PtxKYsqZ4kv/3t7lI3WJk+8LMZk6HI4cFsKQahpNKEdr4FhvXbeC2v83BSfWlpYPrdFeQxuBqhbGGssJc3r3vQi79Zn+8hmbESKqfIpNO6fDz8MyHyuhTumMjXWcTXK2w4uI1tPDNE8uZ+acLGVBagO8bIjrdO9rxvCpje3/9/FyWrN5AeOO7eObgDm1fchgABxu92VTuNRmrIatqBs9OX8nT764g5ITwfR8RwaZ60VQq1eFoB198CiIuL9zxLR7635PIcTz85gRaC65y0BI06QW1usNjHGl7rlBosaCEkBZcHcJr9YnYdu790RjeuOdiSvNysNbiuunOoXROOQDX85K4jmbax+t55OVlZFV9SKJpayq/cfgQHzhbfABx0o/VDrsUZ8AE3v/9KZwwrA/GT6Jcl6BTrKMIRhTKxNFuhOVbG/jlU3N449NNYLNxssMoNx6U6U0643VoIspBiyEkBqWz8ERj4u1go5wxZgD3XjuOMYPKwLcY5eM4HXvUgmevrVKI7+O4Lks21nDyL6bTvuYDvJVTUXipBvM0jTt0yP5jgDXBpFztwsjr6Dp0NB/c9y2G9CohYS1Zeg8KIzbV7a7wjSGcyuu++9kGHn51Kf9evANJWIhk44Y0ypEU1yTTl9ChkAKozEaASoLGEZO0kPAgyzJ+WBk3n38UF5wYJHCM76NcH8jqXFwN0mt41iPkWLbsSjDhF2+wbvlSQssfw0u2oyX9PMbhw/UfAwxOitIassLFJEZex5HDhzHj99+mX1kxvm9wXCfYhCqznoBtCBorQbrRcYL+hTnLNvPirPXMWFDFxp1RSDiBAXNTfRma3WUiK0Hp36gg9ytJCGfTp3uYs0aVcfEZIzl5ZO/A39sg16w06PRVUqmyf4qQGd8Scl12NsT41p1vsXDpasLLnsBv3RU0aWdMw+FHo18A4PQIGsQSzislOfT7HDFyBK//egJDepaQMJaQNiicThUQIJUY8on7kO0q0lWNaFucz9fXsGBNLYsrq6ncGWVXU5JoeztJP9DqiOuQk5dLSV6EirJshh9ZxIlDenPckWUUZMr9lqTno1yHkOroTC3pfWLAYjxFKKTYUt/EeXdPZ/HC9YRXP4tp3oRRIRDvC8EDu43Kf/5SSjRIOL+bcNwd0uuy52X2qioRkWDjIuOJWJPZX8eKiLVWPBO8t2Bjjfx28iyJxfa9V0+stU2q6ppkbXWTVFY3yta6RmmMJcRIstNxRoJ9eDbuaJT/eeQtiVsRY42ItR2OsiLWim+tJL24iIgs3FAtR1wzVfj6XZJV1E9CII52BOV8cWwO9KHW+tAHcnSw41R2vqhjfyw5506Rp2csEhERz4okjd8JDGs9EetLc2ubjLllmjinPCYrt1VLfXtCHnx5rkTbEuInE5JIxqXJ6wh86nfPF2tFZi7eJEvX7xQRkbuf+1iuuPs12RZtk9E/fFE+X7tDRIwYu/vcVkQ834qkLu5Ls9ZI8YVPC6N/IpG8bkEgp0KC0qJJBXZfAKMD8qF08llkz2a5vUUbi2iHRHsUd+mzeG2NXPdAjHlrmnjg2jEU5+ViTFBVThWmsdrhG796i7KiLM4aV47WitUbG5k0cx23nH8cjtbc+cwsPl+6k65FEe689gQao0nenr2aB244naseeIMdu+Jsb2jgkR+dxrFDevPbifNp0W+iHZc3F2xh9JHdEd+CS1CmsoqQo2hNxPnls4v4yz8X4e5chLvunyQSLSjlIuJ34tb7sqLpOmTwcMz+Kdx+eXA4HOb4448Pcg0ie2X5ARzHybxvAWuDXjHfa8Nf9SLhjf/g6WlzGPuTN3h93jocR+NoSPg+oHjwhTl48Tj9uxUwd3kV3QoLWFS5nROHdsdNjbt8Uz1jjulDYzLEguW1GOOxZGsDa3bEWLB2F+8/eDF//P4Z/P4fyznlmJ6M+VopF506itZEK1NnriBhDGgfz/g4ShNyFDMXbmbs//6bh5/7iPCG1zArXsAkWgiKBoZMwKT1PptfOirdaaedhuvuX0/3+YnjOHiex49+9COuuOIKbrzxxgw59/0gJFZKZboTXdfFGBNcxRRhF63wN31MpH49q9vO5jtbY5x/8iZuv+Qojh1QDsDFJw3ihvOOIz87xMcrNpFMeny4dBtH99/dYqUFmqKCmFYG9StAOWEioQhhx8H3AjaSX5JPNNZKruPSp0seLQ2tfPbEFbz64VKSviUrK4wDrNhSxx9eXci0f1didmwgvO1Vkg1bUw7YxaoAXEXwQGXHtaY1NI1BJBLhueeeo7Gxkffff78TNnvKXnbDcQLjfv7554uIyNtvvy19+vQJbIrrZuzOtddeKwMGDNhtb1xXlFIZx6dS44SUK1k9jhWOvkNyznlGLn/oPZm3ZkcHu5qUyq3VEm2Ly11T5sr4W16QH93/lrT7CRl+7ST5zT/myribX5A/T5sny7bWy9DvTxIrIj/+yww5/qbJctQNL8pTby8V3xhZtbVWlm2q6TC2L0vWb5cfPjJLCr7ztHDsXRLuM06cVJeWTtlaUKK0FjfkZtZTUVEh/fv3F6VUp3WPGDFCPv30UxEROe200zphto/X3m+mQSorK5P6+noREamurpaLLrooc8yECRNERKSurk7uvvtuKS0t7QS044REKVdQWlSKZYTCOeL2O0k4+nYJf/MJOe3O6fL3d5fKtvrGTg4w7htZu6NOEklPXpu7Vu6Y9LE88NJ8ibV7UrUrKpPeWCwJz4gRIx8s3yYrN9fJnrKzoVmee3+lnH33DMn+1pPC6NvE7X+6hLPyRYE4KFEpZ+Y4bidgS0pK5Pbbb5empiaZPXv2bqUB+fGPfyxNTcF2kdu2bZPCwsJOmB0SwHTwjm+++ab4/m4vPHnyZBk6dKgsW7ZMjNlNvXbs2CF333239O7du9OFchwnOLkKSerhL8kKF0qo5xhh+A3CiQ9K6WWT5Tu/mSmPvLlUPluzTVpi7XsBdmCx0hCNyeeVNfLXt5fI+b+fKd0vnyyMv08Yeb24vU+ScKRwNyNQKjO3jiygR48ecscdd8jWrVs7jX7JJZdIRUWFvPvuuyIi4nme+L4vU6ZMOZj27n+33LRNufLKK3n++efxPC/j1OLxOJFIQOhFBGNMxtA3NjYydepUJk2axMKFC3eP5ziIdsAK2ngYgqeHdF5v/KI+mIIKyK9AF3ejV1kefcq7UFGeR98uBXQrcMnPDZGdHXQ9xhMere0e1VGfqppmNtYk2bqzkeqaGuKNLRDdBq0bCDetRTdvw0+VfcRxg00EhU728uijj+aaa67hsssuo6Qk2L/H9310ysk1NTUBUFxcnPme67qcd955/Otf/zqg/c0A7DhOJ4+ZNuxdunRhzZo1FBcXB5kya3H20R+252fWWmbNmsWUKVN4++23qamp2T224+LoMMr6GJNEAFeByi3CRnpiIj2QSBeIFEGoAMJ5EMrqEIxZ8JPgtYLXDsl6SOwi1LoD1VaDxBuwJtAb5boo5eIbg9jdUVlZWRnf+MY3uPzyyzn55JMzCmKMyQC7pxhjUEqhtWbHjh0MHTqUtra2zPrTYm1Q6clgczCyfN9992VuDZEgCtvvzWqteJ4nRnYfs7OmRl6YOlUuv+xy6dOj595kXIckHMqSLEdLSCFOQNAlpLWEwmEJRfLEze4ibk6JuDndJBQpkVBWgYRD2RLSWsKkkpwKcR0toVBOEIntcZ4evXrIJZddKi+88ILs3Lmz07w9z9vvuqy1mc/SGNx+++0HDjBSDl8BMmbMGK6//nrq6uqora0lmUxijCErK4tIJMKIESO47LLLMjWqQxERQaxBO7vzDACNTQ0sXLCE2bNn8cknc1i1alUn7d6f7F13OLiUlZUxbNhQjv/68Zxyymkce8xoiooLOhwRNIK7zt7/w8H+JI3Bq6++ytq1a/E8j0QigdaacDhM9+7dyc3N5eGHH2bBggWolLHniiuu4IknnsjY1i8s4uPhsKW6gV31MfqXF1NS4BIK53Q6rKmpifXr17Nq1SpWrFhBZWUl27Zto7a2lpaWFmKtrfjevhMubihEXm4uBQUFlJaW0qtXLwYOHMiwYcMYPnw4FRUD6NKluMM3PMBh864Yi1dt46gjSujXvTRICn5JGzXt2rWLa665hnfeeSezM4BoHeyHUF5ezuOPP855552H7/sYYzK2eV92d38SxBoJqhva+e2kj3lxzgZuvfRY7vjuOOrbkzQ2xRjYvYhgh6x9B5Pt7e00NTUTi0Vpb2sjkUySSCZTD96ECIezyMnJoSA/j4LCQrKzs/c5TkexNsFr87fw8JS5FBcWkJPt8Pefn0N2aN8290CSDqzSQQfAk08+yc9//nOi0Win4CRjM9K/33DDDdLY2JixOR3p2KGKMSK+70l1rFX6Xf53Wb21RhZvqpVR102UcTc9Kz/560xpS3piPSPN7QmRlM32rBdkwORwzmnE+unjkxJPtku758nKzXXyl3/Ol8t+94Y8/tp8EREZfPXj8pc3FoknIvM31krSD7YbNynzu3/v0ll838/Q16qqKrnkkktkX1jS4RfRWmcc3pFHHimvv/56ZsA09/MyW3MfWJKpDNijry+Qr103WURElm6slZkLN4uISMWVE+XdhRulNtoqI78/Uc799Svy44emy/b6qIgx4vlJ2VbXJH6iTaKeJ2LjkkgkpNlrl6TnSXNru1TVN0tdrE2s8cU3njz9zgL5bHWQJo37ngy4epJc8vt35fkP1kiXS/4q7362Vh5+c6kM/95EOeknU2X0Dc/LhNumSV1LmxhrxRhzQIDTytYxLnjmmWekvLx870j2QIFGxytwxRVXyIYNGzIDxmIxaW5ulmRydy52X943aYz4xsjwHzwn9788v9NnD0ybK0Oumig7G2Pym8kfyxl3vioLKmvk1Q/XSl1TVJImSEX+8KE35ba/zxYRkZc/WS1X/u5V2VoblZNunCxn3jpFTrh5krw0e4mIiKzaUS+Mf0CGXfestCYCrZxwx4vy9PTlkrRGRt/ygjwzfamIiKytbhIRIxuao+Kc8VdZvH57BsD0WjquKR6PS3Nzs7S2tmbeW7RokXzjG9/Yd5rgUCO5NNDFxcXyu9/9TlpaWkREJJFISHV1tezatWufGh1Mzsrm6no56vuPyebaFqmPtsljry+Ss38xVb7/4NuybnsQbt757Edy5p0vybdvmyLvfL5BRKwkvXYRsfJ5ZZ30vPwJWVcdlYrvPSHTPlojW3bFpOzSp6WmNbjAXso0THpnmVz0p/fk8gemy2//MUdERH495RPpft4TMvZnL4ie8JCsq41KtLVNTrxxklz+u+ky9qbn5LanZ4lvjHjGiDW2k2FKJBJSU1MjNTU1GTNZXV0tP/3pTyUrKysTxR0gTN4/wKRC3Y7aPGjQIJk0aVIG1KamJtmwYYPs3LlTEondSfGANxrxjZW6tuD9ye8vE3fcPXLMzVNkxoLN0tLWLtVNLfL5+moREflwxTbpdunfJNrmiUhSfC8A8MbH35Oyc/4i1/zpHRERWbOjXkoveUIu/8Obcs6dL8qLs1aJiMh1D7wjVz44Qx58dYFw6oPS2N4msxZVSdmFT0pTe0LueGaO9DjvUVm1pVYWVNbIk68tlgUbalLz7Wwa2trapKqqSjZu3JjR2ubmZrn//vulrKwsg8eBQuRDAnh/QB9zzDEyefLkDNA1NTWyatUq2bJli0Sj0b1MhrVWfGNlR0ObTHl/uVzwy1dl2gcrpaY5Jn0veFie+XCN3PP8HPnaD56VuOcF5Rw/qPQs3FQtRd95VDbWxcRakY07m6XnlU/JWwsqZeXWXdKcSIoVI6Nvel6Ov/EfctffZ8kpP3tBzrrjJdkZa5cBlz8qlTsbRETkrbmVsqm6sdPc0hrr+740NzfLxo0bZdWqVRkn39LSIn/+85+loqKiE7AH0drDA7ij2eh41UaOHCkTJ07MmI7q6mpZuXKlrF+/Xnbt2iXxeLxDOaxzyciYQEM/X1stVz7wrlxx3xuyZMsuESvimaQkU7fkJ6u3SvnFac32ZVNts+R/62F58J9L5JFX58kzby+WFVvrpfziiVIdDbRte0Or/PLJ96Q6GpOt1fUSa0tIItHWCVRjA/MSa22V6p07Zc2aNZ2A3b59u9x7773St2/fQ7Gz+1fONMqHI1prtNaZBEefPn24/PLLufrqqxk4cCAtLS3s2rUL3/fJzs4mPz+f3JxcsnP25KqG3f8XYvC3b0BrA+KglGVrXRsfzFvLZWd9jSxXE21P8OjrC2lutYQimhG9CznpqAp2NTQztG9pULnQipAbRoxB7YO/x1pbicVixFpjJOIJIuEwpWVlhMNhlixZwjPPPMO0adMySR7HcTK5lsOVL1S2TydF0pWNSCTChAkTuPTSSxk7dix5eXm0t7cRjcbQKsTdv/olBUW5jD/5VEaOOIqK/n3Jyck9wBks6apWunQV7LNx6EFPW1srm7dsYtmS5cyaNYvG5ij33vMblFLk5eURDoepr6/n/fffZ8qUKcyZMyfzXdd190rcHK588b4IyER6HVN2ffr0YcKECZx22mmMHj2apuYmxowek5ms42h69e7DoCMHMXjQkQweMoT+/fvRq1dvSkpKKExFZweLsIyxJOJxGpoaaWxoYPv27WzcuIm1a9awdt1a1q5dR1VVFSb10I7WirlzPyUnJ4dPPvmEmTNnBsA3NqY+D5QmfUG/MDZ8CQBnBkul8oCMVkMAdvfu3Zk/f36mYNjx8z2loKCAvLw8CgsLycvLIzc3l1AohOu6CILxDclkkra2NmKxGM3NzUSjUaLR6H7HTIf8xhgGDx5MTU0NDQ0NnT4HvjRg0/KlAtxp4JRWdwSzY3yulOr0gr3zqP+JpP0DkKn8pl97zuGrArWj/H9j3MbVq4OldgAAAABJRU5ErkJggg==';
+})();
 
 function initHome() {
   drawStars();
@@ -1152,6 +1317,10 @@ function animateRiders(ctx, canvas) {
     pelotonX += 2.5;
     if (pelotonX > canvas.width + 200) pelotonX = -200;
     drawPeloton(ctx, pelotonX, canvas.height - 56);
+    // Brighton seagull with logo — flies left to right, above headline
+    const seagullX = -200 + ((frame * 1.6) % (canvas.width + 420));
+    const seagullY = canvas.height * 0.10;
+    drawSeagullWithLogo(ctx, seagullX, seagullY, frame);
     // Climber on mountain
     climberPos += 0.003;
     if (climberPos > 1) climberPos = 0;
@@ -1195,6 +1364,129 @@ function drawPeloton(ctx, x, y) {
   const yoff = [0,2,-1,1,-2,3,-1];
   cols.forEach((c,i) => { drawRider(ctx, x + offsets[i], y + yoff[i], c, 0.85); });
 }
+
+function drawSeagullWithLogo(ctx, x, y, frame) {
+  ctx.save();
+  // Flying LEFT to RIGHT — seagull leads, logo trails behind on rope (to the left)
+  const ropeLen = 72;
+  const logoX = x - ropeLen;  // logo is behind (to the left)
+
+  // Wing flap — oscillates using sine wave on frame
+  const flapCycle = Math.sin(frame * 0.18);  // -1 to +1
+  const wingUp = flapCycle * 10;             // wing tip vertical movement
+  const ropeSwing = Math.sin(frame * 0.12) * 5; // rope sway
+
+  // ── Rope (animated sway) ────────────────────────────────────────────
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(x - 22, y + 2);
+  ctx.quadraticCurveTo(
+    x - ropeLen/2, y + 14 + ropeSwing,
+    logoX + 24, y + 2
+  );
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // ── Brighton & Hove Albion badge — actual logo image ────────────────
+  if (window._bhafcBadge && window._bhafcBadge.complete) {
+    const bSize = 52;
+    ctx.save();
+    // Draw circular clipped badge
+    ctx.beginPath();
+    ctx.arc(logoX, y, bSize/2, 0, Math.PI*2);
+    ctx.clip();
+    ctx.drawImage(window._bhafcBadge, logoX - bSize/2, y - bSize/2, bSize, bSize);
+    ctx.restore();
+  } else {
+    // Fallback — blue circle while image loads
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(logoX, y, 24, 0, Math.PI*2);
+    ctx.fillStyle = '#0057B8';
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Main seagull — flies LEFT to RIGHT, white body, yellow beak ────
+  // Seagull is to the RIGHT of the logo, facing right
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Body — elongated, facing right (positive x direction)
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.ellipse(2, 2, 15, 5, 0.05, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Upper wing — flaps using flapCycle
+  // Wing root at body centre-left, tip extends UP and LEFT (trailing)
+  const wingTipY = -10 + wingUp;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(10, -1);
+  ctx.bezierCurveTo(4, wingTipY - 4, -6, wingTipY, -16, wingTipY + 3);
+  ctx.bezierCurveTo(-8, 0, 2, 0, 10, -1);
+  ctx.fill();
+
+  // Wing tip flare (outermost feathers)
+  ctx.beginPath();
+  ctx.moveTo(-14, wingTipY + 3);
+  ctx.bezierCurveTo(-18, wingTipY - 2, -22, wingTipY + 1, -20, wingTipY + 6);
+  ctx.bezierCurveTo(-16, wingTipY + 7, -13, wingTipY + 6, -14, wingTipY + 3);
+  ctx.fill();
+
+  // Secondary lower wing (right side of body — forward wing)
+  ctx.fillStyle = '#e0e0e0';
+  const lowerWingY = 4 - wingUp * 0.3;
+  ctx.beginPath();
+  ctx.moveTo(8, 3);
+  ctx.bezierCurveTo(12, lowerWingY + 4, 18, lowerWingY + 2, 22, lowerWingY - 1);
+  ctx.bezierCurveTo(18, 3, 12, 3, 8, 3);
+  ctx.fill();
+
+  // Tail feathers (at left/back of bird)
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(-10, 2);
+  ctx.lineTo(-18, 1);
+  ctx.lineTo(-17, 5);
+  ctx.lineTo(-10, 5);
+  ctx.closePath();
+  ctx.fill();
+
+  // Head — at the right end (leading direction)
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(15, -1, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Beak — yellow, pointing RIGHT
+  ctx.fillStyle = '#F5A623';
+  ctx.beginPath();
+  ctx.moveTo(19, -1.5);
+  ctx.lineTo(27, 0.5);
+  ctx.lineTo(19, 2);
+  ctx.closePath();
+  ctx.fill();
+
+  // Eye
+  ctx.fillStyle = '#111';
+  ctx.beginPath();
+  ctx.arc(16, -2, 1.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Attach rope to beak area
+  ctx.restore();
+  ctx.restore();
+}
+
 
 function getCurrentStage() {
   const now = new Date();
@@ -1258,12 +1550,74 @@ function updateRouteProgress(stageNum) {
   }
 }
 
+
+// ─── MEDIA CENTRE ────────────────────────────────────────────────────────────
+
+const MEDIA_KEY = 'tdf26-media';
+
+function loadMessages() {
+  try { const d = localStorage.getItem(MEDIA_KEY); return d ? JSON.parse(d) : []; } catch(e) { return []; }
+}
+function saveMessages(msgs) {
+  try { localStorage.setItem(MEDIA_KEY, JSON.stringify(msgs)); } catch(e) {}
+}
+
+function senderClass(sender) {
+  if (sender === 'Admin') return 'admin';
+  if (sender === 'Étienne') return 'etienne';
+  if (sender === 'Räikkönen') return 'raikkonenp';
+  return '';
+}
+
+function postMedia() {
+  const input = document.getElementById('media-input');
+  const senderEl = document.getElementById('media-sender');
+  if (!input || !senderEl) return;
+  const text = input.value.trim();
+  if (!text) { toast('Please type a message first', '#c05050'); return; }
+  const sender = senderEl.value;
+  const msgs = loadMessages();
+  const now = new Date();
+  const ts = now.toLocaleDateString('en-GB', {day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+  msgs.unshift({sender, text, ts, id: Date.now()});
+  saveMessages(msgs);
+  input.value = '';
+  renderMedia();
+  toast('Message posted ✓');
+}
+
+function clearMedia() {
+  if (!confirm('Clear all messages? This cannot be undone.')) return;
+  localStorage.removeItem(MEDIA_KEY);
+  renderMedia();
+  toast('Messages cleared');
+}
+
+function renderMedia() {
+  const feed = document.getElementById('media-feed');
+  if (!feed) return;
+  const msgs = loadMessages();
+  if (msgs.length === 0) {
+    feed.innerHTML = '<div class="media-empty">No messages yet. Be the first to post!</div>';
+    return;
+  }
+  feed.innerHTML = msgs.map(m => `
+    <div class="media-msg ${m.sender==='Admin'?'from-admin':''}">
+      <div class="media-msg-header">
+        <span class="media-sender-tag ${senderClass(m.sender)}">${m.sender}</span>
+        <span class="media-timestamp">${m.ts}</span>
+      </div>
+      <div class="media-text">${m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`).join('');
+}
+
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 load();
 applyDeadlines();
 calcScores();
 renderRules();
+initSpoiler(); // restore shield state from localStorage
 // Start on home tab
 document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
 const homeEl = document.getElementById('tab-home');
