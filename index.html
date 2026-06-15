@@ -105,7 +105,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .locked-pt{background:#181818;border:0.5px solid #333;border-radius:8px;padding:9px 13px;font-size:15px;color:#777;font-style:italic;width:100%}
 
 /* REST DAY */
-.rdcard{background:#151515;border:0.5px dashed #2a2a2a;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.rdcard{background:#141a14;border:1.5px dashed #2a4a2a;border-radius:10px;padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:center;gap:12px}
 
 /* LEADERBOARD */
 .lbcard{background:#1e1e1e;border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden;margin-bottom:1rem}
@@ -284,6 +284,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .media-empty{font-size:13px;color:#555;text-align:center;padding:2rem}
 .media-clear-btn{background:transparent;border:0.5px solid #333;border-radius:6px;padding:5px 12px;font-size:12px;color:#555;cursor:pointer;margin-top:.5rem}
 .media-clear-btn:hover{border-color:#c05050;color:#c05050}
+.media-badge{display:inline-flex;align-items:center;justify-content:center;background:#c05050;color:#fff;font-size:10px;font-weight:800;border-radius:20px;min-width:18px;height:18px;padding:0 5px;margin-left:4px;vertical-align:middle;animation:badgePop .3s ease}
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+.media-mark-btn{display:inline-flex;align-items:center;gap:6px;background:#1a2a1a;border:0.5px solid #2a4a2a;border-radius:6px;padding:6px 14px;font-size:12px;color:#3daa68;cursor:pointer;margin-top:.75rem;margin-right:8px}
+.media-mark-btn:hover{border-color:#3daa68}
 </style>
 </head>
 <body>
@@ -311,7 +315,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <button class="nb" onclick="showTab('pretour',this)">🎽 Pre-Tour</button>
   <button class="nb" onclick="showTab('stages',this)">🚴 Stages</button>
   <button class="nb" onclick="showTab('picks',this)">👁️ All Picks</button><button class="nb spoiler-btn" id="spoiler-btn" onclick="toggleSpoiler(this)" title="Spoiler Shield — click to activate">🛡️</button>
-  <button class="nb" onclick="showTab('media',this)">📢 Media</button>
+  <button class="nb" id="media-nav-btn" onclick="showTab('media',this)">📢 Media<span id="media-badge" style="display:none" class="media-badge"></span></button>
   <button class="nb" onclick="showTab('results',this)">✏️ Results</button>
   <button class="nb" onclick="showTab('rules',this)">📋 Rules</button>
 </div>
@@ -384,8 +388,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
 <!-- PRE-TOUR -->
 <div id="tab-pretour" class="sec" style="display:none">
-  <div class="sec-title">🎽 Pre-tour Selections</div>
-  <div class="dl">⏰ Deadline: 10:00 on 4 July 2026 · Picks hidden until then</div>
+  <div class="sec-title">🎽 Pre-Tour Selections</div>
+  <div class="dl">⏰ Deadline: 10:00 on 4 July 2026 · Any incomplete selections at deadline incur a flat −2 pt penalty · Picks hidden until then</div>
   <div class="ptabs" id="pt-tabs"></div>
   <div id="pt-form"></div>
   <div id="pt-save-wrap" style="padding-bottom:1.5rem">
@@ -441,9 +445,19 @@ input:disabled{opacity:.45;cursor:not-allowed}
     </div>
   </div>
   <div class="card">
-    <div class="card-title">Messages</div>
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>Messages</span>
+      <span id="media-unread-label" style="font-size:11px;color:#555"></span>
+    </div>
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:11px;color:#666;margin-bottom:8px">Who is reading?</div>
+      <div class="ptabs" id="media-reader-tabs" style="margin-bottom:0"></div>
+    </div>
     <div class="media-feed" id="media-feed"></div>
-    <button class="media-clear-btn" onclick="clearMedia()">Clear all messages</button>
+    <div style="margin-top:.75rem;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="media-mark-btn" onclick="markMediaRead()">✓ Mark all as read</button>
+      <button class="media-clear-btn" onclick="clearMedia()">Clear all messages</button>
+    </div>
   </div>
 </div>
 
@@ -465,7 +479,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card">
     <div class="card-title">⏰ Deadlines</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
-      <div>Pre-tour Picks must be entered before <strong style="color:#FFCD00">10:00 on 4 July</strong>. Fields lock at the deadline — any empty field at that point is recorded as no selection.</div>
+      <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock — late entries are accepted at any time. However, if any Pre-Tour field is left empty at 10:00 on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score. The penalty stands regardless of whether selections are entered after the deadline — it is the consequence of not completing selections on time.</div>
       <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is not accepted.</div>
       <div>If 1 or 2 players are tied for the lead going into Stage 21, those players must submit by <strong style="color:#FFCD00">09:45 on 26 July</strong>.</div>
     </div>
@@ -480,13 +494,42 @@ input:disabled{opacity:.45;cursor:not-allowed}
     </div>
   </div>
   <div class="card">
+    <div class="card-title">🏆 Tiebreakers</div>
+    <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
+      <div>If two or more players finish level on points at the end of Le Tour, the following tiebreakers apply in order:</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="background:#FFCD00;color:#111;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px">1</span>
+          <span><strong style="color:#FFCD00">Maillot Jaune</strong> — the player who correctly picked the Tour winner wins the tie.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="background:#FFCD00;color:#111;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px">2</span>
+          <span><strong style="color:#FFCD00">GC Podium</strong> — the player with the most correct picks across GC 1st, 2nd and 3rd place wins the tie.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="background:#FFCD00;color:#111;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px">3</span>
+          <span><strong style="color:#FFCD00">Jerseys</strong> — the player with the most correct jersey picks (Green, Polka Dot and White — Lanterne Rouge and French Stage Wins excluded) wins the tie.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="background:#FFCD00;color:#111;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px">4</span>
+          <span><strong style="color:#FFCD00">Stage wins</strong> — the player with the most correct daily stage picks wins the tie.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="background:#FFCD00;color:#111;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:1px">5</span>
+          <span><strong style="color:#FFCD00">Tie stands</strong> — if still level after all tiebreakers, there is more than one champion. 🏆🏆</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
     <div class="card-title">🛡️ Spoiler Shield</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
       <div>The <strong style="color:#FFCD00">🛡️ Spoiler Shield</strong> button sits flush against the 👁️ All Picks tab in the navigation bar, so it is clear they are associated. Tap it to activate — it turns red when on.</div>
+      <div><strong style="color:#FFCD00">Per-player</strong> — each player has their own independent shield. Suzanne activating her shield does not affect Étienne or Räikkönen. The shield shown always reflects whoever is currently identified as themselves in the Stages tab.</div>
       <div><strong style="color:#FFCD00">When active</strong> — stage results and picks in the All Picks table are hidden from the moment of activation onwards. Past results (stages already revealed before activation) remain fully visible.</div>
       <div><strong style="color:#FFCD00">When deactivated</strong> — all results become visible simultaneously, including any stages that accumulated while the shield was active.</div>
       <div>The Spoiler Shield only hides stage results in All Picks. It does not affect the Leaderboard, Points Breakdown, or Live Race Standings — simply avoid clicking those tabs if you do not want to see them.</div>
-      <div>The shield <strong style="color:#FFCD00">persists across page loads and browser restarts</strong> — it remains active until you explicitly tap the button to deactivate it. Refreshing the page will not turn it off.</div>
+      <div>The shield <strong style="color:#FFCD00">persists across page loads and browser restarts</strong> — it remains active until the player explicitly taps the button to deactivate it. Refreshing the page will not turn it off.</div>
     </div>
   </div>
   <div class="card">
@@ -613,7 +656,8 @@ const STAGE_DL = {
   21: new Date('2026-07-26T09:45:00+01:00'),
 };
 
-const ptLocked  = () => new Date() >= PRETOUR_DL;
+const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
+const ptPastDeadline = () => new Date() >= PRETOUR_DL; // used for penalty calculation
 const stLocked  = n  => new Date() >= STAGE_DL[n];
 const ptRevealed = () => new Date() >= PRETOUR_DL;
 const stRevealed = n  => new Date() >= STAGE_DL[n];
@@ -728,7 +772,7 @@ function showTab(tab, btn) {
   if (tab === 'pretour')     renderPT();
   if (tab === 'stages')      renderST();
   if (tab === 'picks')       renderPicks();
-  if (tab === 'media')       renderMedia();
+  if (tab === 'media')       { renderMedia(); updateMediaBadge(); }
   if (tab === 'results')     renderResults();
   if (tab === 'rules')       renderRules();
 }
@@ -747,6 +791,14 @@ function calcScores() {
   PLAYERS.forEach(p => {
     let tot = 0; const bd = [];
     const pk = S.pretour[p] || {}; const r = S.results;
+    const pastDL = ptPastDeadline();
+
+    // Check if player had ANY empty Pre-Tour field at the deadline
+    // If so, apply a single flat −2 point penalty (regardless of how many were empty)
+    const PT_FIELD_IDS = ['gc1','gc2','gc3','pts','mtn','yth','lan','fre'];
+    const hadEmptyAtDL = pastDL && PT_FIELD_IDS.some(id => !pk[id] || pk[id] === '');
+    if (hadEmptyAtDL) { tot -= 2; bd.push(['Pre-Tour incomplete at deadline (penalty)', -2]); }
+
     const chk = (pick, res, pts, lbl) => {
       if (res && norm(pick) === norm(res) && pick && pick !== 'DNS') { tot += pts; bd.push([lbl, pts]); }
     };
@@ -761,16 +813,37 @@ function calcScores() {
       tot += 2; bd.push(['French Stage Wins (exact)', 2]);
     }
     const sp = S.stages[p] || {}; const jk = S.jokers[p];
+    // Store per-player tiebreaker stats alongside score
+    let gcPodiumCorrect = 0, jerseyCorrect = 0, stageWinsCorrect = 0;
+    if (norm(pk.gc1) === norm(r.gc1) && pk.gc1 && r.gc1) gcPodiumCorrect++;
+    if (norm(pk.gc2) === norm(r.gc2) && pk.gc2 && r.gc2) gcPodiumCorrect++;
+    if (norm(pk.gc3) === norm(r.gc3) && pk.gc3 && r.gc3) gcPodiumCorrect++;
+    if (norm(pk.pts) === norm(r.pts) && pk.pts && r.pts) jerseyCorrect++;
+    if (norm(pk.mtn) === norm(r.mtn) && pk.mtn && r.mtn) jerseyCorrect++;
+    if (norm(pk.yth) === norm(r.yth) && pk.yth && r.yth) jerseyCorrect++;
     RACE_STAGES.forEach(st => {
       const key = 's' + st.n; const pick = sp[key]; const res = r.stages[key];
       if (!pick || !res || pick === 'DNS') return;
       if (norm(pick) === norm(res)) {
         const pts = jk === key ? 2 : 1; tot += pts;
         bd.push([jk === key ? `Stage ${st.n} (Joker!)` : `Stage ${st.n} winner`, pts]);
+        stageWinsCorrect++;
       }
     });
-    S.scores[p] = {total: tot, bd};
+    const mjCorrect = norm(pk.gc1) === norm(r.gc1) && pk.gc1 && r.gc1 ? 1 : 0;
+    S.scores[p] = {total: tot, bd, mjCorrect, gcPodiumCorrect, jerseyCorrect, stageWinsCorrect};
   });
+}
+
+// Tiebreaker sort: by total pts, then MJ, then GC podium, then jerseys, then stage wins
+function tieSort(a, b) {
+  const sa = S.scores[a] || {}, sb = S.scores[b] || {};
+  if ((sb.total||0) !== (sa.total||0)) return (sb.total||0) - (sa.total||0);
+  if ((sb.mjCorrect||0) !== (sa.mjCorrect||0)) return (sb.mjCorrect||0) - (sa.mjCorrect||0);
+  if ((sb.gcPodiumCorrect||0) !== (sa.gcPodiumCorrect||0)) return (sb.gcPodiumCorrect||0) - (sa.gcPodiumCorrect||0);
+  if ((sb.jerseyCorrect||0) !== (sa.jerseyCorrect||0)) return (sb.jerseyCorrect||0) - (sa.jerseyCorrect||0);
+  if ((sb.stageWinsCorrect||0) !== (sa.stageWinsCorrect||0)) return (sb.stageWinsCorrect||0) - (sa.stageWinsCorrect||0);
+  return 0; // true tie
 }
 
 // ─── LEADERBOARD ────────────────────────────────────────────────────────────
@@ -778,7 +851,7 @@ function calcScores() {
 function renderLB() {
   calcScores();
   renderLiveStandings();
-  const sorted = [...PLAYERS].sort((a,b) => (S.scores[b]?.total||0) - (S.scores[a]?.total||0));
+  const sorted = [...PLAYERS].sort(tieSort);
   const pc = ['p1','p2','p3'], pl = ['1st','2nd','3rd'];
   document.getElementById('lb-rows').innerHTML = sorted.map((p,i) => `
     <div class="lbrow">
@@ -791,7 +864,7 @@ function renderLB() {
     return `<div style="margin-bottom:1rem">
       <div style="font-size:13px;font-weight:600;color:#eee;margin-bottom:6px;padding-bottom:4px;border-bottom:0.5px solid #2a2a2a">${p}</div>
       ${sc.bd.length === 0 ? '<div style="font-size:12px;color:#555">No points yet</div>' :
-        sc.bd.map(([l,v]) => `<div class="sbrow"><span>${l}</span><span style="color:#FFCD00">+${v}</span></div>`).join('') +
+        sc.bd.map(([l,v]) => `<div class="sbrow"><span>${l}</span><span style="color:${v<0?'#c05050':'#FFCD00'}">${v>0?'+':''}${v}</span></div>`).join('') +
         `<div class="sbrow tot"><span>Total</span><span>${sc.total} pts</span></div>`}
     </div>`;
   }).join('<div style="border-top:0.5px solid #2a2a2a;margin:.75rem 0"></div>');
@@ -806,7 +879,7 @@ function renderLiveStandings() {
 
   // ── PODIUM (always shown, uses fantasy scores) ─────────────────────────
   calcScores();
-  const sorted = [...PLAYERS].sort((a,b) => (S.scores[b]?.total||0) - (S.scores[a]?.total||0));
+  const sorted = [...PLAYERS].sort(tieSort);
   const raceStarted = new Date() >= STAGE1_DT;
 
   // Group players by score for tied podium steps
@@ -885,42 +958,50 @@ function renderLiveStandings() {
 // ─── PRE-TOUR ───────────────────────────────────────────────────────────────
 
 function renderPT() {
-  const locked = ptLocked();
+  const pastDL = ptPastDeadline();
   document.getElementById('pt-tabs').innerHTML = PLAYERS.map(p =>
     `<button class="ptab ${p===S.ptPlayer?'active':''}" onclick="setPTP('${p}')">${p}</button>`).join('');
   const p = S.ptPlayer; const pk = S.pretour[p] || {};
   const btn = document.getElementById('pt-save-btn');
   if (btn) {
-    btn.disabled = locked;
-    btn.innerHTML = locked ? '🔒 Selections Locked' : '💾 Save Selections';
+    btn.disabled = false; // never disabled
+    btn.innerHTML = '💾 Save Selections';
   }
   const wrap = document.getElementById('pt-save-wrap');
   const ex = wrap && wrap.querySelector('.lock-notice');
-  if (locked && wrap && !ex) {
+  // Show penalty warning (not lock) after deadline
+  if (pastDL && wrap && !ex) {
     const n = document.createElement('div'); n.className = 'lock-notice';
-    n.innerHTML = '🔒 Pre-tour Selections locked at 10:00 on 4 July';
+    n.style.borderColor = '#5a2000';
+    n.style.color = '#c07040';
+    n.innerHTML = '⚠️ Deadline passed — a flat −2 pt penalty has been applied as one or more fields were empty at 10:00 on 4 July. Late entries are still accepted but the penalty stands';
     wrap.insertBefore(n, wrap.firstChild);
-  } else if (!locked && ex) { ex.remove(); }
+  } else if (!pastDL && ex) { ex.remove(); }
+  // Check if penalty applies — any field was empty at deadline
+  const PT_FIELD_IDS_CHECK = ['gc1','gc2','gc3','pts','mtn','yth','lan','fre'];
+  const penaltyApplies = pastDL && PT_FIELD_IDS_CHECK.some(id => !pk[id] || pk[id] === '');
   document.getElementById('pt-form').innerHTML = PT_FIELDS.map(f => `
     <div class="card">
       <div class="card-title" style="display:flex;align-items:center;gap:8px">
         <span style="display:inline-flex;align-items:center;flex-shrink:0">${fieldIcon(f,24)}</span>
         <span>${f.label}</span>
         <span style="margin-left:auto;background:#1f1800;color:#FFCD00;font-size:10px;padding:2px 7px;border-radius:20px;flex-shrink:0">${f.pts} pts</span>
-        ${locked ? '<span style="font-size:10px;color:#c05050;margin-left:2px">🔒</span>' : ''}
       </div>
-      ${locked
-        ? `<div class="locked-pt">${pk[f.id] || '<span style="color:#444">No selection made</span>'}</div>`
-        : `<input type="${f.num?'number':'text'}" id="pf-${f.id}" value="${pk[f.id]||''}" placeholder="${f.num?'0–21':'Rider name'}" ${f.num?'min="0" max="21"':''}>`
-      }
+      <input type="${f.num?'number':'text'}" id="pf-${f.id}" value="${pk[f.id]||''}" placeholder="${f.num?'0–21':'Rider name (late entry accepted)'}" ${f.num?'min="0" max="21"':''}>
     </div>`).join('');
 }
 function setPTP(p) { S.ptPlayer = p; renderPT(); }
 function savePretour() {
-  if (ptLocked()) { toast('Deadline passed — Selections are locked', '#c05050'); return; }
   const p = S.ptPlayer; if (!S.pretour[p]) S.pretour[p] = {};
   PT_FIELDS.forEach(f => { const el = document.getElementById('pf-'+f.id); if (el) S.pretour[p][f.id] = el.value.trim(); });
-  save(); toast('Saved for ' + p + ' ✓');
+  save();
+  const pastDL = ptPastDeadline();
+  if (pastDL) {
+    toast('Saved for ' + p + ' ✓ (late entry — check for penalties)', '#c8a020');
+  } else {
+    toast('Saved for ' + p + ' ✓');
+  }
+  renderPT();
 }
 
 // ─── STAGE PROFILE IMAGES ───────────────────────────────────────────────────
@@ -958,7 +1039,15 @@ function renderST() {
   let html = '';
   STAGES.forEach(st => {
     if (st.t === 'rest') {
-      html += `<div class="rdcard" style="color:#555;font-size:13px">😴 <div><strong style="color:#666">${st.d}</strong> — ${st.r}</div></div>`;
+      html += `<div class="rdcard">
+        <div style="font-size:28px;flex-shrink:0">😴</div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#3daa68;text-transform:uppercase;letter-spacing:.8px">Rest Day</div>
+          <div style="font-size:15px;font-weight:600;color:#6aaa88;margin-top:1px">${st.d}</div>
+          <div style="font-size:12px;color:#3a6a4a;margin-top:2px">${st.r}</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:#2a5a3a;font-style:italic">No stage today</div>
+      </div>`;
       return;
     }
     const key = 's' + st.n;
@@ -1012,7 +1101,7 @@ function renderST() {
   document.getElementById('st-list').innerHTML = html;
 }
 
-function setMyPlayer(p) { S.myPlayer = p; S.stPlayer = p; save(); renderST(); }
+function setMyPlayer(p) { S.myPlayer = p; S.stPlayer = p; save(); renderST(); initSpoiler(); }
 function setSTPlayer(p) { S.stPlayer = p; save(); renderST(); }
 
 function updST(player, key, val) {
@@ -1140,55 +1229,68 @@ function renderRules() {
 
 
 // ─── SPOILER SHIELD ──────────────────────────────────────────────────────────
+// Per-player: each player has their own independent shield state.
+// Key format: tdf26-spoiler-{playername}
+// The shield shown reflects whoever is currently identified as myPlayer.
 
-const SPOILER_KEY = 'tdf26-spoiler';
+const SPOILER_KEY_PREFIX = 'tdf26-spoiler-';
 
-// Load persisted spoiler state from localStorage
-function loadSpoilerState() {
+function spoilerKeyForPlayer(player) {
+  return SPOILER_KEY_PREFIX + (player || PLAYERS[0]).toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function loadSpoilerState(player) {
   try {
-    const d = localStorage.getItem(SPOILER_KEY);
+    const d = localStorage.getItem(spoilerKeyForPlayer(player));
     return d ? JSON.parse(d) : null;
   } catch(e) { return null; }
 }
 
-function saveSpoilerState(activatedAt) {
+function saveSpoilerState(player, activatedAt) {
   try {
+    const key = spoilerKeyForPlayer(player);
     if (activatedAt === null) {
-      localStorage.removeItem(SPOILER_KEY);
+      localStorage.removeItem(key);
     } else {
-      localStorage.setItem(SPOILER_KEY, JSON.stringify({activatedAt}));
+      localStorage.setItem(key, JSON.stringify({activatedAt}));
     }
   } catch(e) {}
 }
 
-// spoilerActivatedAt persists across page loads via localStorage
+// In-memory: tracks current player's shield activation time
 let spoilerActivatedAt = null;
 
 function initSpoiler() {
-  const saved = loadSpoilerState();
-  if (saved && saved.activatedAt) {
-    spoilerActivatedAt = saved.activatedAt;
-    const btn = document.getElementById('spoiler-btn');
-    if (btn) {
+  // Load shield state for the currently identified player
+  const player = S.myPlayer || PLAYERS[0];
+  const saved = loadSpoilerState(player);
+  spoilerActivatedAt = (saved && saved.activatedAt) ? saved.activatedAt : null;
+  const btn = document.getElementById('spoiler-btn');
+  if (btn) {
+    if (spoilerActivatedAt !== null) {
       btn.classList.add('shield-on');
       btn.title = 'Spoiler Shield ON — click to deactivate';
+    } else {
+      btn.classList.remove('shield-on');
+      btn.title = 'Spoiler Shield — click to activate';
     }
   }
 }
 
 function toggleSpoiler(btn) {
+  const player = S.myPlayer || PLAYERS[0];
   if (spoilerActivatedAt === null) {
     spoilerActivatedAt = new Date().getTime();
-    saveSpoilerState(spoilerActivatedAt);
+    saveSpoilerState(player, spoilerActivatedAt);
     btn.classList.add('shield-on');
     btn.title = 'Spoiler Shield ON — click to deactivate';
-    toast('🛡️ Spoiler Shield activated — results hidden from this point', '#c05050');
+    toast('🛡️ ' + player + "'s Shield ON", '#c05050');
   } else {
     spoilerActivatedAt = null;
-    saveSpoilerState(null);
+    saveSpoilerState(player, null);
     btn.classList.remove('shield-on');
     btn.title = 'Spoiler Shield — click to activate';
-    toast('🛡️ Spoiler Shield deactivated — all results now visible', '#3daa68');
+    toast('🛡️ ' + player + "'s Shield OFF", '#3daa68');
   }
   // Refresh All Picks if currently visible
   if (document.getElementById('tab-picks').style.display !== 'none') renderPicks();
@@ -1554,6 +1656,8 @@ function updateRouteProgress(stageNum) {
 // ─── MEDIA CENTRE ────────────────────────────────────────────────────────────
 
 const MEDIA_KEY = 'tdf26-media';
+const MEDIA_READ_KEY = 'tdf26-media-read'; // per-player last-read timestamps
+let mediaReader = PLAYERS[0]; // currently selected reader
 
 function loadMessages() {
   try { const d = localStorage.getItem(MEDIA_KEY); return d ? JSON.parse(d) : []; } catch(e) { return []; }
@@ -1561,12 +1665,59 @@ function loadMessages() {
 function saveMessages(msgs) {
   try { localStorage.setItem(MEDIA_KEY, JSON.stringify(msgs)); } catch(e) {}
 }
+function loadReadTimes() {
+  try { const d = localStorage.getItem(MEDIA_READ_KEY); return d ? JSON.parse(d) : {}; } catch(e) { return {}; }
+}
+function saveReadTimes(rt) {
+  try { localStorage.setItem(MEDIA_READ_KEY, JSON.stringify(rt)); } catch(e) {}
+}
+
+function getUnreadCount(player) {
+  const msgs = loadMessages();
+  const rt = loadReadTimes();
+  const lastRead = rt[player] || 0;
+  return msgs.filter(m => m.id > lastRead).length;
+}
+
+function getTotalUnread() {
+  // Total unread across ALL players — for nav badge show max unread any player has
+  return Math.max(...PLAYERS.map(p => getUnreadCount(p)));
+}
+
+function updateMediaBadge() {
+  const badge = document.getElementById('media-badge');
+  if (!badge) return;
+  const count = getTotalUnread();
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
 
 function senderClass(sender) {
   if (sender === 'Admin') return 'admin';
   if (sender === 'Étienne') return 'etienne';
   if (sender === 'Räikkönen') return 'raikkonenp';
   return '';
+}
+
+function setMediaReader(player) {
+  mediaReader = player;
+  renderMedia();
+}
+
+function markMediaRead() {
+  const rt = loadReadTimes();
+  const msgs = loadMessages();
+  if (msgs.length === 0) return;
+  const latestId = Math.max(...msgs.map(m => m.id));
+  rt[mediaReader] = latestId;
+  saveReadTimes(rt);
+  renderMedia();
+  updateMediaBadge();
+  toast('Marked as read for ' + mediaReader + ' ✓');
 }
 
 function postMedia() {
@@ -1579,9 +1730,11 @@ function postMedia() {
   const msgs = loadMessages();
   const now = new Date();
   const ts = now.toLocaleDateString('en-GB', {day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
-  msgs.unshift({sender, text, ts, id: Date.now()});
+  const id = Date.now();
+  msgs.unshift({sender, text, ts, id});
   saveMessages(msgs);
   input.value = '';
+  updateMediaBadge();
   renderMedia();
   toast('Message posted ✓');
 }
@@ -1589,11 +1742,26 @@ function postMedia() {
 function clearMedia() {
   if (!confirm('Clear all messages? This cannot be undone.')) return;
   localStorage.removeItem(MEDIA_KEY);
+  localStorage.removeItem(MEDIA_READ_KEY);
+  updateMediaBadge();
   renderMedia();
   toast('Messages cleared');
 }
 
 function renderMedia() {
+  // Render reader tabs
+  const readerTabs = document.getElementById('media-reader-tabs');
+  if (readerTabs) {
+    readerTabs.innerHTML = PLAYERS.map(p => {
+      const uc = getUnreadCount(p);
+      return `<button class="ptab ${p===mediaReader?'active':''}" onclick="setMediaReader('${p}')">${p}${uc > 0 ? `<span class="media-badge" style="margin-left:6px">${uc}</span>` : ''}</button>`;
+    }).join('');
+  }
+  // Unread label
+  const unreadLabel = document.getElementById('media-unread-label');
+  const myUnread = getUnreadCount(mediaReader);
+  if (unreadLabel) unreadLabel.textContent = myUnread > 0 ? `${myUnread} unread for ${mediaReader}` : `All read for ${mediaReader}`;
+  // Feed
   const feed = document.getElementById('media-feed');
   if (!feed) return;
   const msgs = loadMessages();
@@ -1601,14 +1769,20 @@ function renderMedia() {
     feed.innerHTML = '<div class="media-empty">No messages yet. Be the first to post!</div>';
     return;
   }
-  feed.innerHTML = msgs.map(m => `
-    <div class="media-msg ${m.sender==='Admin'?'from-admin':''}">
+  const rt = loadReadTimes();
+  const lastRead = rt[mediaReader] || 0;
+  feed.innerHTML = msgs.map(m => {
+    const isNew = m.id > lastRead;
+    return `
+    <div class="media-msg ${m.sender==='Admin'?'from-admin':''}" style="${isNew?'border-color:#3d3000;background:#1a1800;':''}">
       <div class="media-msg-header">
         <span class="media-sender-tag ${senderClass(m.sender)}">${m.sender}</span>
+        ${isNew ? '<span style="font-size:10px;background:#c8a020;color:#111;padding:2px 7px;border-radius:20px;font-weight:700">NEW</span>' : ''}
         <span class="media-timestamp">${m.ts}</span>
       </div>
       <div class="media-text">${m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
@@ -1618,6 +1792,7 @@ applyDeadlines();
 calcScores();
 renderRules();
 initSpoiler(); // restore shield state from localStorage
+updateMediaBadge(); // show unread count on nav badge
 // Start on home tab
 document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
 const homeEl = document.getElementById('tab-home');
