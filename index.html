@@ -480,8 +480,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="card-title">⏰ Deadlines</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
       <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
-      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is not accepted.</div>
-      <div>If 1 or 2 players are tied for the lead going into Stage 21, those players must submit by <strong style="color:#FFCD00">09:45 on 26 July</strong>.</div>
+      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
+      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 on 26 July</strong>.</div>
     </div>
   </div>
   <div class="card">
@@ -527,7 +527,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
       <div>The <strong style="color:#FFCD00">🛡️ Spoiler Shield</strong> button sits flush against the 👁️ All Picks tab in the navigation bar, so it is clear they are associated. Tap it to activate, when on it turns red.</div>
       <div><strong style="color:#FFCD00">Per-player</strong> — each player has their own independent shield. A player activating their shield does not affect the other players. The shield shown always reflects whoever is currently identified as themselves in the Stages tab.</div>
       <div><strong style="color:#FFCD00">When active</strong> — stage results and picks in the All Picks table are hidden from the moment of activation onwards. Past results (stages already revealed before activation) remain fully visible.</div>
-      <div><strong style="color:#FFCD00">When deactivated</strong> — all results become visible simultaneously, including any stages that accumulated while the shield was active.</div>
+      <div><strong style="color:#FFCD00">When deactivated</strong> — all results become visible simultaneously, including any stages that accumulated whilst the shield was active.</div>
       <div>The Spoiler Shield only hides stage results in All Picks. It does not affect the Leaderboard, Points Breakdown, or Live Race Standings. Simply avoid clicking those tabs if you do not want to see them.</div>
       <div>The shield <strong style="color:#FFCD00">persists across page loads and browser restarts</strong>. It remains active until the player explicitly taps the button to have it deactivated. Refreshing the page will not turn it off.</div>
     </div>
@@ -535,16 +535,16 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card">
     <div class="card-title">📢 Media Centre</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
-      <div>The <strong style="color:#FFCD00">📢 Media</strong> tab is a shared message board for all three players on this device.</div>
+      <div>The <strong style="color:#FFCD00">📢 Media</strong> tab is a shared message board for all players.</div>
       <div>Select your name from the dropdown, type your message, and tap <strong style="color:#FFCD00">Post</strong>. Messages are stored locally and visible to whoever opens the app on this device.</div>
       <div>Admin posts are used to notify players of any changes or updates, scoring corrections, rule clarifications, technical issues etc.</div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">🔒 Privacy &amp; pick visibility</div>
+    <div class="card-title">🔒 Privacy &amp; Pick Visibility</div>
     <div class="priv-item"><span class="priv-icon">✏️</span><span>A player can <strong style="color:#FFCD00">change their stage pick any number of times</strong> before the deadline. The most recent entry is what counts. Once the deadline passes the field locks and no further changes are possible.</span></div>
     <div class="priv-item"><span class="priv-icon">🔒</span><span><strong style="color:#FFCD00">Before the deadline</strong> — a player's stage pick is visible only to themselves. If another player views that player's stages, they see "Pick hidden until the deadline".</span></div>
-    <div class="priv-item"><span class="priv-icon">🔓</span><span><strong style="color:#FFCD00">After the deadline</strong> — the pick is revealed to all three players automatically in the Stages tab and the All Picks table.</span></div>
+    <div class="priv-item"><span class="priv-icon">🔓</span><span><strong style="color:#FFCD00">After the deadline</strong> — the pick is revealed to all players automatically in the Stages tab and the All Picks table.</span></div>
     <div class="priv-item"><span class="priv-icon">🎽</span><span><strong style="color:#FFCD00">Pre-tour picks</strong> — all pre-tour selections remain hidden from other players until 10:00 on 4 July, at which point all selections are revealed simultaneously.</span></div>
     <div class="priv-item"><span class="priv-icon">🚫</span><span><strong style="color:#FFCD00">No editing other players' picks</strong> — the app only allows a player to edit their own picks. Attempts to enter a pick under another player's name are blocked.</span></div>
     <div class="priv-item"><span class="priv-icon">🏮</span><span><strong style="color:#FFCD00">DNS (Did Not Sign-in)</strong> — if a stage pick field is empty when the deadline passes, a DNS is recorded automatically. A DNS scores 0 points. If a Joker was active on that stage it is cancelled and cannot be used again.</span></div>
