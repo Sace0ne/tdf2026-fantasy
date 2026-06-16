@@ -430,7 +430,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- MEDIA CENTRE -->
 <div id="tab-media" class="sec" style="display:none">
   <div class="sec-title">📢 Media Centre</div>
-  <div class="dl">💬 Post updates, announcements, requests and what you fancy — visible on this device</div>
+  <div class="dl">💬 Post updates, announcements, requests and what you fancy</div>
   <div class="card">
     <div class="card-title">Post a message</div>
     <div class="media-input-wrap">
@@ -464,7 +464,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- RESULTS -->
 <div id="tab-results" class="sec" style="display:none">
   <div class="sec-title">✏️ Enter results</div>
-  <div class="dl">⏰ Update daily at ~19:00</div>
+  <div class="dl">⏰ Update before 22:53</div>
   <div class="card"><div class="card-title">Final classifications</div><div id="res-classifications"></div></div>
   <div class="card"><div class="card-title">Daily stage winners</div><div id="r-stages"></div></div>
   <div style="padding-bottom:1.5rem">
@@ -739,6 +739,117 @@ function toast(m, col) {
 }
 function norm(s) { return (s||'').toLowerCase().trim(); }
 
+// ── Robust name matcher ───────────────────────────────────────────────────
+// Handles: diacritics, initials, order variations, surname-only,
+//          fuzzy misspellings (Levenshtein distance).
+//
+// Accepted formats (all match "Tadej Pogačar"):
+//   "Tadej Pogačar"  "Tadej Pogacar"  "T Pogačar"  "T. Pogacar"
+//   "Tadej P"        "Pogačar"        "Pogacar"     "Vingegard" (fuzzy)
+//   "Pogačar Tadej"  "T Pogacar"      "Evenepol"    (fuzzy)
+
+function stripDiacritics(s) {
+  return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+}
+
+function nameParts(s) {
+  return stripDiacritics(s).replace(/\./g,'').split(/\s+/).filter(Boolean);
+}
+
+// Levenshtein distance — counts minimum edits between two strings
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const dp = Array.from({length: b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = i;
+    for (let j = 1; j <= b.length; j++) {
+      const val = a[i-1] === b[j-1] ? dp[j-1] : 1 + Math.min(dp[j-1], dp[j], prev);
+      dp[j-1] = prev;
+      prev = val;
+    }
+    dp[b.length] = prev;
+  }
+  return dp[b.length];
+}
+
+// Fuzzy match threshold: allow 1 edit always; 2 edits for names > 7 chars
+function fuzzyMatch(a, b) {
+  if (a === b) return true;
+  const dist = levenshtein(a, b);
+  if (dist === 1) return true;
+  if (dist === 2 && a.length > 7 && b.length > 7) return true;
+  return false;
+}
+
+function isInitialOf(initial, fullName) {
+  return initial.length === 1 && fullName.startsWith(initial);
+}
+
+// Match two individual name parts (exact, initial, or fuzzy)
+function partMatch(a, b) {
+  if (a === b) return true;
+  if (isInitialOf(a, b) || isInitialOf(b, a)) return true;
+  if (a.length > 2 && b.length > 2 && fuzzyMatch(a, b)) return true;
+  return false;
+}
+
+function namesMatch(entry, result) {
+  if (!entry || !result) return false;
+
+  const e = stripDiacritics(entry);
+  const r = stripDiacritics(result);
+
+  // Exact after diacritics
+  if (e === r) return true;
+
+  const ep = nameParts(entry);
+  const rp = nameParts(result);
+  if (ep.length === 0 || rp.length === 0) return false;
+
+  // ── Surname-only match ─────────────────────────────────────────────────
+  // If player enters just one word, check if it fuzzy-matches ANY part of
+  // the official result (handles "Pogacar", "Vingegard", "Evenepol" etc.)
+  if (ep.length === 1) {
+    return rp.some(rPart => partMatch(ep[0], rPart));
+  }
+  if (rp.length === 1) {
+    return ep.some(ePart => partMatch(ePart, rp[0]));
+  }
+
+  // ── Multi-part matching ────────────────────────────────────────────────
+  function partsMatch(a, b) {
+    if (a.length !== b.length) return false;
+    return a.every((p, i) => partMatch(p, b[i]));
+  }
+
+  // Direct order
+  if (partsMatch(ep, rp)) return true;
+
+  // Reversed entry order ("Pogačar Tadej" vs "Tadej Pogačar")
+  if (partsMatch([...ep].reverse(), rp)) return true;
+
+  // Two-part cross combinations (initial + surname in any order)
+  if (ep.length === 2 && rp.length === 2) {
+    if (partMatch(ep[0], rp[0]) && partMatch(ep[1], rp[1])) return true;
+    if (partMatch(ep[0], rp[1]) && partMatch(ep[1], rp[0])) return true;
+  }
+
+  // ── Partial surname match for multi-word entries ───────────────────────
+  // e.g. "Van der Poel" entry — check if all entry parts appear somewhere
+  // in the result parts (handles abbreviated compound names)
+  if (ep.length <= rp.length) {
+    const usedIdx = new Set();
+    const allFound = ep.every(ePart =>
+      rp.some((rPart, i) => !usedIdx.has(i) && partMatch(ePart, rPart) && usedIdx.add(i))
+    );
+    if (allFound) return true;
+  }
+
+  return false;
+}
+
 // ─── DEADLINES ──────────────────────────────────────────────────────────────
 
 function applyDeadlines() {
@@ -800,7 +911,7 @@ function calcScores() {
     if (hadEmptyAtDL) { tot -= 2; bd.push(['Pre-Tour incomplete at deadline (penalty)', -2]); }
 
     const chk = (pick, res, pts, lbl) => {
-      if (res && norm(pick) === norm(res) && pick && pick !== 'DNS') { tot += pts; bd.push([lbl, pts]); }
+      if (res && namesMatch(pick, res) && pick && pick !== 'DNS') { tot += pts; bd.push([lbl, pts]); }
     };
     chk(pk.gc1, r.gc1, 6, 'Maillot Jaune');
     chk(pk.gc2, r.gc2, 4, 'GC 2nd Place');
@@ -809,28 +920,28 @@ function calcScores() {
     chk(pk.mtn, r.mtn, 4, 'Polka Dot Jersey');
     chk(pk.yth, r.yth, 4, 'White Jersey');
     chk(pk.lan, r.lan, 2, 'Lanterne Rouge');
-    if (r.fre !== '' && pk.fre !== '' && pk.fre !== undefined && pk.fre !== 'DNS' && norm(pk.fre) === norm(r.fre)) {
+    if (r.fre !== '' && pk.fre !== '' && pk.fre !== undefined && pk.fre !== 'DNS' && norm(pk.fre) === norm(r.fre)) { // French wins is numeric — keep exact match
       tot += 2; bd.push(['French Stage Wins (exact)', 2]);
     }
     const sp = S.stages[p] || {}; const jk = S.jokers[p];
     // Store per-player tiebreaker stats alongside score
     let gcPodiumCorrect = 0, jerseyCorrect = 0, stageWinsCorrect = 0;
-    if (norm(pk.gc1) === norm(r.gc1) && pk.gc1 && r.gc1) gcPodiumCorrect++;
-    if (norm(pk.gc2) === norm(r.gc2) && pk.gc2 && r.gc2) gcPodiumCorrect++;
-    if (norm(pk.gc3) === norm(r.gc3) && pk.gc3 && r.gc3) gcPodiumCorrect++;
-    if (norm(pk.pts) === norm(r.pts) && pk.pts && r.pts) jerseyCorrect++;
-    if (norm(pk.mtn) === norm(r.mtn) && pk.mtn && r.mtn) jerseyCorrect++;
-    if (norm(pk.yth) === norm(r.yth) && pk.yth && r.yth) jerseyCorrect++;
+    if (namesMatch(pk.gc1, r.gc1) && pk.gc1 && r.gc1) gcPodiumCorrect++;
+    if (namesMatch(pk.gc2, r.gc2) && pk.gc2 && r.gc2) gcPodiumCorrect++;
+    if (namesMatch(pk.gc3, r.gc3) && pk.gc3 && r.gc3) gcPodiumCorrect++;
+    if (namesMatch(pk.pts, r.pts) && pk.pts && r.pts) jerseyCorrect++;
+    if (namesMatch(pk.mtn, r.mtn) && pk.mtn && r.mtn) jerseyCorrect++;
+    if (namesMatch(pk.yth, r.yth) && pk.yth && r.yth) jerseyCorrect++;
     RACE_STAGES.forEach(st => {
       const key = 's' + st.n; const pick = sp[key]; const res = r.stages[key];
       if (!pick || !res || pick === 'DNS') return;
-      if (norm(pick) === norm(res)) {
+      if (namesMatch(pick, res)) {
         const pts = jk === key ? 2 : 1; tot += pts;
         bd.push([jk === key ? `Stage ${st.n} (Joker!)` : `Stage ${st.n} winner`, pts]);
         stageWinsCorrect++;
       }
     });
-    const mjCorrect = norm(pk.gc1) === norm(r.gc1) && pk.gc1 && r.gc1 ? 1 : 0;
+    const mjCorrect = namesMatch(pk.gc1, r.gc1) && pk.gc1 && r.gc1 ? 1 : 0;
     S.scores[p] = {total: tot, bd, mjCorrect, gcPodiumCorrect, jerseyCorrect, stageWinsCorrect};
   });
 }
@@ -1139,10 +1250,10 @@ function renderPicks() {
       const pk = (S.pretour[p]||{})[f.id] || '';
       if (!rev) { ph += `<td class="lk">🔒</td>`; }
       else {
-        const ok = res && norm(pk) === norm(res) && pk && pk !== 'DNS';
+        const ok = res && namesMatch(pk, res) && pk && pk !== 'DNS';
         // Check if player pick matches current live jersey holder
         const liveHolder = liveMap[f.id];
-        const hasJersey = liveHolder && pk && norm(pk) === norm(liveHolder) && f.jersey && f.id !== 'gc2' && f.id !== 'gc3';
+        const hasJersey = liveHolder && pk && namesMatch(pk, liveHolder) && f.jersey && f.id !== 'gc2' && f.id !== 'gc3';
         const jerseyBadge = hasJersey ? `<span class="j-badge">${jersey(f.jersey, 16)}</span>` : '';
         ph += `<td class="${ok?'ok':'pc'}">${pk||'—'}${jerseyBadge}${ok?`<span class="pp">+${PT_PTS[f.id]}</span>`:''}</td>`;
       }
@@ -1162,7 +1273,7 @@ function renderPicks() {
       if (!past) { sh += `<td class="lk">🔒</td>`; }
       else if (isDNS) { sh += `<td class="dns-cell">DNS</td>`; }
       else if (isSpoilerBlocked(st.n)) { sh += `<td class="spoiler-blocked">🛡️</td>`; }
-      else { const ok = res && norm(pick) === norm(res) && pick; const pts = ok ? (isJk?2:1) : 0; sh += `<td class="${ok?'win-pick':isJk&&pick?'pc jk':'pc'}">${pick||'—'}${isJk&&pick?' 🃏':''}${ok?`<span class="pp">+${pts}</span>`:''}</td>`; }
+      else { const ok = res && namesMatch(pick, res) && pick; const pts = ok ? (isJk?2:1) : 0; sh += `<td class="${ok?'win-pick':isJk&&pick?'pc jk':'pc'}">${pick||'—'}${isJk&&pick?' 🃏':''}${ok?`<span class="pp">+${pts}</span>`:''}</td>`; }
     });
     // Result column — also spoiler-blocked if applicable
     if (isSpoilerBlocked(st.n)) {
