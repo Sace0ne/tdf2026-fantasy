@@ -279,6 +279,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .media-sender-tag.admin{background:#c8a020;color:#111}
 .media-sender-tag.etienne{background:#3daa68;color:#fff}
 .media-sender-tag.raikkonenp{background:#5080c8;color:#fff}
+.media-sender-tag.samuel{background:#c85050;color:#fff}
 .media-timestamp{font-size:11px;color:#555;margin-left:auto}
 .media-text{font-size:14px;color:#e0e0e0;line-height:1.5}
 .media-empty{font-size:13px;color:#555;text-align:center;padding:2rem}
@@ -327,9 +328,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="home-title">Le Tour de France</div>
     <div class="home-sub">Fantasy 2026</div>
     <div class="home-players">
+      <div class="home-player">Samuel</div>
+      <div class="home-player">Räikkönen</div>
       <div class="home-player">Suzanne</div>
       <div class="home-player">Étienne</div>
-      <div class="home-player">Räikkönen</div>
     </div>
     <div class="home-status">
       <div id="home-countdown-wrap">
@@ -436,9 +438,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="media-input-wrap">
       <select class="media-sender" id="media-sender">
         <option value="Admin">📋 Admin</option>
+        <option value="Samuel">Samuel</option>
+        <option value="Räikkönen">Räikkönen</option>
         <option value="Suzanne">Suzanne</option>
         <option value="Étienne">Étienne</option>
-        <option value="Räikkönen">Räikkönen</option>
       </select>
       <input class="media-input" id="media-input" type="text" placeholder="Type your message…" maxlength="300" onkeydown="if(event.key==='Enter')postMedia()">
       <button class="media-post-btn" onclick="postMedia()">Post</button>
@@ -463,9 +466,9 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
 <!-- RESULTS -->
 <div id="tab-results" class="sec" style="display:none">
-  <div class="sec-title">✏️ Enter results</div>
+  <div class="sec-title">✏️ Enter Results</div>
   <div class="dl">⏰ Update before 22:53</div>
-  <div class="card"><div class="card-title">Final classifications</div><div id="res-classifications"></div></div>
+  <div class="card"><div class="card-title" id="classifications-title">Current Classifications</div><div id="res-classifications"></div></div>
   <div class="card"><div class="card-title">Daily stage winners</div><div id="r-stages"></div></div>
   <div style="padding-bottom:1.5rem">
     <button class="save-btn" onclick="saveResults()">💾 Save &amp; recalculate scores</button>
@@ -557,7 +560,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
 
-const PLAYERS = ['Suzanne', 'Étienne', 'Räikkönen'];
+const PLAYERS = ['Samuel', 'Räikkönen', 'Suzanne', 'Étienne'];
 
 const STAGES = [
   {n:1,  d:'4 Jul',  r:'Barcelona → Barcelona',             dist:'19.7 km', t:'tt',         l:'Team TT'},
@@ -1289,6 +1292,13 @@ function renderPicks() {
 
 function renderResults() {
   const r = S.results;
+  // Switch title based on date
+  const titleEl = document.getElementById('classifications-title');
+  if (titleEl) {
+    titleEl.textContent = new Date() >= FINAL_CLASS_DT
+      ? 'Final Classifications'
+      : 'Current Classifications';
+  }
   document.getElementById('res-classifications').innerHTML = PT_FIELDS.map(f => `
     <div class="card" style="margin-bottom:.75rem">
       <div class="card-title" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
@@ -1419,6 +1429,7 @@ function isSpoilerBlocked(stageNum) {
 // ─── HOME PAGE ───────────────────────────────────────────────────────────────
 
 const STAGE1_DT = new Date('2026-07-04T10:00:00+01:00');
+const FINAL_CLASS_DT = new Date('2026-07-26T20:00:00+01:00'); // Switch to Final Classifications
 
 // Preload Brighton & Hove badge image
 (function() {
@@ -1820,6 +1831,7 @@ function senderClass(sender) {
   if (sender === 'Admin') return 'admin';
   if (sender === 'Étienne') return 'etienne';
   if (sender === 'Räikkönen') return 'raikkonenp';
+  if (sender === 'Samuel') return 'samuel';
   return '';
 }
 
