@@ -112,7 +112,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .lbrow{display:flex;align-items:center;padding:14px 1.25rem;border-bottom:0.5px solid #2a2a2a;gap:12px}
 .lbrow:last-child{border-bottom:none}
 .lbpos{font-size:20px;font-weight:700;width:34px;flex-shrink:0}
-.lbpos.p1{color:#FFCD00}.lbpos.p2{color:#bbb}.lbpos.p3{color:#c4874a}
+.lbpos.p1{color:#FFCD00}.lbpos.p2{color:#bbb}.lbpos.p3{color:#c4874a}.lbpos.p4{color:#777}
 .lbname{font-size:17px;font-weight:500;flex:1;color:#f0f0f0}
 .lbpts{font-size:24px;font-weight:700;color:#FFCD00}
 .lbptsl{font-size:12px;color:#888}
@@ -258,6 +258,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .podium-step.p1{height:100px}
 .podium-step.p2{height:70px}
 .podium-step.p3{height:50px}
+.podium-step.p4{height:34px}
 .podium-pos{font-size:11px;font-weight:700;color:#111;margin-top:4px;opacity:.7}
 .podium-pre .podium-names{bottom:110% !important}
 
@@ -966,7 +967,7 @@ function renderLB() {
   calcScores();
   renderLiveStandings();
   const sorted = [...PLAYERS].sort(tieSort);
-  const pc = ['p1','p2','p3'], pl = ['1st','2nd','3rd'];
+  const pc = ['p1','p2','p3','p4'], pl = ['1st','2nd','3rd','4th'];
   document.getElementById('lb-rows').innerHTML = sorted.map((p,i) => `
     <div class="lbrow">
       <div class="lbpos ${pc[i]}">${pl[i]}</div>
@@ -1006,15 +1007,15 @@ function renderLiveStandings() {
   });
 
   // Build podium HTML — up to 3 steps
-  const stepHeights = ['p1','p2','p3'];
-  const stepLabels = ['1st','2nd','3rd'];
-  // Pad groups to 3
-  while (groups.length < 3) groups.push({pts:0, players:[]});
+  const stepHeights = ['p1','p2','p3','p4'];
+  const stepLabels = ['1st','2nd','3rd','4th'];
+  // Pad groups to 4
+  while (groups.length < 4) groups.push({pts:0, players:[]});
 
-  // Classic podium order: 2nd LEFT, 1st CENTRE (tallest), 3rd RIGHT
-  const displayOrder = [1, 0, 2]; // indices into groups: 2nd, 1st, 3rd
-  const displayHeights = ['p2', 'p1', 'p3'];
-  const displayLabels = ['2nd', '1st', '3rd'];
+  // Classic podium order: 2nd LEFT, 1st CENTRE (tallest), 3rd RIGHT, 4th far right
+  const displayOrder = [1, 0, 2, 3]; // indices into groups: 2nd, 1st, 3rd, 4th
+  const displayHeights = ['p2', 'p1', 'p3', 'p4'];
+  const displayLabels = ['2nd', '1st', '3rd', '4th'];
 
   const podiumCols = displayOrder.map((gi, di) => {
     const g = groups[gi] || {pts:0, players:[]};
