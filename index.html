@@ -2387,7 +2387,10 @@ function renderIntel() {
             <span style="color:#777">${r.n}</span>
           </div>`).join('')}
       </div>`;
-    feed.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+    feed.innerHTML = `<div style="display:inline-flex;align-items:center;gap:6px;background:#1f1800;border:0.5px solid #3d3000;border-radius:6px;padding:6px 12px;font-size:13px;color:#c8a020;margin-bottom:1rem">
+      ⚠️ Preliminary startlist · Subject to change before Stage 1 on 4 July
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
       ${pairs.map(([a, b]) => `
         <div style="display:flex;gap:10px;align-items:flex-start">
           ${teamCard(a)}
