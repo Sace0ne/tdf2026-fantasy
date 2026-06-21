@@ -486,8 +486,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
       <select class="media-sender" id="intel-category">
         <option value="stage">🚴 Stage Profile</option>
         <option value="weather">🌤️ Weather</option>
-        <option value="tactics">🧠 Tactics</option>
-        <option value="riders">🏅 Riders to Watch</option>
+        <option value="teams">🚴 Teams</option>
         <option value="general">📋 General</option>
       </select>
       <input class="media-input" id="intel-input" type="text" placeholder="Add intel…" maxlength="500" onkeydown="if(event.key==='Enter')postIntel()">
@@ -499,8 +498,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
       <button class="ptab active" onclick="setIntelFilter('all',this)" style="padding:6px 16px;font-size:13px">All</button>
       <button class="ptab" onclick="setIntelFilter('stage',this)" style="padding:6px 16px;font-size:13px">🚴 Stage</button>
       <button class="ptab" onclick="setIntelFilter('weather',this)" style="padding:6px 16px;font-size:13px">🌤️ Weather</button>
-      <button class="ptab" onclick="setIntelFilter('tactics',this)" style="padding:6px 16px;font-size:13px">🧠 Tactics</button>
-      <button class="ptab" onclick="setIntelFilter('riders',this)" style="padding:6px 16px;font-size:13px">🏅 Riders</button>
+      <button class="ptab" onclick="setIntelFilter('teams',this)" style="padding:6px 16px;font-size:13px">🚴 Teams</button>
     </div>
     <div id="intel-feed"></div>
   </div>
@@ -2200,15 +2198,13 @@ const INTEL_KEY = 'tdf26-intel';
 let intelFilter = 'all';
 
 const INTEL_ICONS = {
-  stage: '🚴', weather: '🌤️', tactics: '🧠', riders: '🏅', general: '📋'
+  stage: '🚴', weather: '🌤️', teams: '🚴', general: '📋'
 };
 const INTEL_LABELS = {
-  stage: 'Stage Profile', weather: 'Weather', tactics: 'Tactics',
-  riders: 'Riders to Watch', general: 'General'
+  stage: 'Stage Profile', weather: 'Weather', teams: 'Teams', general: 'General'
 };
 const INTEL_COLORS = {
-  stage: '#FFCD00', weather: '#5080c8', tactics: '#c85050',
-  riders: '#3daa68', general: '#888'
+  stage: '#FFCD00', weather: '#5080c8', teams: '#3daa68', general: '#888'
 };
 
 function loadIntel() {
@@ -2248,11 +2244,64 @@ function postIntel() {
   toast('Intel posted ✓', '#3daa68');
 }
 
+const TDF2026_TEAMS = [
+  { team: 'Alpecin – Premier Tech', riders: [{f:'🇧🇪',s:'PHILIPSEN',n:'Jasper'}, {f:'🇦🇺',s:'GROVES',n:'Kaden'}, {f:'🇳🇱',s:'VAN DER POEL',n:'Mathieu'}, {f:'🇧🇪',s:'VERSTRYNGE',n:'Emiel'}, {f:'🇧🇪',s:'RICKAERT',n:'Jonas'}] },
+  { team: 'Bahrain Victorious', riders: [{f:'🇮🇹',s:'TIBERI',n:'Antonio'}, {f:'🇫🇷',s:'MARTINEZ',n:'Lenny'}, {f:'🇸🇮',s:'MOHORIČ',n:'Matej'}, {f:'🇪🇸',s:'BILBAO',n:'Pello'}] },
+  { team: 'Decathlon CMA CGM', riders: [{f:'🇳🇱',s:'KOOIJ',n:'Olav'}, {f:'🇧🇪',s:'BENOOT',n:'Tiesj'}, {f:'🇳🇱',s:'HOOLE',n:'Daan'}, {f:'🇨🇭',s:'BISSEGGER',n:'Stefan'}, {f:'🇫🇷',s:'SEIXAS',n:'Paul'}] },
+  { team: 'EF Education – EasyPost', riders: [{f:'🇮🇪',s:'HEALY',n:'Ben'}, {f:'🇩🇰',s:'ASGREEN',n:'Kasper'}, {f:'🇪🇨',s:'CARAPAZ',n:'Richard'}, {f:'🇫🇷',s:'BAUDIN',n:'Alex'}] },
+  { team: 'Groupama – FDJ United', riders: [{f:'🇫🇷',s:'GAUDU',n:'David'}, {f:'🇫🇷',s:'MARTIN',n:'Guillaume'}, {f:'🇫🇷',s:'GRÉGOIRE',n:'Romain'}, {f:'🇫🇷',s:'MADOUAS',n:'Valentin'}] },
+  { team: 'Netcompany INEOS', riders: [{f:'🇮🇹',s:'GANNA',n:'Filippo'}, {f:'🇪🇸',s:'RODRÍGUEZ',n:'Carlos'}, {f:'🇵🇱',s:'KWIATKOWSKI',n:'Michał'}, {f:'🇫🇷',s:'VAUQUELIN',n:'Kévin'}, {f:'🇫🇷',s:'GODON',n:'Dorian'}, {f:'🇳🇱',s:'ARENSMAN',n:'Thymen'}, {f:'🇬🇧',s:'ONLEY',n:'Oscar'}] },
+  { team: 'Lidl – Trek', riders: [{f:'🇮🇹',s:'CICCONE',n:'Giulio'}, {f:'🇪🇸',s:'AYUSO',n:'Juan'}, {f:'🇩🇰',s:'PEDERSEN',n:'Mads'}, {f:'🇨🇿',s:'VACEK',n:'Mathias'}, {f:'🇩🇰',s:'SKJELMOSE',n:'Mattias'}, {f:'🇺🇸',s:'SIMMONS',n:'Quinn'}, {f:'🇩🇰',s:'KRAGH ANDERSEN',n:'Søren'}, {f:'🇪🇸',s:'VERONA',n:'Carlos'}] },
+  { team: 'Lotto Intermarché', riders: [{f:'🇧🇪',s:'DE LIE',n:'Arnaud'}, {f:'🇧🇪',s:'VAN EETVELT',n:'Lennert'}, {f:'🇩🇪',s:'ZIMMERMANN',n:'Georg'}, {f:'🇧🇪',s:'BERCKMOES',n:'Jenno'}, {f:'🇫🇷',s:'VEISTROFFER',n:'Baptiste'}] },
+  { team: 'Movistar Team', riders: [{f:'🇧🇪',s:'UIJTDEBROEKS',n:'Cian'}, {f:'🇨🇴',s:'RUBIO',n:'Einer'}, {f:'🇪🇸',s:'ROMEO',n:'Iván'}, {f:'🇪🇸',s:'CASTRILLO',n:'Pablo'}, {f:'🇪🇸',s:'ADRIÀ',n:'Roger'}, {f:'🇩🇪',s:'HESSMANN',n:'Michel'}] },
+  { team: 'NSN Cycling Team', riders: [{f:'🇪🇷',s:'GIRMAY',n:'Biniam'}, {f:'🇬🇧',s:'STEWART',n:'Jake'}] },
+  { team: 'Red Bull – Bora – Hansgrohe', riders: [{f:'🇧🇪',s:'EVENEPOEL',n:'Remco'}, {f:'🇩🇪',s:'LIPOWITZ',n:'Florian'}, {f:'🇮🇹',s:'CATTANEO',n:'Mattia'}, {f:'🇧🇪',s:'VAN GILS',n:'Maxim'}, {f:'🇩🇪',s:'DENZ',n:'Nico'}, {f:'🇳🇱',s:'VAN DIJKE',n:'Mick'}, {f:'🇦🇺',s:'HINDLEY',n:'Jai'}, {f:'🇨🇴',s:'MARTÍNEZ',n:'Daniel Felipe'}, {f:'🇧🇪',s:'MEEUS',n:'Jordi'}, {f:'🇮🇹',s:'MOSCON',n:'Gianni'}, {f:'🇸🇮',s:'TRATNIK',n:'Jan'}] },
+  { team: 'Soudal Quick-Step', riders: [{f:'🇫🇷',s:'PARET-PEINTRE',n:'Valentin'}, {f:'🇪🇸',s:'LANDA',n:'Mikel'}, {f:'🇧🇪',s:'MERLIER',n:'Tim'}, {f:'🇧🇪',s:'STUYVEN',n:'Jasper'}, {f:'🇧🇪',s:'VAN WILDER',n:'Ilan'}, {f:'🇧🇪',s:'VERVAEKE',n:'Louis'}, {f:'🇧🇪',s:'VAN BAARLE',n:'Dylan'}, {f:'🇧🇪',s:'VAN LERBERGHE',n:'Bert'}] },
+  { team: 'Team Jayco AlUla', riders: [{f:'🇦🇺',s:'MATTHEWS',n:'Michael'}, {f:'🇦🇺',s:'PLAPP',n:'Luke'}, {f:'🇨🇭',s:'ACKERMANN',n:'Pascal'}, {f:'🇦🇺',s:'O\'CONNOR',n:'Ben'}, {f:'🇨🇭',s:'SCHMID',n:'Mauro'}] },
+  { team: 'Team Picnic PostNL', riders: [{f:'🇨🇿',s:'BITTNER',n:'Pavel'}, {f:'🇫🇷',s:'BARGUIL',n:'Warren'}, {f:'🇳🇱',s:'VAN DEN BROEK',n:'Frank'}] },
+  { team: 'Visma – Lease a Bike', riders: [{f:'🇩🇰',s:'VINGEGAARD',n:'Jonas'}, {f:'🇺🇸',s:'JORGENSON',n:'Matteo'}, {f:'🇫🇷',s:'ARMIRAIL',n:'Bruno'}, {f:'🇧🇪',s:'CAMPENAERTS',n:'Victor'}, {f:'🇺🇸',s:'KUSS',n:'Sepp'}, {f:'🇬🇧',s:'TULETT',n:'Ben'}, {f:'🇮🇹',s:'AFFINI',n:'Edoardo'}] },
+  { team: 'UAE Team Emirates XRG', riders: [{f:'🇷🇺',s:'POGAČAR',n:'Tadej'}, {f:'🇲🇽',s:'DEL TORO',n:'Isaac'}, {f:'🇧🇪',s:'WELLENS',n:'Tim'}, {f:'🇺🇸',s:'MCNULTY',n:'Brandon'}, {f:'🇬🇧',s:'YATES',n:'Adam'}, {f:'🇧🇪',s:'VERMEERSCH',n:'Florian'}, {f:'🇩🇪',s:'POLITT',n:'Nils'}] },
+  { team: 'Uno-X Mobility', riders: [{f:'🇳🇴',s:'KRON',n:'Andreas'}, {f:'🇩🇰',s:'CORT',n:'Magnus'}, {f:'🇳🇴',s:'JOHANNESSEN',n:'Tobias Halland'}] },
+  { team: 'XDS Astana Team', riders: [{f:'🇰🇿',s:'TEUNISSEN',n:'Mike'}, {f:'🇨🇴',s:'HIGUITA',n:'Sergio'}, {f:'🇨🇴',s:'TEJADA',n:'Harold'}, {f:'🇮🇹',s:'FORTUNATO',n:'Lorenzo'}] },
+  { team: 'Cofidis', riders: [{f:'🇸🇮',s:'KIRSCH',n:'Alex'}, {f:'🇧🇪',s:'FRETIN',n:'Milan'}, {f:'🇩🇪',s:'BUCHMANN',n:'Emanuel'}, {f:'🇫🇷',s:'PAGE',n:'Hugo'}, {f:'🇪🇸',s:'ARANBURU',n:'Alex'}, {f:'🇪🇸',s:'IZAGIRRE',n:'Ion'}, {f:'🇧🇪',s:'ALLEGAERT',n:'Piet'}, {f:'🇧🇪',s:'BIERMANS',n:'Jenthe'}, {f:'🇫🇷',s:'THOMAS',n:'Benjamin'}] },
+  { team: 'Tudor Pro Cycling Team', riders: [{f:'🇫🇷',s:'ALAPHILIPPE',n:'Julian'}, {f:'🇨🇭',s:'KÜNG',n:'Stefan'}, {f:'🇦🇺',s:'STORER',n:'Michael'}, {f:'🇮🇹',s:'TRENTIN',n:'Matteo'}, {f:'🇳🇱',s:'PLUIMERS',n:'Rick'}] },
+  { team: 'TotalEnergies', riders: [{f:'🇫🇷',s:'JEGAT',n:'Jordan'}] },
+  { team: 'Caja Rural – Seguros RGA', riders: [{f:'🇳🇱',s:'MOLENAAR',n:'Alex'}] },
+  { team: 'Pinarello Q36.5', riders: [{f:'🇬🇧',s:'PIDCOCK',n:'Tom'}, {f:'🇬🇧',s:'WRIGHT',n:'Fred'}, {f:'🇧🇪',s:'HERMANS',n:'Quinten'}] }
+];
+
+
 function renderIntel() {
   const feed = document.getElementById('intel-feed');
   if (!feed) return;
   const posts = loadIntel();
   const filtered = intelFilter === 'all' ? posts : posts.filter(p => p.category === intelFilter);
+  // Teams tab — PCS-style two-column grid layout
+  if (intelFilter === 'teams') {
+    // Split into pairs for two-column layout
+    const pairs = [];
+    for (let i = 0; i < TDF2026_TEAMS.length; i += 2) {
+      pairs.push([TDF2026_TEAMS[i], TDF2026_TEAMS[i+1] || null]);
+    }
+    const teamCard = t => `
+      <div style="background:#161616;border:0.5px solid #2a2a2a;border-radius:10px;padding:.9rem 1rem;flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:#FFCD00;margin-bottom:8px;padding-bottom:6px;border-bottom:0.5px solid #2a2a2a">${t.team}</div>
+        ${t.riders.map(r => `
+          <div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12.5px;color:#ccc;border-bottom:0.5px solid #1a1a1a">
+            <span style="font-size:14px;flex-shrink:0;width:20px;text-align:center">${r.f}</span>
+            <span style="font-weight:600;color:#e0e0e0">${r.s}</span>
+            <span style="color:#777">${r.n}</span>
+          </div>`).join('')}
+      </div>`;
+    feed.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      ${pairs.map(([a, b]) => `
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          ${teamCard(a)}
+          ${b ? teamCard(b) : '<div style="flex:1;min-width:0"></div>'}
+        </div>`).join('')}
+    </div>`;
+    return;
+  }
   if (filtered.length === 0) {
     feed.innerHTML = `<div class="media-empty" style="padding:3rem 0">
       ${intelFilter === 'all'
