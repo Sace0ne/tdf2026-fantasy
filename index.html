@@ -403,7 +403,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- PRE-TOUR -->
 <div id="tab-pretour" class="sec" style="display:none">
   <div class="sec-title">🎽 Pre-Tour Selections</div>
-  <div class="dl">⏰ Deadline: 10:00 GMT on 4 July 2026 · Any incomplete selections at deadline incur a flat −2 pt penalty · Picks hidden until then</div>
+  <div class="dl">⏰ Deadline: 10:00 BST on 4 July 2026 · Any incomplete selections at deadline incur a flat −2 pt penalty · Picks hidden until then</div>
   <div class="ptabs" id="pt-tabs"></div>
   <div id="pt-form"></div>
   <div id="pt-save-wrap" style="padding-bottom:1.5rem">
@@ -414,7 +414,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- STAGES -->
 <div id="tab-stages" class="sec" style="display:none">
   <div class="sec-title">🚴 Stage picks</div>
-  <div class="dl">⏰ Deadline: 10:00 GMT each stage day · Stage 21: 09:45 GMT if leading · Picks lock at deadline</div>
+  <div class="dl">⏰ Deadline: 10:00 BST each stage day · Stage 21: 09:45 BST if leading · Picks lock at deadline</div>
   <div class="who-wrap">
     <div class="who-label">👤 Who are you? Select your name to enter or view your own Picks.</div>
     <div class="who-tabs" id="who-tabs"></div>
@@ -430,7 +430,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- ALL PICKS -->
 <div id="tab-picks" class="sec" style="display:none">
   <div class="sec-title">👁️ All picks — side by side</div>
-  <div class="dl">🔒 Pre-tour hidden until 04 Jul 10:00 GMT · Stage Picks revealed after each deadline</div>
+  <div class="dl">🔒 Pre-tour hidden until 04 Jul 10:00 BST · Stage Picks revealed after each deadline</div>
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:.75rem 1.1rem .5rem;font-size:11px;color:#FFCD00;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #2a2a2a">Pre-tour picks</div>
     <div class="sbs-wrap" style="border:none;border-radius:0"><table class="sbs" id="picks-pretour"></table></div>
@@ -526,11 +526,11 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="card-title">⏰ Deadlines</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
       <div style="background:#0d1a0d;border:0.5px solid #1a4a1a;border-radius:8px;padding:8px 12px;color:#3daa68;font-size:12px">
-        🕐 <strong>Greenwich Mean Time (GMT) is the official clock of this game.</strong> All deadlines are measured in GMT regardless of player location or device time. The current GMT time is shown below the navigation bar at all times.
+        🕐 <strong>British Summer Time (BST) is the official clock of this game.</strong> All deadlines are measured in BST (UTC+1), the standard UK time in use during all three Grand Tours. The current BST time is verified and shown below the navigation bar at all times.
       </div>
-      <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 GMT on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 GMT on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
-      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00 GMT</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 GMT are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
-      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 GMT on 26 July</strong>.</div>
+      <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 BST on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 BST on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
+      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00 BST</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 BST are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
+      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 BST on 26 July</strong>.</div>
     </div>
   </div>
   <div class="card">
@@ -717,36 +717,71 @@ const LKM = {
 };
 
 // ─── GMT TIME SYSTEM ─────────────────────────────────────────────────────────
-// All deadlines use Greenwich Mean Time (GMT) as the official game clock.
-// Time is fetched from worldtimeapi.org on load and refreshed every 5 minutes.
-// Falls back to device UTC time if the API is unavailable.
+// All deadlines use British Summer Time (BST / UTC+1) as the official game clock.
+// During the Grand Tours the UK operates on BST (UTC+1).
+// Time is fetched via a fallback chain of three sources:
+//   1. timeapi.io        — primary (HTTPS, reliable, no key needed)
+//   2. worldtimeapi.org  — secondary
+//   3. Device local time — last resort (with warning shown)
+// Refreshed every 5 minutes.
 
-let _gmtOffset = null;      // ms offset between device time and GMT
-let _gmtFetched = null;     // timestamp of last successful fetch
-let _gmtFetchFailed = false;// true if last fetch failed
+let _gmtOffset = null;        // ms offset between device time and BST
+let _gmtFetched = null;       // timestamp of last successful fetch
+let _gmtFetchFailed = false;  // true if ALL sources failed
+let _gmtSource = null;        // which source succeeded
 
-async function fetchGMT() {
-  try {
-    const res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
-      cache: 'no-cache',
-      signal: AbortSignal.timeout(4000),
-    });
-    const data = await res.json();
-    const serverTime = new Date(data.utc_datetime).getTime();
-    _gmtOffset = serverTime - Date.now();
-    _gmtFetched = Date.now();
-    _gmtFetchFailed = false;
-    updateGMTIndicator();
-  } catch(e) {
-    _gmtFetchFailed = true;
-    _gmtOffset = 0; // fall back to device UTC
-    updateGMTIndicator();
-  }
+// Individual fetch attempts — each returns UTC ms or throws
+async function _tryTimeapiIo() {
+  const res = await fetch('https://timeapi.io/api/time/current/zone?timeZone=Europe%2FLondon', {
+    cache: 'no-cache', signal: AbortSignal.timeout(4000)
+  });
+  const data = await res.json();
+  // dateTime is local UK time e.g. "2026-07-04T10:03:22.123"
+  // Treat as UTC timestamp to get ms value representing BST time
+  return new Date(data.dateTime + 'Z').getTime();
 }
 
-// Get current GMT time — corrected for any device clock drift
+async function _tryWorldTimeApi() {
+  const res = await fetch('https://worldtimeapi.org/api/timezone/Europe/London', {
+    cache: 'no-cache', signal: AbortSignal.timeout(4000)
+  });
+  const data = await res.json();
+  // datetime includes BST offset e.g. "2026-07-04T10:03:22.123+01:00"
+  // Parse as local BST, store as if UTC for consistent offset calculation
+  const bstDatetime = data.datetime; // "2026-07-04T10:03:22+01:00"
+  const utcMs = new Date(bstDatetime).getTime(); // this IS UTC ms
+  const offsetHours = 1; // BST = UTC+1
+  return utcMs + (offsetHours * 3600000); // shift to represent BST as "UTC" ms
+}
+
+async function fetchGMT() {
+  const sources = [
+    { fn: _tryTimeapiIo,    name: 'timeapi.io' },
+    { fn: _tryWorldTimeApi, name: 'worldtimeapi.org' },
+  ];
+  for (const src of sources) {
+    try {
+      const serverTime = await src.fn();
+      _gmtOffset = serverTime - Date.now();
+      _gmtFetched = Date.now();
+      _gmtFetchFailed = false;
+      _gmtSource = src.name;
+      updateGMTIndicator();
+      return; // success — stop trying
+    } catch(e) {
+      // this source failed — try next
+    }
+  }
+  // All sources failed — fall back to device UTC
+  _gmtFetchFailed = true;
+  _gmtOffset = 0;
+  _gmtSource = null;
+  updateGMTIndicator();
+}
+
+// Get current BST time — corrected for any device clock drift
 function nowGMT() {
-  if (_gmtOffset === null) return new Date(); // not yet fetched — use device
+  if (_gmtOffset === null) return new Date(); // not yet fetched — use device local
   return new Date(Date.now() + _gmtOffset);
 }
 
@@ -755,11 +790,10 @@ function updateGMTIndicator() {
   const el = document.getElementById('gmt-indicator');
   if (!el) return;
   const t = nowGMT();
-  const ts = t.toUTCString().replace(' GMT','');
   if (_gmtFetchFailed) {
-    el.innerHTML = '🕐 <span style="color:#c05050">GMT unavailable — using device UTC</span>';
+    el.innerHTML = '🕐 <span style="color:#c05050">BST unavailable — using device time</span>';
   } else {
-    el.innerHTML = `🕐 <span style="color:#3daa68">GMT ${t.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified</span>`;
+    el.innerHTML = `🕐 <span style="color:#3daa68">BST ${t.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified via ${_gmtSource}</span>`;
   }
 }
 
@@ -797,7 +831,7 @@ const STAGE_DL = {
 };
 
 const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
-const ptPastDeadline = () => nowGMT() >= PRETOUR_DL; // GMT — official game clock
+const ptPastDeadline = () => nowGMT() >= PRETOUR_DL; // BST — official game clock
 const stLocked  = n  => nowGMT() >= STAGE_DL[n];
 const ptRevealed = () => nowGMT() >= PRETOUR_DL;
 const stRevealed = n  => nowGMT() >= STAGE_DL[n];
@@ -2700,7 +2734,7 @@ function renderArchive() {
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
-startGMTSync(); // Fetch GMT — official game clock
+startGMTSync(); // Fetch BST — official game clock (UK time)
 load();
 applyDeadlines();
 calcScores();
