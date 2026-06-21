@@ -329,6 +329,9 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <button class="nb" onclick="showTab('archive',this)">🗃️ Archive</button>
   <button class="nb" onclick="showTab('rules',this)">📋 Rules</button>
 </div>
+<div style="background:#0a0a0a;border-bottom:1px solid #1a1a1a;padding:4px 12px;font-size:11px;text-align:right" id="gmt-indicator">
+  🕐 <span style="color:#555">Syncing GMT clock…</span>
+</div>
 
 <!-- HOME -->
 <div id="tab-home" class="sec" style="padding:0">
@@ -400,7 +403,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- PRE-TOUR -->
 <div id="tab-pretour" class="sec" style="display:none">
   <div class="sec-title">🎽 Pre-Tour Selections</div>
-  <div class="dl">⏰ Deadline: 10:00 on 4 July 2026 · Any incomplete selections at deadline incur a flat −2 pt penalty · Picks hidden until then</div>
+  <div class="dl">⏰ Deadline: 10:00 GMT on 4 July 2026 · Any incomplete selections at deadline incur a flat −2 pt penalty · Picks hidden until then</div>
   <div class="ptabs" id="pt-tabs"></div>
   <div id="pt-form"></div>
   <div id="pt-save-wrap" style="padding-bottom:1.5rem">
@@ -411,7 +414,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- STAGES -->
 <div id="tab-stages" class="sec" style="display:none">
   <div class="sec-title">🚴 Stage picks</div>
-  <div class="dl">⏰ Deadline: 10:00 each stage day · Stage 21: 09:45 if leading · Picks lock at deadline</div>
+  <div class="dl">⏰ Deadline: 10:00 GMT each stage day · Stage 21: 09:45 GMT if leading · Picks lock at deadline</div>
   <div class="who-wrap">
     <div class="who-label">👤 Who are you? Select your name to enter or view your own Picks.</div>
     <div class="who-tabs" id="who-tabs"></div>
@@ -427,7 +430,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- ALL PICKS -->
 <div id="tab-picks" class="sec" style="display:none">
   <div class="sec-title">👁️ All picks — side by side</div>
-  <div class="dl">🔒 Pre-tour hidden until 04 Jul 10:00 · Stage Picks revealed after each deadline</div>
+  <div class="dl">🔒 Pre-tour hidden until 04 Jul 10:00 GMT · Stage Picks revealed after each deadline</div>
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:.75rem 1.1rem .5rem;font-size:11px;color:#FFCD00;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #2a2a2a">Pre-tour picks</div>
     <div class="sbs-wrap" style="border:none;border-radius:0"><table class="sbs" id="picks-pretour"></table></div>
@@ -522,9 +525,12 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card">
     <div class="card-title">⏰ Deadlines</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
-      <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
-      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
-      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 on 26 July</strong>.</div>
+      <div style="background:#0d1a0d;border:0.5px solid #1a4a1a;border-radius:8px;padding:8px 12px;color:#3daa68;font-size:12px">
+        🕐 <strong>Greenwich Mean Time (GMT) is the official clock of this game.</strong> All deadlines are measured in GMT regardless of player location or device time. The current GMT time is shown below the navigation bar at all times.
+      </div>
+      <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 GMT on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 GMT on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
+      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00 GMT</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 GMT are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
+      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 GMT on 26 July</strong>.</div>
     </div>
   </div>
   <div class="card">
@@ -710,6 +716,60 @@ const LKM = {
   21: 'https://img.aso.fr/core_app/img-cycling-tdf-jpg/21/71150/0:0,1302:838-960-0-90/7f973',
 };
 
+// ─── GMT TIME SYSTEM ─────────────────────────────────────────────────────────
+// All deadlines use Greenwich Mean Time (GMT) as the official game clock.
+// Time is fetched from worldtimeapi.org on load and refreshed every 5 minutes.
+// Falls back to device UTC time if the API is unavailable.
+
+let _gmtOffset = null;      // ms offset between device time and GMT
+let _gmtFetched = null;     // timestamp of last successful fetch
+let _gmtFetchFailed = false;// true if last fetch failed
+
+async function fetchGMT() {
+  try {
+    const res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
+      cache: 'no-cache',
+      signal: AbortSignal.timeout(4000),
+    });
+    const data = await res.json();
+    const serverTime = new Date(data.utc_datetime).getTime();
+    _gmtOffset = serverTime - Date.now();
+    _gmtFetched = Date.now();
+    _gmtFetchFailed = false;
+    updateGMTIndicator();
+  } catch(e) {
+    _gmtFetchFailed = true;
+    _gmtOffset = 0; // fall back to device UTC
+    updateGMTIndicator();
+  }
+}
+
+// Get current GMT time — corrected for any device clock drift
+function nowGMT() {
+  if (_gmtOffset === null) return new Date(); // not yet fetched — use device
+  return new Date(Date.now() + _gmtOffset);
+}
+
+// Show GMT clock indicator in UI
+function updateGMTIndicator() {
+  const el = document.getElementById('gmt-indicator');
+  if (!el) return;
+  const t = nowGMT();
+  const ts = t.toUTCString().replace(' GMT','');
+  if (_gmtFetchFailed) {
+    el.innerHTML = '🕐 <span style="color:#c05050">GMT unavailable — using device UTC</span>';
+  } else {
+    el.innerHTML = `🕐 <span style="color:#3daa68">GMT ${t.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified</span>`;
+  }
+}
+
+// Refresh GMT every 5 minutes
+function startGMTSync() {
+  fetchGMT();
+  setInterval(fetchGMT, 5 * 60 * 1000);
+  setInterval(updateGMTIndicator, 30 * 1000); // update display every 30s
+}
+
 // Deadlines
 const PRETOUR_DL = new Date('2026-07-04T10:00:00+01:00');
 const STAGE_DL = {
@@ -737,10 +797,10 @@ const STAGE_DL = {
 };
 
 const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
-const ptPastDeadline = () => new Date() >= PRETOUR_DL; // used for penalty calculation
-const stLocked  = n  => new Date() >= STAGE_DL[n];
-const ptRevealed = () => new Date() >= PRETOUR_DL;
-const stRevealed = n  => new Date() >= STAGE_DL[n];
+const ptPastDeadline = () => nowGMT() >= PRETOUR_DL; // GMT — official game clock
+const stLocked  = n  => nowGMT() >= STAGE_DL[n];
+const ptRevealed = () => nowGMT() >= PRETOUR_DL;
+const stRevealed = n  => nowGMT() >= STAGE_DL[n];
 
 // ─── PRE-TOUR FIELDS ────────────────────────────────────────────────────────
 
@@ -964,7 +1024,7 @@ function namesMatch(entry, result) {
 // ─── DEADLINES ──────────────────────────────────────────────────────────────
 
 function applyDeadlines() {
-  const now = new Date();
+  const now = nowGMT(); // GMT official clock
   PLAYERS.forEach(p => {
     RACE_STAGES.forEach(st => {
       if (now >= STAGE_DL[st.n]) {
@@ -1105,7 +1165,7 @@ function renderLiveStandings() {
   // ── PODIUM (always shown, uses fantasy scores) ─────────────────────────
   calcScores();
   const sorted = [...PLAYERS].sort(tieSort);
-  const raceStarted = new Date() >= STAGE1_DT;
+  const raceStarted = nowGMT() >= STAGE1_DT; // GMT
 
   // Group players by score for tied podium steps
   const groups = [];
@@ -1406,7 +1466,7 @@ function renderResults() {
   // Switch title based on date
   const titleEl = document.getElementById('classifications-title');
   if (titleEl) {
-    titleEl.textContent = new Date() >= FINAL_CLASS_DT
+    titleEl.textContent = nowGMT() >= FINAL_CLASS_DT
       ? 'Final Classifications'
       : 'Current Classifications';
   }
@@ -1998,10 +2058,10 @@ function drawSeagullWithLogo(ctx, x, y, frame) {
 
 
 function getCurrentStage() {
-  const now = new Date();
+  const now = nowGMT(); // GMT
   let current = null;
   for (let n = 1; n <= 21; n++) {
-    if (STAGE_DL[n] && now >= new Date(STAGE_DL[n].getTime() - 12*3600*1000)) {
+    if (STAGE_DL[n] && nowGMT() >= new Date(STAGE_DL[n].getTime() - 12*3600*1000)) {
       const st = STAGES.find(s => s.n === n);
       if (st) current = st;
     }
@@ -2010,7 +2070,7 @@ function getCurrentStage() {
 }
 
 function updateHomeStatus() {
-  const now = new Date();
+  const now = nowGMT(); // GMT official clock
   const cdWrap = document.getElementById('home-countdown-wrap');
   const liveWrap = document.getElementById('home-live-wrap');
   if (!cdWrap || !liveWrap) return;
@@ -2640,6 +2700,7 @@ function renderArchive() {
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
+startGMTSync(); // Fetch GMT — official game clock
 load();
 applyDeadlines();
 calcScores();
