@@ -153,6 +153,9 @@ input:disabled{opacity:.45;cursor:not-allowed}
 /* TOAST */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1}
+#test-mode-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0d00;border-top:2px solid #cc4400;padding:8px 16px;z-index:9998;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+#test-mode-bar.active{display:flex}
+.test-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
 
 @media(max-width:640px){
   .hdr-t{font-size:21px}
@@ -513,8 +516,9 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="dl">⏰ Update before 22:53</div>
   <div class="card"><div class="card-title" id="classifications-title">Current Classifications</div><div id="res-classifications"></div></div>
   <div class="card"><div class="card-title">Daily stage winners</div><div id="r-stages"></div></div>
-  <div style="padding-bottom:1.5rem">
+  <div style="padding-bottom:1.5rem;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <button class="save-btn" onclick="saveResults()">💾 Save &amp; recalculate scores</button>
+    <button class="save-btn" onclick="activateTestMode()" style="background:#1a0d00;color:#cc4400;border:2px solid #cc4400">🧪 Test Mode</button>
   </div>
 </div>
 
@@ -639,6 +643,16 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
 </div><!-- end .app -->
 <div id="toast"></div>
+
+<!-- TEST MODE BAR -->
+<div id="test-mode-bar">
+  <span style="font-size:12px;font-weight:700;color:#cc4400">🧪 TEST MODE</span>
+  <span style="font-size:11px;color:#884400;flex:1">Dummy data loaded — scores, podium and tiebreakers are all live</span>
+  <button class="test-btn" style="background:#1e3a1e;color:#3daa68;border:1px solid #2a5a2a" onclick="testVerify()">✓ Verify</button>
+  <button class="test-btn" style="background:#1a1a1a;color:#888;border:1px solid #333" onclick="testScenario2()">Scenario 2</button>
+  <button class="test-btn" style="background:#1a1a1a;color:#888;border:1px solid #333" onclick="testScenario3()">Scenario 3</button>
+  <button class="test-btn" style="background:#3a0000;color:#c05050;border:1px solid #5a0000" onclick="clearTestData()">🗑️ Clear All Data</button>
+</div>
 
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
@@ -831,7 +845,7 @@ const STAGE_DL = {
 };
 
 const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
-const ptPastDeadline = () => nowGMT() >= PRETOUR_DL; // BST — official game clock
+const ptPastDeadline = () => (typeof S !== "undefined" && S._testDeadlinePast) || nowGMT() >= PRETOUR_DL; // BST + test mode
 const stLocked  = n  => nowGMT() >= STAGE_DL[n];
 const ptRevealed = () => nowGMT() >= PRETOUR_DL;
 const stRevealed = n  => nowGMT() >= STAGE_DL[n];
@@ -873,7 +887,7 @@ function stageProfileSvg(sz) {
     <polygon points="21,0 19,4 23,4" fill="#FFCD00"/>
     <!-- Flat ground line -->
     <line x1="1" y1="34" x2="46" y2="34" stroke="#FFCD00" stroke-width="1.5" stroke-opacity="0.45"/>
-    <!-- Flat section indicators — subtle tick marks below the flat stretches -->
+    <!-- Flat section indicators: subtle tick marks below the flat stretches -->
     <line x1="3" y1="32" x2="3" y2="34" stroke="#FFCD00" stroke-width="1" stroke-opacity="0.5"/>
     <line x1="6" y1="32" x2="6" y2="34" stroke="#FFCD00" stroke-width="1" stroke-opacity="0.5"/>
     <line x1="31" y1="32" x2="31" y2="34" stroke="#FFCD00" stroke-width="1" stroke-opacity="0.5"/>
@@ -2733,6 +2747,138 @@ function renderArchive() {
   });
 
   el.innerHTML = html;
+}
+
+
+// ─── TEST MODE ────────────────────────────────────────────────────────────────
+// Three scenarios to verify all game logic:
+// Scenario 1 (default): spread scores, clear winner, no tiebreak needed
+// Scenario 2: two players tied on points — tests tiebreaker chain
+// Scenario 3: all players tied — tests all 4 tiebreaker levels
+
+let _testActive = false;
+
+function loadTestScenario(scenario) {
+  _testActive = true;
+
+  // ── Shared dummy results ──────────────────────────────────────────────
+  S.results = {
+    gc1: 'Pogačar', gc2: 'Vingegaard', gc3: 'Evenepoel',
+    pts: 'Philipsen', mtn: 'Ciccone', yth: 'Ayuso',
+    lan: 'Molenaar', fre: '3',
+    stages: {
+      s1:'Ganna', s2:'Philipsen', s3:'Pogačar', s4:'Pogačar',
+      s5:'Pedersen', s6:'Pogačar', s7:'Merlier', s8:'Philipsen',
+      s9:'Pogačar', s10:'Pogačar', s11:'Pedersen', s12:'Philipsen',
+      s13:'Pogačar', s14:'Pogačar', s15:'Vingegaard',
+      s16:'Ganna', s17:'Pogačar', s18:'Evenepoel',
+      s19:'Pogačar', s20:'Pogačar', s21:'Philipsen',
+    }
+  };
+
+  // ── Pre-tour picks ────────────────────────────────────────────────────
+  if (scenario === 1) {
+    // Spread scores: Samuel wins clearly
+    S.pretour = {
+      'Samuel':    {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Philipsen',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'3'},
+      'Räikkönen': {gc1:'Vingegaard',gc2:'Pogacar',gc3:'Roglic',pts:'Philipsen',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'2'},
+      'Suzanne':   {gc1:'Evenepoel',gc2:'Vingegaard',gc3:'Pogacar',pts:'Groves',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'3'},
+      'Étienne':   {gc1:'Pogacar',gc2:'Evenepoel',gc3:'Vingegaard',pts:'Philipsen',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'1'},
+    };
+    S.stages = {
+      'Samuel':    {s1:'Ganna',s2:'Philipsen',s3:'Pogacar',s5:'Pedersen',s7:'Merlier',s9:'Pogacar',s11:'Pedersen',s13:'Pogacar',s15:'Vingegaard',s17:'Pogacar',s19:'Pogacar',s21:'Philipsen'},
+      'Räikkönen': {s1:'Ganna',s2:'Philipsen',s3:'Van der Poel',s5:'Pedersen',s7:'Merlier',s9:'Evenepoel',s11:'Pedersen',s13:'Pogacar',s15:'Pogacar',s17:'Pogacar',s19:'Vingegaard',s21:'Philipsen'},
+      'Suzanne':   {s1:'Ganna',s2:'Van Aert',s3:'Pogacar',s5:'Philipsen',s7:'Merlier',s9:'Pogacar',s11:'Pedersen',s13:'Evenepoel',s15:'Vingegaard',s17:'Evenepoel',s19:'Pogacar',s21:'Pedersen'},
+      'Étienne':   {s1:'Ganna',s2:'Philipsen',s3:'Evenepoel',s5:'Pedersen',s7:'Philipsen',s9:'Pogacar',s11:'Matthews',s13:'Pogacar',s15:'Vingegaard',s17:'Pogacar',s19:'Pogacar',s21:'Philipsen'},
+    };
+    S.jokers = {'Samuel':'s3','Räikkönen':'s13','Suzanne':'s3','Étienne':'s19'};
+  } else if (scenario === 2) {
+    // Samuel and Räikkönen tied on points — tiebreaker: MJ pick
+    // Samuel picked correct MJ (Pogačar), Räikkönen did not
+    S.pretour = {
+      'Samuel':    {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Philipsen',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'3'},
+      'Räikkönen': {gc1:'Vingegaard',gc2:'Pogacar',gc3:'Evenepoel',pts:'Philipsen',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'3'},
+      'Suzanne':   {gc1:'Evenepoel',gc2:'Vingegaard',gc3:'Pogacar',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+      'Étienne':   {gc1:'Roglic',gc2:'Evenepoel',gc3:'Vingegaard',pts:'Philipsen',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'1'},
+    };
+    S.stages = {
+      'Samuel':    {s1:'Ganna',s2:'Philipsen',s3:'Pogacar',s5:'Pedersen',s7:'Merlier',s9:'Pogacar',s13:'Pogacar',s15:'Vingegaard',s19:'Pogacar',s21:'Philipsen'},
+      'Räikkönen': {s1:'Ganna',s2:'Philipsen',s3:'Pogacar',s5:'Pedersen',s7:'Merlier',s9:'Pogacar',s13:'Pogacar',s15:'Vingegaard',s19:'Pogacar',s21:'Philipsen'},
+      'Suzanne':   {s1:'Ganna',s2:'Van Aert',s3:'Van der Poel',s5:'Philipsen',s9:'Evenepoel',s13:'Evenepoel',s15:'Pogacar',s19:'Vingegaard',s21:'Pedersen'},
+      'Étienne':   {s1:'Van der Poel',s2:'Philipsen',s3:'Evenepoel',s5:'Pedersen',s7:'Philipsen',s9:'Pogacar',s13:'Evenepoel',s15:'Vingegaard',s21:'Philipsen'},
+    };
+    S.jokers = {'Samuel':'s3','Räikkönen':'s3','Suzanne':'s9','Étienne':'s15'};
+  } else if (scenario === 3) {
+    // All four tied on points AND MJ pick — tiebreaker: GC podium
+    S.pretour = {
+      'Samuel':    {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+      'Räikkönen': {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+      'Suzanne':   {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Roglic',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+      'Étienne':   {gc1:'Pogacar',gc2:'Roglic',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+    };
+    S.stages = {
+      'Samuel':    {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
+      'Räikkönen': {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
+      'Suzanne':   {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
+      'Étienne':   {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
+    };
+    S.jokers = {'Samuel':null,'Räikkönen':null,'Suzanne':null,'Étienne':null};
+  }
+
+  // Mark past deadline for scoring
+  const pastDate = new Date('2026-07-27T00:00:00+01:00');
+  S._testDeadlinePast = true;
+
+  save();
+  calcScores();
+
+  // Show test bar
+  const bar = document.getElementById('test-mode-bar');
+  if (bar) bar.classList.add('active');
+
+  // Navigate to leaderboard
+  showTab('leaderboard', document.querySelector('.nb'));
+  toast(`🧪 Test Scenario ${scenario} loaded`, '#cc4400');
+}
+
+function testScenario2() { loadTestScenario(2); }
+function testScenario3() { loadTestScenario(3); }
+
+function testVerify() {
+  calcScores();
+  const sorted = [...PLAYERS].sort(tieSort);
+  const scores = PLAYERS.map(p => p + ': ' + (S.scores[p]?.total||0) + 'pts').join(', ');
+  const order = sorted.join(' > ');
+  const breakdown = PLAYERS.map(p => {
+    const sc = S.scores[p] || {};
+    return p + ': MJ=' + (sc.mjCorrect||0) + ' GCPod=' + (sc.gcPodiumCorrect||0) + ' Jsy=' + (sc.jerseyCorrect||0) + ' Stg=' + (sc.stageWinsCorrect||0);
+  }).join('\n');
+  alert('VERIFICATION\n\nScores: ' + scores + '\n\nLeaderboard order:\n' + order + '\n\nTiebreaker stats:\n' + breakdown);
+}
+
+function clearTestData() {
+  if (!confirm('Clear ALL test data? This resets the entire game to a blank state.')) return;
+  localStorage.clear();
+  _testActive = false;
+  const bar = document.getElementById('test-mode-bar');
+  if (bar) bar.classList.remove('active');
+  S = {
+    pretour: {}, stages: {}, jokers: {},
+    results: {gc1:'',gc2:'',gc3:'',pts:'',mtn:'',yth:'',lan:'',fre:'',stages:{}},
+    scores: {},
+    ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
+  };
+  save();
+  initSpoiler();
+  showTab('home', document.querySelector('.nb'));
+  toast('✓ All data cleared — clean slate', '#3daa68');
+}
+
+// Test mode uses S._testDeadlinePast to simulate post-deadline scoring
+// ptPastDeadline already checks this flag — no override needed
+
+function activateTestMode() {
+  loadTestScenario(1);
 }
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
