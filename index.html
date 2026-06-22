@@ -518,7 +518,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card"><div class="card-title">Daily stage winners</div><div id="r-stages"></div></div>
   <div style="padding-bottom:1.5rem;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <button class="save-btn" onclick="saveResults()">💾 Save &amp; recalculate scores</button>
-    <button class="save-btn" onclick="activateTestMode()" style="background:#1a0d00;color:#cc4400;border:2px solid #cc4400">🧪 Test Mode</button>
+    <button class="save-btn" id="test-mode-btn" onclick="activateTestMode()" style="background:#1a0d00;color:#cc4400;border:2px solid #cc4400;display:none">🧪 Test Mode</button>
   </div>
 </div>
 
@@ -645,7 +645,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <div id="toast"></div>
 
 <!-- TEST MODE BAR -->
-<div id="test-mode-bar">
+<div id="test-mode-bar" style="display:none">
   <span style="font-size:12px;font-weight:700;color:#cc4400">🧪 TEST MODE</span>
   <span style="font-size:11px;color:#884400;flex:1">Dummy data loaded — scores, podium and tiebreakers are all live</span>
   <button class="test-btn" style="background:#1e3a1e;color:#3daa68;border:1px solid #2a5a2a" onclick="testVerify()">✓ Verify</button>
@@ -658,6 +658,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
 // ─── DATA ───────────────────────────────────────────────────────────────────
 
 const PLAYERS = ['Samuel', 'Räikkönen', 'Suzanne', 'Étienne'];
+
+// Admin mode — Test Mode only visible when ?admin=anquetil is in the URL
+// Players never see this parameter or the Test Mode button
+const IS_ADMIN = new URLSearchParams(window.location.search).get('admin') === 'anquetil';
 
 // ─── BACKEND API ──────────────────────────────────────────────────────────────
 const API_BASE = 'https://fantasy.saceone.com';
@@ -2958,9 +2962,11 @@ function loadTestScenario(scenario) {
   save();
   calcScores();
 
-  // Show test bar
-  const bar = document.getElementById('test-mode-bar');
-  if (bar) bar.classList.add('active');
+  // Show test bar (only reachable in admin mode)
+  if (IS_ADMIN) {
+    const bar = document.getElementById('test-mode-bar');
+    if (bar) bar.classList.add('active');
+  }
 
   // Navigate to leaderboard
   showTab('leaderboard', document.querySelector('.nb'));
@@ -3010,6 +3016,14 @@ function activateTestMode() {
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 startGMTSync(); // Fetch BST — official game clock (UK time)
+// Show Test Mode controls only in admin mode (?admin=anquetil)
+if (IS_ADMIN) {
+  const tb = document.getElementById('test-mode-btn');
+  if (tb) tb.style.display = '';
+  // Also add subtle admin indicator in GMT bar
+  const gi = document.getElementById('gmt-indicator');
+  if (gi) gi.style.borderLeft = '3px solid #cc4400';
+}
 checkApiHealth(); // Check backend connectivity
 // Load game state from API then initialise
 (async () => {
