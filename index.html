@@ -2927,18 +2927,26 @@ function loadTestScenario(scenario) {
     };
     S.jokers = {'Samuel':'s3','Räikkönen':'s3','Suzanne':'s9','Étienne':'s15'};
   } else if (scenario === 3) {
-    // All four tied on points AND MJ pick — tiebreaker: GC podium
+    // True 4-way tie — all players identical picks, identical correct scores
+    // All pick: MJ=Pogacar(6), GC2=Vingegaard(4), GC3=Evenepoel(2),
+    //           Green=Philipsen(4), Polka=Ciccone(4), White=Ayuso(4),
+    //           Lanterne=Molenaar(2), FrenchWins=3(2) = 28 pre-tour pts
+    // All pick same 3 stage winners correctly (s2, s7, s21) = 3 stage pts
+    // Total: 31 pts each — identical tiebreaker stats at every level
+    // Result: true tie stands — joint champions
+    const identicalPretour = {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Philipsen',mtn:'Ciccone',yth:'Ayuso',lan:'Molenaar',fre:'3'};
     S.pretour = {
-      'Samuel':    {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
-      'Räikkönen': {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
-      'Suzanne':   {gc1:'Pogacar',gc2:'Vingegaard',gc3:'Roglic',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
-      'Étienne':   {gc1:'Pogacar',gc2:'Roglic',gc3:'Evenepoel',pts:'Groves',mtn:'Ciccone',yth:'Skjelmose',lan:'Molenaar',fre:'2'},
+      'Samuel':    {...identicalPretour},
+      'Räikkönen': {...identicalPretour},
+      'Suzanne':   {...identicalPretour},
+      'Étienne':   {...identicalPretour},
     };
+    const identicalStages = {s2:'Philipsen',s7:'Merlier',s21:'Philipsen'};
     S.stages = {
-      'Samuel':    {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
-      'Räikkönen': {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
-      'Suzanne':   {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
-      'Étienne':   {s1:'Ganna',s2:'Philipsen',s7:'Merlier',s13:'Pogacar',s21:'Philipsen'},
+      'Samuel':    {...identicalStages},
+      'Räikkönen': {...identicalStages},
+      'Suzanne':   {...identicalStages},
+      'Étienne':   {...identicalStages},
     };
     S.jokers = {'Samuel':null,'Räikkönen':null,'Suzanne':null,'Étienne':null};
   }
