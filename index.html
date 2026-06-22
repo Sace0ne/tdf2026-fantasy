@@ -452,7 +452,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="card-title">Post a message</div>
     <div class="media-input-wrap">
       <select class="media-sender" id="media-sender">
-        <option value="Admin">📋 Admin</option>
+        <option value="Anquetil">📋 Anquetil</option>
         <option value="Samuel">Samuel</option>
         <option value="Räikkönen">Räikkönen</option>
         <option value="Suzanne">Suzanne</option>
@@ -486,7 +486,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
   <div class="card">
     <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
       <span>Post Intel</span>
-      <span style="font-size:11px;color:#555">Admin only</span>
+      <span style="font-size:11px;color:#555">Anquetil only</span>
     </div>
     <div class="media-input-wrap">
       <select class="media-sender" id="intel-category">
@@ -612,7 +612,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
       <div>The <strong style="color:#FFCD00">📢 Media</strong> tab is a shared message board for all players.</div>
       <div>Select your name from the dropdown, type your message, and tap <strong style="color:#FFCD00">Post</strong>. Messages are stored locally and visible to whoever opens the app on this device.</div>
-      <div>Admin posts are used to notify players of any changes or updates, scoring corrections, rule clarifications, technical issues etc.</div>
+      <div>Anquetil posts are used to notify players of any changes or updates, scoring corrections, rule clarifications, technical issues etc.</div>
     </div>
   </div>
   <div class="card">
@@ -2313,7 +2313,7 @@ function updateMediaBadge() {
 }
 
 function senderClass(sender) {
-  if (sender === 'Admin') return 'admin';
+  if (sender === 'Anquetil') return 'admin';
   if (sender === 'Étienne') return 'etienne';
   if (sender === 'Räikkönen') return 'raikkonenp';
   if (sender === 'Samuel') return 'samuel';
@@ -2397,7 +2397,7 @@ function renderMedia() {
   feed.innerHTML = msgs.map(m => {
     const isNew = m.id > lastRead;
     return `
-    <div class="media-msg ${m.sender==='Admin'?'from-admin':''}" style="${isNew?'border-color:#3d3000;background:#1a1800;':''}">
+    <div class="media-msg ${m.sender==='Anquetil'?'from-admin':''}" style="${isNew?'border-color:#3d3000;background:#1a1800;':''}">
       <div class="media-msg-header">
         <span class="media-sender-tag ${senderClass(m.sender)}">${m.sender}</span>
         ${isNew ? '<span style="font-size:10px;background:#c8a020;color:#111;padding:2px 7px;border-radius:20px;font-weight:700">NEW</span>' : ''}
