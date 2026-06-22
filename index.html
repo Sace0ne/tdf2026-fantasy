@@ -659,6 +659,76 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
 const PLAYERS = ['Samuel', 'Räikkönen', 'Suzanne', 'Étienne'];
 
+// ─── BACKEND API ──────────────────────────────────────────────────────────────
+const API_BASE = 'https://fantasy.saceone.com';
+const API_KEY  = '29a5bdb67ccfddb1217d1e058104a8423b33180c6d54848cd4ddb421d754c781';
+
+async function apiGet(path) {
+  try {
+    const r = await fetch(API_BASE + path, {
+      headers: {'X-Fantasy-Key': API_KEY},
+      cache: 'no-cache',
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) {
+    console.warn('API GET failed:', path, e.message);
+    return null;
+  }
+}
+
+async function apiPost(path, body) {
+  try {
+    const r = await fetch(API_BASE + path, {
+      method: 'POST',
+      headers: {'X-Fantasy-Key': API_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) {
+    console.warn('API POST failed:', path, e.message);
+    return null;
+  }
+}
+
+async function apiDelete(path) {
+  try {
+    const r = await fetch(API_BASE + path, {
+      method: 'DELETE',
+      headers: {'X-Fantasy-Key': API_KEY},
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) {
+    console.warn('API DELETE failed:', path, e.message);
+    return null;
+  }
+}
+
+// Show connection status in GMT indicator area
+let _apiConnected = null;
+async function checkApiHealth() {
+  try {
+    const r = await fetch(API_BASE + '/health', {cache: 'no-cache',
+      signal: AbortSignal.timeout(3000)});
+    _apiConnected = r.ok;
+  } catch(e) {
+    _apiConnected = false;
+  }
+  updateApiIndicator();
+}
+
+function updateApiIndicator() {
+  const el = document.getElementById('gmt-indicator');
+  if (!el) return;
+  const bstPart = el.innerHTML.split('·')[0] || el.innerHTML;
+  if (_apiConnected === false) {
+    el.innerHTML = bstPart + ' · <span style="color:#c05050">⚠️ Server offline — picks may not save</span>';
+  }
+  // If connected, no extra indicator needed — clean UI
+}
+
 const STAGES = [
   {n:1,  d:'4 Jul',  r:'Barcelona → Barcelona',             dist:'19.7 km', t:'tt',         l:'Team TT'},
   {n:2,  d:'5 Jul',  r:'Tarragona → Barcelona',             dist:'182 km',  t:'hilly',      l:'Hilly'},
@@ -945,11 +1015,29 @@ let S = {
   ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
 };
 
-function load() {
+// Load game state from API (primary) with localStorage fallback
+async function load() {
+  try {
+    const data = await apiGet('/api/state/tdf26');
+    if (data && data.value) {
+      S = {...S, ...data.value};
+      // Also sync to localStorage as local cache
+      localStorage.setItem('tdf26', JSON.stringify(S));
+      return;
+    }
+  } catch(e) {}
+  // Fallback: load from localStorage
   try { const d = localStorage.getItem('tdf26'); if (d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
 }
+
+// Save game state to API and localStorage cache
 function save() {
+  // Immediate localStorage save for responsiveness
   try { localStorage.setItem('tdf26', JSON.stringify(S)); } catch(e) {}
+  // Async API save
+  apiPost('/api/state', {key: 'tdf26', value: S}).catch(e =>
+    console.warn('State save failed:', e)
+  );
 }
 function toast(m, col) {
   const t = document.getElementById('toast');
@@ -1102,11 +1190,11 @@ function showTab(tab, btn) {
   if (tab === 'pretour')     renderPT();
   if (tab === 'stages')      renderST();
   if (tab === 'picks')       renderPicks();
-  if (tab === 'media')       { renderMedia(); updateMediaBadge(); }
+  if (tab === 'media')       { renderMedia(); updateMediaBadge(); syncMessages(); }
   if (tab === 'results')     renderResults();
   if (tab === 'intel')       renderIntel();
   if (tab === 'rules')       renderRules();
-  if (tab === 'career')      renderCareer();
+  if (tab === 'career')      { renderCareer(); syncCareer(); }
   if (tab === 'archive')     renderArchive();
 }
 
@@ -2175,10 +2263,23 @@ const MEDIA_READ_KEY = 'tdf26-media-read'; // per-player last-read timestamps
 let mediaReader = PLAYERS[0]; // currently selected reader
 
 function loadMessages() {
+  // Return from localStorage cache (kept in sync by renderMedia)
   try { const d = localStorage.getItem(MEDIA_KEY); return d ? JSON.parse(d) : []; } catch(e) { return []; }
 }
 function saveMessages(msgs) {
   try { localStorage.setItem(MEDIA_KEY, JSON.stringify(msgs)); } catch(e) {}
+}
+
+// Fetch messages from API and refresh cache + UI
+async function syncMessages() {
+  const data = await apiGet('/api/messages');
+  if (data && Array.isArray(data)) {
+    // API returns newest first — matches localStorage format
+    saveMessages(data);
+    updateMediaBadge();
+    const feed = document.getElementById('media-feed');
+    if (feed) renderMedia();
+  }
 }
 function loadReadTimes() {
   try { const d = localStorage.getItem(MEDIA_READ_KEY); return d ? JSON.parse(d) : {}; } catch(e) { return {}; }
@@ -2247,11 +2348,16 @@ function postMedia() {
   const now = new Date();
   const ts = now.toLocaleDateString('en-GB', {day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
   const id = Date.now();
-  msgs.unshift({sender, text, ts, id});
+  const newMsg = {sender, text, ts, id};
+  msgs.unshift(newMsg);
   saveMessages(msgs);
   input.value = '';
   updateMediaBadge();
   renderMedia();
+  // Save to API
+  apiPost('/api/messages', {sender, text, ts, msg_id: String(id)}).then(() => {
+    syncMessages(); // refresh from API to confirm save
+  });
   toast('Message posted ✓');
 }
 
@@ -2261,6 +2367,7 @@ function clearMedia() {
   localStorage.removeItem(MEDIA_READ_KEY);
   updateMediaBadge();
   renderMedia();
+  apiDelete('/api/messages');
   toast('Messages cleared');
 }
 
@@ -2522,6 +2629,17 @@ function loadCareer() {
 
 function saveCareer(data) {
   try { localStorage.setItem(CAREER_KEY, JSON.stringify(data)); } catch(e) {}
+  apiPost('/api/state', {key: CAREER_KEY, value: data}).catch(e =>
+    console.warn('Career save failed:', e)
+  );
+}
+
+async function syncCareer() {
+  const data = await apiGet('/api/state/' + CAREER_KEY);
+  if (data && data.value) {
+    saveCareer(data.value);
+    renderCareer();
+  }
 }
 
 // Career players — Étienne always shown as Steve
@@ -2884,12 +3002,17 @@ function activateTestMode() {
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 startGMTSync(); // Fetch BST — official game clock (UK time)
-load();
-applyDeadlines();
-calcScores();
-renderRules();
-initSpoiler(); // restore shield state from localStorage
-updateMediaBadge(); // show unread count on nav badge
+checkApiHealth(); // Check backend connectivity
+// Load game state from API then initialise
+(async () => {
+  await load(); // async — waits for API
+  applyDeadlines();
+  calcScores();
+  renderRules();
+  initSpoiler(); // restore shield state from localStorage
+  updateMediaBadge(); // show unread count on nav badge
+  syncMessages(); // sync Media Centre from API on startup
+})();
 // Start on home tab
 document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
 const homeEl = document.getElementById('tab-home');
