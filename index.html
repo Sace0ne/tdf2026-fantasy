@@ -611,7 +611,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="card-title">📢 Media Centre</div>
     <div style="font-size:13px;color:#ccc;line-height:1.8;display:flex;flex-direction:column;gap:10px">
       <div>The <strong style="color:#FFCD00">📢 Media</strong> tab is a shared message board for all players.</div>
-      <div>Select your name from the dropdown, type your message, and tap <strong style="color:#FFCD00">Post</strong>. Messages are stored locally and visible to whoever opens the app on this device.</div>
+      <div>Select your name from the dropdown, type your message, and tap <strong style="color:#FFCD00">Post</strong>. Messages are visible to all players in real time.</div>
       <div>Anquetil posts are used to notify players of any changes or updates, scoring corrections, rule clarifications, technical issues etc.</div>
     </div>
   </div>
@@ -645,7 +645,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <div id="toast"></div>
 
 <!-- TEST MODE BAR -->
-<div id="test-mode-bar">
+<div id="test-mode-bar" style="display:none">
   <span style="font-size:12px;font-weight:700;color:#cc4400">🧪 TEST MODE</span>
   <span style="font-size:11px;color:#884400;flex:1">Dummy data loaded — scores, podium and tiebreakers are all live</span>
   <button class="test-btn" style="background:#1e3a1e;color:#3daa68;border:1px solid #2a5a2a" onclick="testVerify()">✓ Verify</button>
