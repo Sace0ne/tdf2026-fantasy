@@ -417,7 +417,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- STAGES -->
 <div id="tab-stages" class="sec" style="display:none">
   <div class="sec-title">🚴 Stage picks</div>
-  <div class="dl">⏰ Deadline: 10:00 BST each stage day · Stage 21: 09:45 BST if leading · Picks lock at deadline</div>
+  <div class="dl">⏰ Deadline: 10:00 BST each stage day · Picks lock at deadline</div>
   <div class="who-wrap">
     <div class="who-label">👤 Who are you? Select your name to enter or view your own Picks.</div>
     <div class="who-tabs" id="who-tabs"></div>
@@ -533,8 +533,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
         🕐 <strong>British Summer Time (BST) is the official clock of this game.</strong> All deadlines are measured in BST (UTC+1), the standard UK time in use during all three Grand Tours. The current BST time is verified and shown below the navigation bar at all times.
       </div>
       <div>Pre-Tour Picks should be entered before <strong style="color:#FFCD00">10:00 BST on 4 July</strong>. Fields do <strong style="color:#FFCD00">not</strong> lock. However, if any Pre-Tour field is left empty at 10:00 BST on 4 July, a flat <strong style="color:#c05050">−2 point penalty</strong> is applied to that player's total score.</div>
-      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00 BST</strong> on each stage day. Fields lock at the deadline. Empty fields at 10:00 BST are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
-      <div>For the player, or players if tied, that is leading going into Stage 21, the deadline is <strong style="color:#FFCD00">09:45 BST on 26 July</strong>.</div>
+      <div>Daily stage Picks must be entered before <strong style="color:#FFCD00">10:00 BST</strong> on each stage day — including Stage 21. Fields lock at the deadline. Empty fields at 10:00 BST are recorded as <strong style="color:#c05050">DNS</strong> (0 points). Late input is blocked automatically.</div>
+
     </div>
   </div>
   <div class="card">
@@ -915,7 +915,7 @@ const STAGE_DL = {
   18: new Date('2026-07-23T10:00:00+01:00'),
   19: new Date('2026-07-24T10:00:00+01:00'),
   20: new Date('2026-07-25T10:00:00+01:00'),
-  21: new Date('2026-07-26T09:45:00+01:00'),
+  21: new Date('2026-07-26T10:00:00+01:00'),
 };
 
 const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
@@ -1493,7 +1493,7 @@ function renderST() {
         <div class="sn">Stage ${st.n}</div>
         <div class="sr">${st.r}</div>
         <div class="sm">
-          <span class="sd">${st.d}${st.n===21?' · <span style="color:#c05050;font-size:10px">09:45 if leading</span>':''}</span>
+          <span class="sd">${st.d}</span>
           <span class="sd">${st.dist}</span>
           <span class="st ${tc}">${st.l}</span>
           ${showHidden ? '<span style="font-size:10px;color:#555">🔒 Hidden until deadline</span>'
