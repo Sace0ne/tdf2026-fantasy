@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="en">
 <title>Le Tour de France Fantasy 2026</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1780,6 +1782,26 @@ function loadParticipation() {
 }
 function saveParticipation(data) {
   try { localStorage.setItem(PARTICIPATION_KEY, JSON.stringify(data)); } catch(e) {}
+  apiPost('/api/state', {key: PARTICIPATION_KEY, value: data}).catch(e =>
+    console.warn('Participation save failed:', e)
+  );
+}
+
+async function syncParticipation() {
+  const data = await apiGet('/api/state/' + PARTICIPATION_KEY);
+  if (data && data.value) {
+    // Merge API data with localStorage (union of registered players)
+    const local = loadParticipation();
+    const merged = Object.assign({}, local);
+    for (const gt of Object.keys(data.value)) {
+      if (!merged[gt]) merged[gt] = [];
+      for (const p of (data.value[gt] || [])) {
+        if (!merged[gt].includes(p)) merged[gt].push(p);
+      }
+    }
+    try { localStorage.setItem(PARTICIPATION_KEY, JSON.stringify(merged)); } catch(e) {}
+    initHomeParticipation();
+  }
 }
 
 // Current Grand Tour identifier
@@ -1856,6 +1878,7 @@ function initHome() {
   drawStars();
   updateHomeStatus();
   initHomeParticipation();
+  syncParticipation(); // pull latest registrations from API
   setInterval(updateHomeStatus, 1000);
 }
 
@@ -3034,6 +3057,7 @@ checkApiHealth(); // Check backend connectivity
   initSpoiler(); // restore shield state from localStorage
   updateMediaBadge(); // show unread count on nav badge
   syncMessages(); // sync Media Centre from API on startup
+  syncParticipation(); // sync registration status from API on startup
 })();
 // Start on home tab
 document.querySelectorAll('[id^="tab-"]').forEach(e => e.style.display = 'none');
