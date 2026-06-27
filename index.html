@@ -1741,7 +1741,8 @@ function isSpoilerBlocked(stageNum) {
 
 // ─── HOME PAGE ───────────────────────────────────────────────────────────────
 
-const STAGE1_DT = new Date('2026-07-04T10:00:00+01:00');
+const STAGE1_DT    = new Date('2026-07-04T10:00:00+01:00'); // picks deadline / race-started gate
+const STAGE1_START = new Date('2026-07-04T16:05:00+01:00'); // actual Stage 1 start (17:05 CEST = 16:05 BST)
 const FINAL_CLASS_DT = new Date('2026-07-26T20:00:00+01:00'); // Switch to Final Classifications
 
 // Preload Grand Tour logos for Career tab
@@ -2237,11 +2238,11 @@ function updateHomeStatus() {
   const cdWrap = document.getElementById('home-countdown-wrap');
   const liveWrap = document.getElementById('home-live-wrap');
   if (!cdWrap || !liveWrap) return;
-  if (now < STAGE1_DT) {
-    // Pre-race countdown
+  if (now < STAGE1_START) {
+    // Pre-race countdown (counts to actual Stage 1 start, 17:05 CEST / 16:05 BST)
     cdWrap.style.display = 'block';
     liveWrap.style.display = 'none';
-    const diff = STAGE1_DT - now;
+    const diff = STAGE1_START - now;
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
