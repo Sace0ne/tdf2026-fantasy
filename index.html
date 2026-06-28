@@ -2320,7 +2320,9 @@ function getUnreadCount(player) {
   const msgs = loadMessages();
   const rt = loadReadTimes();
   const lastRead = rt[player] || 0;
-  return msgs.filter(m => m.id > lastRead).length;
+  const cleared = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  const clearedBefore = cleared[player] || 0;
+  return msgs.filter(m => m.id > lastRead && m.id > clearedBefore).length;
 }
 
 function getTotalUnread() {
@@ -2389,14 +2391,42 @@ function postMedia() {
   toast('Message posted ✓');
 }
 
+function replyToMessage(sender, text) {
+  // Pre-fill the composer with a quoted reply
+  const input = document.getElementById('media-input');
+  const senderEl = document.getElementById('media-sender');
+  if (!input) return;
+  // Set the sender dropdown to the current reader if possible
+  if (senderEl && mediaReader !== 'Anquetil') {
+    senderEl.value = mediaReader;
+  }
+  // Quote the original (truncate if long)
+  const preview = text.length > 80 ? text.substring(0, 80) + '…' : text;
+  input.value = '@' + sender + ' "' + preview + '" — ';
+  input.focus();
+  // Scroll composer into view
+  input.scrollIntoView({behavior: 'smooth', block: 'center'});
+  // Place cursor at end
+  const len = input.value.length;
+  input.setSelectionRange(len, len);
+}
+
 function clearMedia() {
-  if (!confirm('Clear all messages? This cannot be undone.')) return;
-  localStorage.removeItem(MEDIA_KEY);
-  localStorage.removeItem(MEDIA_READ_KEY);
+  if (!confirm('Clear all messages for ' + mediaReader + '? They will be hidden for you only — other players are not affected.')) return;
+  // Store a per-player hide-before timestamp: hide all messages up to now
+  const rt = loadReadTimes();
+  const msgs = loadMessages();
+  const maxId = msgs.length > 0 ? Math.max(...msgs.map(m => m.id)) : Date.now();
+  // Use a separate key to track cleared-up-to per player
+  const ck = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  ck[mediaReader] = maxId;
+  localStorage.setItem('tdf26-media-cleared', JSON.stringify(ck));
+  // Also mark all as read for this player
+  rt[mediaReader] = maxId;
+  saveReadTimes(rt);
   updateMediaBadge();
   renderMedia();
-  apiDelete('/api/messages');
-  toast('Messages cleared');
+  toast('Messages cleared for ' + mediaReader);
 }
 
 function renderMedia() {
@@ -2422,16 +2452,28 @@ function renderMedia() {
   }
   const rt = loadReadTimes();
   const lastRead = rt[mediaReader] || 0;
-  feed.innerHTML = msgs.map(m => {
+  const cleared = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  const clearedBefore = cleared[mediaReader] || 0;
+  const visibleMsgs = msgs.filter(m => m.id > clearedBefore);
+  if (visibleMsgs.length === 0) {
+    feed.innerHTML = '<div class="media-empty">No messages yet. Be the first to post!</div>';
+    return;
+  }
+  feed.innerHTML = visibleMsgs.map(m => {
     const isNew = m.id > lastRead;
+    const safeText = m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return `
     <div class="media-msg ${m.sender==='Anquetil'?'from-admin':''}" style="${isNew?'border-color:#3d3000;background:#1a1800;':''}">
       <div class="media-msg-header">
         <span class="media-sender-tag ${senderClass(m.sender)}">${m.sender}</span>
         ${isNew ? '<span style="font-size:10px;background:#c8a020;color:#111;padding:2px 7px;border-radius:20px;font-weight:700">NEW</span>' : ''}
         <span class="media-timestamp">${m.ts}</span>
+        <button onclick="replyToMessage('${m.sender}', \`${safeText.replace(/`/g, '\`')}\`)"
+          style="margin-left:auto;background:none;border:1px solid #333;color:#888;font-size:11px;padding:2px 8px;border-radius:4px;cursor:pointer;flex-shrink:0"
+          onmouseover="this.style.color='#FFCD00';this.style.borderColor='#FFCD00'"
+          onmouseout="this.style.color='#888';this.style.borderColor='#333'">↩ Reply</button>
       </div>
-      <div class="media-text">${m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="media-text">${safeText}</div>
     </div>`;
   }).join('');
 }
