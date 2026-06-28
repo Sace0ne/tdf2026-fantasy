@@ -1018,7 +1018,7 @@ let S = {
   pretour: {}, stages: {}, jokers: {},
   results: {gc1:'',gc2:'',gc3:'',pts:'',mtn:'',yth:'',lan:'',fre:'',stages:{}},
   scores: {},
-  ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
+  ptPlayer: null, stPlayer: null, myPlayer: null,
 };
 
 // Load game state from API (primary) with localStorage fallback
@@ -1388,6 +1388,11 @@ function renderPT() {
   const pastDL = ptPastDeadline();
   document.getElementById('pt-tabs').innerHTML = PLAYERS.map(p =>
     `<button class="ptab ${p===S.ptPlayer?'active':''}" onclick="setPTP('${p}')">${p}</button>`).join('');
+  if (!S.ptPlayer) {
+    const body = document.getElementById('pt-body');
+    if (body) body.innerHTML = '<div style="padding:2rem;text-align:center;color:#666;font-size:14px">Select a player above to view or enter Pre-Tour picks</div>';
+    return;
+  }
   const p = S.ptPlayer; const pk = S.pretour[p] || {};
   const btn = document.getElementById('pt-save-btn');
   if (btn) {
@@ -1457,6 +1462,11 @@ function renderST() {
     `<button class="ptab ${p===me?'active':''}" onclick="setMyPlayer('${p}')">${p}</button>`).join('');
   document.getElementById('st-tabs').innerHTML = PLAYERS.map(p =>
     `<button class="ptab ${p===viewing?'active':''}" onclick="setSTPlayer('${p}')">${p}</button>`).join('');
+  if (!me) {
+    document.getElementById('st-banner').innerHTML = '<div class="viewing-banner" style="text-align:center;color:#666">Select who you are above to enter your Picks</div>';
+    document.getElementById('stage-list').innerHTML = '';
+    return;
+  }
   document.getElementById('st-banner').innerHTML = isOwn
     ? `<div class="viewing-banner own-banner">✏️ You are entering your own Picks as <strong>${me}</strong>. Picks are hidden from other players until each stage deadline.</div>`
     : `<div class="viewing-banner">👁️ Viewing <strong>${viewing}</strong>'s Picks as <strong>${me}</strong>. Only Picks past their deadline are visible.</div>`;
@@ -2288,7 +2298,7 @@ function updateRouteProgress(stageNum) {
 
 const MEDIA_KEY = 'tdf26-media';
 const MEDIA_READ_KEY = 'tdf26-media-read'; // per-player last-read timestamps
-let mediaReader = PLAYERS[0]; // currently selected reader
+let mediaReader = null; // no reader selected by default
 
 function loadMessages() {
   // Return from localStorage cache (kept in sync by renderMedia)
@@ -2375,7 +2385,7 @@ function updateMediaBadge() {
   const badge = document.getElementById('media-badge');
   if (!badge) return;
   // Show unread count for the current reader only — clears when they mark as read
-  const count = getUnreadCount(mediaReader);
+  const count = mediaReader ? getUnreadCount(mediaReader) : 0;
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'inline-flex';
@@ -2483,6 +2493,12 @@ function renderMedia() {
   }
   // Unread label
   const unreadLabel = document.getElementById('media-unread-label');
+  if (!mediaReader) {
+    if (unreadLabel) unreadLabel.textContent = '';
+    const feed = document.getElementById('media-feed');
+    if (feed) feed.innerHTML = '<div class="media-empty">Select a player above to view messages</div>';
+    return;
+  }
   const myUnread = getUnreadCount(mediaReader);
   if (unreadLabel) unreadLabel.textContent = myUnread > 0 ? `${myUnread} unread for ${mediaReader}` : `All read for ${mediaReader}`;
   // Feed
@@ -3118,7 +3134,7 @@ function clearTestData() {
     pretour: {}, stages: {}, jokers: {},
     results: {gc1:'',gc2:'',gc3:'',pts:'',mtn:'',yth:'',lan:'',fre:'',stages:{}},
     scores: {},
-    ptPlayer: PLAYERS[0], stPlayer: PLAYERS[0], myPlayer: PLAYERS[0],
+    ptPlayer: null, stPlayer: null, myPlayer: null,
   };
   save();
   initSpoiler();
