@@ -2392,8 +2392,11 @@ function getTotalUnread() {
 function updateMediaBadge() {
   const badge = document.getElementById('media-badge');
   if (!badge) return;
-  // Show unread count for the current reader only — clears when they mark as read
-  const count = mediaReader ? getUnreadCount(mediaReader) : 0;
+  // If a reader is selected show their count; otherwise show max across all players
+  // so the badge is always meaningful even before a player selects their tab
+  const count = mediaReader
+    ? getUnreadCount(mediaReader)
+    : Math.max(0, ...PLAYERS.map(p => getUnreadCount(p)));
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'inline-flex';
