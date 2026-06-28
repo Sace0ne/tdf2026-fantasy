@@ -2295,7 +2295,12 @@ function loadMessages() {
   try { const d = localStorage.getItem(MEDIA_KEY); return d ? JSON.parse(d) : []; } catch(e) { return []; }
 }
 function saveMessages(msgs) {
-  try { localStorage.setItem(MEDIA_KEY, JSON.stringify(msgs)); } catch(e) {}
+  // Normalise: ensure every message has a numeric 'id' field (API returns string msg_id)
+  const normalised = msgs.map(m => ({
+    ...m,
+    id: m.id ? Number(m.id) : (m.msg_id ? Number(m.msg_id) : 0)
+  }));
+  try { localStorage.setItem(MEDIA_KEY, JSON.stringify(normalised)); } catch(e) {}
 }
 
 // Fetch messages from API and refresh cache + UI
@@ -2396,7 +2401,7 @@ function markMediaRead() {
   const rt = loadReadTimes();
   const msgs = loadMessages();
   if (msgs.length === 0) return;
-  const latestId = Math.max(...msgs.map(m => m.id));
+  const latestId = Math.max(...msgs.map(m => Number(m.id) || 0));
   rt[mediaReader] = latestId;
   saveReadTimes(rt);
   renderMedia();
@@ -2453,7 +2458,7 @@ function clearMedia() {
   // Store a per-player hide-before timestamp: hide all messages up to now
   const rt = loadReadTimes();
   const msgs = loadMessages();
-  const maxId = msgs.length > 0 ? Math.max(...msgs.map(m => m.id)) : Date.now();
+  const maxId = msgs.length > 0 ? Math.max(...msgs.map(m => Number(m.id) || 0)) : Date.now();
   // Use a separate key to track cleared-up-to per player
   const ck = loadCleared();
   ck[mediaReader] = maxId;
