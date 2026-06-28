@@ -1027,21 +1027,27 @@ async function load() {
     const data = await apiGet('/api/state/tdf26');
     if (data && data.value) {
       S = {...S, ...data.value};
+      // Always reset UI navigation state to neutral after load
+      S.ptPlayer = null; S.stPlayer = null; S.myPlayer = null;
       // Also sync to localStorage as local cache
-      localStorage.setItem('tdf26', JSON.stringify(S));
+      localStorage.setItem('tdf26', JSON.stringify(data.value));
       return;
     }
   } catch(e) {}
   // Fallback: load from localStorage
   try { const d = localStorage.getItem('tdf26'); if (d) S = {...S, ...JSON.parse(d)}; } catch(e) {}
+  // Always reset UI navigation state to neutral
+  S.ptPlayer = null; S.stPlayer = null; S.myPlayer = null;
 }
 
 // Save game state to API and localStorage cache
 function save() {
+  // Strip UI-only navigation state before persisting — player selection is always neutral on load
+  const {ptPlayer, stPlayer, myPlayer, ...gameData} = S;
   // Immediate localStorage save for responsiveness
-  try { localStorage.setItem('tdf26', JSON.stringify(S)); } catch(e) {}
+  try { localStorage.setItem('tdf26', JSON.stringify(gameData)); } catch(e) {}
   // Async API save
-  apiPost('/api/state', {key: 'tdf26', value: S}).catch(e =>
+  apiPost('/api/state', {key: 'tdf26', value: gameData}).catch(e =>
     console.warn('State save failed:', e)
   );
 }
