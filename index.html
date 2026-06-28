@@ -3151,8 +3151,8 @@ checkApiHealth(); // Check backend connectivity
   calcScores();
   renderRules();
   initSpoiler(); // restore shield state from localStorage
-  updateMediaBadge(); // show unread count on nav badge
-  syncMessages(); // sync Media Centre from API on startup
+  await syncMessages(); // sync Media Centre + read times from API on startup
+  updateMediaBadge(); // show unread count after sync so badge reflects API state
   syncParticipation(); // sync registration status from API on startup
 })();
 // Start on home tab
