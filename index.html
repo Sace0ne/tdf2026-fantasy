@@ -2300,35 +2300,39 @@ function saveMessages(msgs) {
 
 // Fetch messages from API and refresh cache + UI
 async function syncMessages() {
-  // Sync messages
-  const data = await apiGet('/api/messages');
-  if (data && Array.isArray(data)) {
-    saveMessages(data);
+  // Run all three API fetches in parallel for speed
+  const [msgData, apiRt, apiCk] = await Promise.allSettled([
+    apiGet('/api/messages'),
+    apiGet('/api/state/' + MEDIA_READ_KEY),
+    apiGet('/api/state/tdf26-media-cleared')
+  ]);
+
+  // 1. Messages
+  if (msgData.status === 'fulfilled' && Array.isArray(msgData.value)) {
+    saveMessages(msgData.value);
   }
-  // Sync read times — merge API with localStorage (take higher value per player)
-  try {
-    const apiRt = await apiGet('/api/state/' + MEDIA_READ_KEY);
-    if (apiRt && apiRt.value) {
-      const local = loadReadTimes();
-      const merged = Object.assign({}, local);
-      for (const p of Object.keys(apiRt.value)) {
-        merged[p] = Math.max(merged[p] || 0, apiRt.value[p] || 0);
-      }
-      try { localStorage.setItem(MEDIA_READ_KEY, JSON.stringify(merged)); } catch(e) {}
+
+  // 2. Read times — merge taking higher value (more read wins)
+  if (apiRt.status === 'fulfilled' && apiRt.value && apiRt.value.value) {
+    const local = loadReadTimes();
+    const merged = Object.assign({}, local);
+    for (const p of Object.keys(apiRt.value.value)) {
+      merged[p] = Math.max(merged[p] || 0, apiRt.value.value[p] || 0);
     }
-  } catch(e) {}
-  // Sync cleared state — merge API with localStorage (take higher value per player)
-  try {
-    const apiCk = await apiGet('/api/state/tdf26-media-cleared');
-    if (apiCk && apiCk.value) {
-      const local = loadCleared();
-      const merged = Object.assign({}, local);
-      for (const p of Object.keys(apiCk.value)) {
-        merged[p] = Math.max(merged[p] || 0, apiCk.value[p] || 0);
-      }
-      try { localStorage.setItem('tdf26-media-cleared', JSON.stringify(merged)); } catch(e) {}
+    try { localStorage.setItem(MEDIA_READ_KEY, JSON.stringify(merged)); } catch(e) {}
+  }
+
+  // 3. Cleared state — merge taking higher value (more cleared wins)
+  if (apiCk.status === 'fulfilled' && apiCk.value && apiCk.value.value) {
+    const local = loadCleared();
+    const merged = Object.assign({}, local);
+    for (const p of Object.keys(apiCk.value.value)) {
+      merged[p] = Math.max(merged[p] || 0, apiCk.value.value[p] || 0);
     }
-  } catch(e) {}
+    try { localStorage.setItem('tdf26-media-cleared', JSON.stringify(merged)); } catch(e) {}
+  }
+
+  // Render once after ALL syncs complete — ensures cleared/read state is applied correctly
   updateMediaBadge();
   const feed = document.getElementById('media-feed');
   if (feed) renderMedia();
