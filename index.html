@@ -1173,6 +1173,7 @@ function namesMatch(entry, result) {
 
 function applyDeadlines() {
   const now = nowGMT(); // GMT official clock
+  let changed = false;
   PLAYERS.forEach(p => {
     RACE_STAGES.forEach(st => {
       if (now >= STAGE_DL[st.n]) {
@@ -1181,11 +1182,12 @@ function applyDeadlines() {
         if (!S.stages[p][key]) {
           S.stages[p][key] = 'DNS';
           if (S.jokers[p] === key) S.jokers[p] = null;
+          changed = true;
         }
       }
     });
   });
-  save();
+  if (changed) save(); // Only save if a DNS was actually assigned
 }
 
 // ─── TAB SWITCHING ──────────────────────────────────────────────────────────
