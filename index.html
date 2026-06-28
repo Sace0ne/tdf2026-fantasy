@@ -2326,14 +2326,15 @@ function getUnreadCount(player) {
 }
 
 function getTotalUnread() {
-  // Total unread across ALL players — for nav badge show max unread any player has
-  return Math.max(...PLAYERS.map(p => getUnreadCount(p)));
+  // Total unread across ALL players — used internally
+  return Math.max(0, ...PLAYERS.map(p => getUnreadCount(p)));
 }
 
 function updateMediaBadge() {
   const badge = document.getElementById('media-badge');
   if (!badge) return;
-  const count = getTotalUnread();
+  // Show unread count for the current reader only — clears when they mark as read
+  const count = getUnreadCount(mediaReader);
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'inline-flex';
