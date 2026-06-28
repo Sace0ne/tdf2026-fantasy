@@ -1688,7 +1688,7 @@ function renderRules() {
 const SPOILER_KEY_PREFIX = 'tdf26-spoiler-';
 
 function spoilerKeyForPlayer(player) {
-  return SPOILER_KEY_PREFIX + (player || PLAYERS[0]).toLowerCase().replace(/[^a-z]/g, '');
+  return SPOILER_KEY_PREFIX + (player || 'unknown').toLowerCase().replace(/[^a-z]/g, '');
 }
 
 function loadSpoilerState(player) {
@@ -1713,8 +1713,14 @@ function saveSpoilerState(player, activatedAt) {
 let spoilerActivatedAt = null;
 
 function initSpoiler() {
-  // Load shield state for the currently identified player
-  const player = S.myPlayer || PLAYERS[0];
+  // Load shield state for the currently identified player — neutral if no player selected
+  const player = S.myPlayer || null;
+  if (!player) {
+    spoilerActivatedAt = null;
+    const btn = document.getElementById('spoiler-btn');
+    if (btn) { btn.classList.remove('shield-on'); btn.title = 'Select a player in Stages to use the shield'; }
+    return;
+  }
   const saved = loadSpoilerState(player);
   spoilerActivatedAt = (saved && saved.activatedAt) ? saved.activatedAt : null;
   const btn = document.getElementById('spoiler-btn');
