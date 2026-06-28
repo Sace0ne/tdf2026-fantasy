@@ -1736,7 +1736,11 @@ function initSpoiler() {
 }
 
 function toggleSpoiler(btn) {
-  const player = S.myPlayer || PLAYERS[0];
+  const player = S.myPlayer;
+  if (!player) {
+    toast('Select who you are in the Stages tab first', '#c05050');
+    return;
+  }
   if (spoilerActivatedAt === null) {
     spoilerActivatedAt = new Date().getTime();
     saveSpoilerState(player, spoilerActivatedAt);
@@ -3179,6 +3183,12 @@ if (IS_ADMIN) {
 }
 checkApiHealth(); // Check backend connectivity
 // Load game state from API then initialise
+// Ensure shield button starts neutral before async load completes
+(function() {
+  const btn = document.getElementById('spoiler-btn');
+  if (btn) { btn.classList.remove('shield-on'); btn.title = 'Select a player in Stages to use the shield'; }
+})();
+
 (async () => {
   await load(); // async — waits for API
   applyDeadlines();
