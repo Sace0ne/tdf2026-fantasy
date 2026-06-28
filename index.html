@@ -2350,7 +2350,7 @@ function saveReadTimes(rt) {
   apiPost('/api/state', {key: MEDIA_READ_KEY, value: rt}).catch(e => console.warn('Read times save failed:', e));
 }
 function loadCleared() {
-  try { return loadCleared(); } catch(e) { return {}; }
+  try { return JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}'); } catch(e) { return {}; }
 }
 function saveCleared(ck) {
   try { localStorage.setItem('tdf26-media-cleared', JSON.stringify(ck)); } catch(e) {}
