@@ -2300,27 +2300,59 @@ function saveMessages(msgs) {
 
 // Fetch messages from API and refresh cache + UI
 async function syncMessages() {
+  // Sync messages
   const data = await apiGet('/api/messages');
   if (data && Array.isArray(data)) {
-    // API returns newest first — matches localStorage format
     saveMessages(data);
-    updateMediaBadge();
-    const feed = document.getElementById('media-feed');
-    if (feed) renderMedia();
   }
+  // Sync read times — merge API with localStorage (take higher value per player)
+  try {
+    const apiRt = await apiGet('/api/state/' + MEDIA_READ_KEY);
+    if (apiRt && apiRt.value) {
+      const local = loadReadTimes();
+      const merged = Object.assign({}, local);
+      for (const p of Object.keys(apiRt.value)) {
+        merged[p] = Math.max(merged[p] || 0, apiRt.value[p] || 0);
+      }
+      try { localStorage.setItem(MEDIA_READ_KEY, JSON.stringify(merged)); } catch(e) {}
+    }
+  } catch(e) {}
+  // Sync cleared state — merge API with localStorage (take higher value per player)
+  try {
+    const apiCk = await apiGet('/api/state/tdf26-media-cleared');
+    if (apiCk && apiCk.value) {
+      const local = loadCleared();
+      const merged = Object.assign({}, local);
+      for (const p of Object.keys(apiCk.value)) {
+        merged[p] = Math.max(merged[p] || 0, apiCk.value[p] || 0);
+      }
+      try { localStorage.setItem('tdf26-media-cleared', JSON.stringify(merged)); } catch(e) {}
+    }
+  } catch(e) {}
+  updateMediaBadge();
+  const feed = document.getElementById('media-feed');
+  if (feed) renderMedia();
 }
 function loadReadTimes() {
   try { const d = localStorage.getItem(MEDIA_READ_KEY); return d ? JSON.parse(d) : {}; } catch(e) { return {}; }
 }
 function saveReadTimes(rt) {
   try { localStorage.setItem(MEDIA_READ_KEY, JSON.stringify(rt)); } catch(e) {}
+  apiPost('/api/state', {key: MEDIA_READ_KEY, value: rt}).catch(e => console.warn('Read times save failed:', e));
+}
+function loadCleared() {
+  try { return loadCleared(); } catch(e) { return {}; }
+}
+function saveCleared(ck) {
+  try { localStorage.setItem('tdf26-media-cleared', JSON.stringify(ck)); } catch(e) {}
+  apiPost('/api/state', {key: 'tdf26-media-cleared', value: ck}).catch(e => console.warn('Cleared save failed:', e));
 }
 
 function getUnreadCount(player) {
   const msgs = loadMessages();
   const rt = loadReadTimes();
   const lastRead = rt[player] || 0;
-  const cleared = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  const cleared = loadCleared();
   const clearedBefore = cleared[player] || 0;
   return msgs.filter(m => m.id > lastRead && m.id > clearedBefore).length;
 }
@@ -2419,9 +2451,9 @@ function clearMedia() {
   const msgs = loadMessages();
   const maxId = msgs.length > 0 ? Math.max(...msgs.map(m => m.id)) : Date.now();
   // Use a separate key to track cleared-up-to per player
-  const ck = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  const ck = loadCleared();
   ck[mediaReader] = maxId;
-  localStorage.setItem('tdf26-media-cleared', JSON.stringify(ck));
+  saveCleared(ck);
   // Also mark all as read for this player
   rt[mediaReader] = maxId;
   saveReadTimes(rt);
@@ -2453,7 +2485,7 @@ function renderMedia() {
   }
   const rt = loadReadTimes();
   const lastRead = rt[mediaReader] || 0;
-  const cleared = JSON.parse(localStorage.getItem('tdf26-media-cleared') || '{}');
+  const cleared = loadCleared();
   const clearedBefore = cleared[mediaReader] || 0;
   const visibleMsgs = msgs.filter(m => m.id > clearedBefore);
   if (visibleMsgs.length === 0) {
