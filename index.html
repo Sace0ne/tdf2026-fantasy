@@ -2441,22 +2441,6 @@ function markMediaRead() {
   toast('Marked as read for ' + mediaReader + ' ✓');
 }
 
-async function deleteMessage(id) {
-  if (!confirm('Delete this message? This cannot be undone.')) return;
-  // Remove from local cache immediately
-  const msgs = loadMessages().filter(m => m.id !== id && Number(m.id) !== Number(id));
-  saveMessages(msgs);
-  renderMedia();
-  updateMediaBadge();
-  // Delete from API
-  const result = await apiDelete('/api/messages/' + id);
-  if (result === null) {
-    toast('Delete failed — message may still exist on server', '#c05050');
-    await syncMessages(); // re-sync to restore accurate state
-  } else {
-    toast('Message deleted ✓', '#3daa68');
-  }
-}
 
 function postMedia() {
   const input = document.getElementById('media-input');
@@ -2560,8 +2544,7 @@ function renderMedia() {
   feed.innerHTML = visibleMsgs.map(m => {
     const isNew = m.id > lastRead;
     const safeText = m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const showDelete = m.sender === 'Anquetil' && currentSender === 'Anquetil';
-    return `
+        return `
     <div class="media-msg ${m.sender==='Anquetil'?'from-admin':''}" style="${isNew?'border-color:#3d3000;background:#1a1800;':''}">
       <div class="media-msg-header">
         <span class="media-sender-tag ${senderClass(m.sender)}">${m.sender}</span>
@@ -2571,11 +2554,7 @@ function renderMedia() {
           style="margin-left:auto;background:none;border:1px solid #333;color:#888;font-size:11px;padding:2px 8px;border-radius:4px;cursor:pointer;flex-shrink:0"
           onmouseover="this.style.color='#FFCD00';this.style.borderColor='#FFCD00'"
           onmouseout="this.style.color='#888';this.style.borderColor='#333'">↩ Reply</button>
-        ${showDelete ? `<button onclick="deleteMessage(${m.id})"
-          style="background:none;border:1px solid #444;color:#666;font-size:11px;padding:2px 8px;border-radius:4px;cursor:pointer;flex-shrink:0;margin-left:4px"
-          onmouseover="this.style.color='#c05050';this.style.borderColor='#c05050'"
-          onmouseout="this.style.color='#666';this.style.borderColor='#444'"
-          title="Delete message">🗑</button>` : ''}
+        
       </div>
       <div class="media-text">${safeText}</div>
     </div>`;
