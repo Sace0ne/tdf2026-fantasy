@@ -2984,7 +2984,7 @@ function saveCareer(data) {
   );
 }
 
-async async function syncCareer() {
+async function syncCareer() {
   const data = await apiGet('/api/state/' + CAREER_KEY);
   if (data && data.value) {
     saveCareer(data.value);
