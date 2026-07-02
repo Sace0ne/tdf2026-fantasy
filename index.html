@@ -1233,8 +1233,8 @@ function showTab(tab, btn) {
   if (tab === 'results')     renderResults();
   if (tab === 'intel')       renderIntel();
   if (tab === 'rules')       renderRules();
-  if (tab === 'career')      { renderCareer(); syncCareer(); }
-  if (tab === 'archive')     renderArchive();
+  if (tab === 'career')      { try { renderCareer(); } catch(e) { console.error('renderCareer error:', e); document.getElementById('career-content').innerHTML = '<div style="padding:2rem;color:#c05050">Career error: ' + e.message + '</div>'; } syncCareer(); }
+  if (tab === 'archive')     { try { renderArchive(); } catch(e) { console.error('renderArchive error:', e); document.getElementById('archive-content').innerHTML = '<div style="padding:2rem;color:#c05050">Archive error: ' + e.message + '</div>'; } }
 }
 
 
@@ -3243,10 +3243,16 @@ function setStageIntel(n, btn) {
     el.style.display = (i + 1 === n) ? 'block' : 'none';
   });
   document.getElementById('stage-intel-view').style.display = 'block';
+  // Hide the feed when showing a stage card
+  const feed = document.getElementById('intel-feed');
+  if (feed) feed.style.display = 'none';
 }
 function hideStageIntel() {
   document.getElementById('stage-intel-view').style.display = 'none';
   document.querySelectorAll('#stage-intel-btns .ptab').forEach(b => b.classList.remove('active'));
+  // Restore feed visibility
+  const feed = document.getElementById('intel-feed');
+  if (feed) feed.style.display = 'block';
 }
 
 </script>
