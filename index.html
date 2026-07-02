@@ -66,10 +66,10 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .sc-header{padding:.9rem 1.1rem .75rem}
 .sc.locked .sc-header{background:#1a1212}
 .sc.joker-active .sc-header{background:#1a0d22}
-.sn{font-size:11px;font-weight:600;color:#FFCD00;text-transform:uppercase;letter-spacing:.8px}
-.sr{font-size:15px;font-weight:500;color:#e8e8e8;margin-top:2px}
+.sn{font-size:13px;font-weight:600;color:#FFCD00;text-transform:uppercase;letter-spacing:.8px}
+.sr{font-size:17px;font-weight:500;color:#e8e8e8;margin-top:2px}
 .sm{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
-.sd{font-size:13px;color:#888}
+.sd{font-size:14px;color:#888}
 .st{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
 .sprint{background:#0d2b1a;color:#3daa68}
 .mountain{background:#1f0f0f;color:#c85050}
@@ -1657,7 +1657,7 @@ function renderST() {
     `<button class="ptab ${p===viewing?'active':''}" onclick="setSTPlayer('${p}')">${p}</button>`).join('');
   if (!me) {
     document.getElementById('st-banner').innerHTML = '<div class="viewing-banner" style="text-align:center;color:#666">Select who you are above to enter your Picks</div>';
-    document.getElementById('stage-list').innerHTML = '';
+    document.getElementById('st-list').innerHTML = '';
     return;
   }
   document.getElementById('st-banner').innerHTML = isOwn
@@ -1672,9 +1672,9 @@ function renderST() {
       html += `<div class="rdcard">
         <div style="font-size:28px;flex-shrink:0">😴</div>
         <div>
-          <div style="font-size:11px;font-weight:600;color:#3daa68;text-transform:uppercase;letter-spacing:.8px">Rest Day</div>
-          <div style="font-size:15px;font-weight:600;color:#6aaa88;margin-top:1px">${st.d}</div>
-          <div style="font-size:12px;color:#3a6a4a;margin-top:2px">${st.r}</div>
+          <div style="font-size:13px;font-weight:600;color:#3daa68;text-transform:uppercase;letter-spacing:.8px">Rest Day</div>
+          <div style="font-size:17px;font-weight:600;color:#6aaa88;margin-top:1px">${st.d}</div>
+          <div style="font-size:14px;color:#3a6a4a;margin-top:2px">${st.r}</div>
         </div>
         <div style="margin-left:auto;font-size:11px;color:#2a5a3a;font-style:italic">No stage today</div>
       </div>`;
@@ -2984,7 +2984,7 @@ function saveCareer(data) {
   );
 }
 
-async function syncCareer() {
+async async function syncCareer() {
   const data = await apiGet('/api/state/' + CAREER_KEY);
   if (data && data.value) {
     saveCareer(data.value);
