@@ -2591,6 +2591,7 @@ function renderMedia() {
 // ─── STAGE INTEL ─────────────────────────────────────────────────────────────
 const INTEL_KEY = 'tdf26-intel';
 let intelFilter = 'all';
+let weatherStage = null; // which stage number is selected in weather view
 
 const INTEL_ICONS = {
   stage: '🚴', weather: '🌤️', teams: '🚴', general: '📋'
@@ -2616,8 +2617,9 @@ function setIntelFilter(filter, btn) {
   if (btn) btn.classList.add('active');
   // Show stage number row only when Stage filter is active
   const stageBtns = document.getElementById('stage-intel-btns');
-  if (stageBtns) stageBtns.style.display = (filter === 'stage') ? 'block' : 'none';
+  if (stageBtns) stageBtns.style.display = (filter === 'stage' || filter === 'weather') ? 'block' : 'none';
   if (filter !== 'stage') hideStageIntel();
+  if (filter !== 'weather') weatherStage = null;
   renderIntel();
 }
 
@@ -2673,19 +2675,27 @@ const TDF2026_TEAMS = [
   // Weather posts come from the Media Centre message store, not intel localStorage
   if (intelFilter === 'weather') {
     const allMsgs = loadMessages();
-    const weatherMsgs = allMsgs.filter(m => m.category === 'weather' || String(m.id).startsWith('weather-'));
-    feed.innerHTML = weatherMsgs.length === 0
-      ? '<div style="color:#666;font-size:13px;padding:12px">No weather posts yet.</div>'
-      : weatherMsgs.slice().reverse().map(m => {
-          const d = m.ts ? new Date(m.ts) : null;
-          const dateStr = d ? d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
-          return `<div class="card" style="border-color:#2a2a2a;margin-bottom:10px;background:#161616">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <span style="font-size:12px;color:#888">${dateStr}</span>
-            </div>
-            <div style="font-size:14px;color:#ccc;white-space:pre-line;line-height:1.7">${m.text}</div>
-          </div>`;
-        }).join('');
+    let weatherMsgs = allMsgs.filter(m => m.category === 'weather' || String(m.id).startsWith('weather-'));
+    if (weatherStage !== null) {
+      const prefix = 'weather-s' + weatherStage + '-';
+      weatherMsgs = weatherMsgs.filter(m => String(m.id).startsWith(prefix));
+    }
+    if (weatherMsgs.length === 0) {
+      feed.innerHTML = weatherStage !== null
+        ? '<div style="color:#666;font-size:13px;padding:12px">No weather posts for Stage ' + weatherStage + ' yet.</div>'
+        : '<div style="color:#666;font-size:13px;padding:12px">No weather posts yet.</div>';
+      return;
+    }
+    feed.innerHTML = weatherMsgs.slice().reverse().map(m => {
+      const d = m.ts ? new Date(m.ts) : null;
+      const dateStr = d ? d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+      return `<div class="card" style="border-color:#2a2a2a;margin-bottom:10px;background:#161616">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:12px;color:#888">${dateStr}</span>
+        </div>
+        <div style="font-size:15px;color:#ccc;white-space:pre-line;line-height:1.8">${m.text}</div>
+      </div>`;
+    }).join('');
     return;
   }
   const posts = loadIntel();
@@ -3255,6 +3265,13 @@ if (homeEl) homeEl.style.display = 'flex';
 initHome();
 setInterval(() => { applyDeadlines(); }, 60000);
 function setStageIntel(n, btn) {
+  if (intelFilter === 'weather') {
+    weatherStage = n;
+    document.querySelectorAll('#stage-intel-btns .ptab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderIntel();
+    return;
+  }
   // Update active button
   document.querySelectorAll('#stage-intel-btns .ptab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
