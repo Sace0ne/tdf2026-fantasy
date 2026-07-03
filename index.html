@@ -2349,10 +2349,11 @@ function loadMessages() {
   try { const d = localStorage.getItem(MEDIA_KEY); return d ? JSON.parse(d) : []; } catch(e) { return []; }
 }
 function saveMessages(msgs) {
-  // Normalise: ensure every message has a numeric 'id' field (API returns string msg_id)
+  // Normalise: preserve id as-is (may be string like 'weather-s1-evening-...' or numeric)
+  // Use msg_id as fallback if id is absent
   const normalised = msgs.map(m => ({
     ...m,
-    id: m.id ? Number(m.id) : (m.msg_id ? Number(m.msg_id) : 0)
+    id: m.id !== undefined ? m.id : (m.msg_id !== undefined ? m.msg_id : 0)
   }));
   try { localStorage.setItem(MEDIA_KEY, JSON.stringify(normalised)); } catch(e) {}
 }
@@ -2672,7 +2673,7 @@ const TDF2026_TEAMS = [
   // Weather posts come from the Media Centre message store, not intel localStorage
   if (intelFilter === 'weather') {
     const allMsgs = loadMessages();
-    const weatherMsgs = allMsgs.filter(m => m.category === 'weather');
+    const weatherMsgs = allMsgs.filter(m => m.category === 'weather' || String(m.id).startsWith('weather-'));
     feed.innerHTML = weatherMsgs.length === 0
       ? '<div style="color:#666;font-size:13px;padding:12px">No weather posts yet.</div>'
       : weatherMsgs.slice().reverse().map(m => {
