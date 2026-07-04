@@ -2680,10 +2680,12 @@ const TDF2026_TEAMS = [
       const prefix = 'weather-s' + weatherStage + '-';
       weatherMsgs = weatherMsgs.filter(m => String(m.id).startsWith(prefix));
     }
+    if (weatherStage === null) {
+      feed.innerHTML = '<div style="color:#666;font-size:13px;padding:12px">Select a stage above to see the weather forecast.</div>';
+      return;
+    }
     if (weatherMsgs.length === 0) {
-      feed.innerHTML = weatherStage !== null
-        ? '<div style="color:#666;font-size:13px;padding:12px">No weather posts for Stage ' + weatherStage + ' yet.</div>'
-        : '<div style="color:#666;font-size:13px;padding:12px">No weather posts yet.</div>';
+      feed.innerHTML = '<div style="color:#666;font-size:13px;padding:12px">No weather posts for Stage ' + weatherStage + ' yet.</div>';
       return;
     }
     feed.innerHTML = weatherMsgs.slice().reverse().map(m => {
