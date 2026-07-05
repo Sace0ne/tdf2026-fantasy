@@ -897,7 +897,7 @@ async function fetchGMT() {
 
 // Get current BST time — corrected for any device clock drift
 function nowGMT() {
-  if (_gmtOffset === null) return new Date(); // not yet fetched — use device local
+  if (_gmtOffset === null) return new Date(0); // not yet fetched — return epoch (Jan 1970) so nothing is revealed/locked prematurely
   return new Date(Date.now() + _gmtOffset);
 }
 
@@ -1198,6 +1198,7 @@ function namesMatch(entry, result) {
 // ─── DEADLINES ──────────────────────────────────────────────────────────────
 
 function applyDeadlines() {
+  if (_gmtOffset === null) return; // GMT not yet verified — do not apply deadlines on unconfirmed time
   const now = nowGMT(); // GMT official clock
   let changed = false;
   PLAYERS.forEach(p => {
