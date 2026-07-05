@@ -1055,6 +1055,20 @@ async function load() {
       S = {...S, ...data.value};
       // Always reset UI navigation state to neutral after load
       S.ptPlayer = null; S.stPlayer = null; S.myPlayer = null;
+      // Strip any DNS entries for stages whose deadlines have not yet passed
+      // This prevents prematurely-set DNS (from device clock drift) being restored from API
+      if (S.stages) {
+        const now = new Date(); // use device time conservatively here — only strip if deadline clearly not passed
+        PLAYERS.forEach(p => {
+          if (!S.stages[p]) return;
+          Object.keys(S.stages[p]).forEach(key => {
+            const n = parseInt(key.replace('s',''));
+            if (S.stages[p][key] === 'DNS' && STAGE_DL[n] && now < STAGE_DL[n]) {
+              delete S.stages[p][key];
+            }
+          });
+        });
+      }
       // Also sync to localStorage as local cache
       localStorage.setItem('tdf26', JSON.stringify(data.value));
       return;
