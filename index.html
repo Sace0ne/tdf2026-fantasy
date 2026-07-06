@@ -3304,6 +3304,7 @@ checkApiHealth(); // Check backend connectivity
 })();
 
 (async () => {
+  await fetchGMT(); // MUST await BST before anything deadline-related
   await load(); // async — waits for API
   await loadDNF(); // load DNF data from API
   applyDeadlines();
