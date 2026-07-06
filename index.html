@@ -2754,13 +2754,19 @@ const TDF2026_TEAMS = [
             let dnfData = null;
             try {
                 // Build full name from r.n (first name) and r.s (surname, uppercased in data)
-                const fullName = r.n + ' ' + r.s.charAt(0).toUpperCase() + r.s.slice(1).toLowerCase();
-                const lastNameLower = r.s.toLowerCase();
+                // r.s may be compound e.g. "DE LIE" — normalise to title case for matching
+                const surnameTitle = r.s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                const fullName = r.n + ' ' + surnameTitle;
+                const surnameLower = r.s.toLowerCase(); // full surname e.g. "de lie"
                 if (DNF[fullName]) {
                   dnfData = DNF[fullName];
                 } else {
-                  // Fallback: match by surname against last word of any DNF key
-                  const match = Object.keys(DNF).find(k => k.split(' ').pop().toLowerCase() === lastNameLower);
+                  // Fallback: match full surname (handles compound surnames like De Lie)
+                  const match = Object.keys(DNF).find(k => {
+                    const parts = k.split(' ');
+                    const dnfSurname = parts.slice(1).join(' ').toLowerCase(); // everything after first name
+                    return dnfSurname === surnameLower;
+                  });
                   if (match) dnfData = DNF[match];
                 }
             } catch(e) {}
