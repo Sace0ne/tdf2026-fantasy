@@ -1080,6 +1080,16 @@ async function load() {
   S.ptPlayer = null; S.stPlayer = null; S.myPlayer = null;
 }
 
+// Load DNF data from API into global DNF object
+async function loadDNF() {
+  try {
+    const data = await apiGet('/api/state/tdf26-dnf');
+    if (data && data.value && data.value.riders) {
+      DNF = data.value.riders;
+    }
+  } catch(e) {}
+}
+
 // Save game state to API and localStorage cache
 function save() {
   // Strip UI-only navigation state before persisting — player selection is always neutral on load
@@ -2607,6 +2617,7 @@ function renderMedia() {
 const INTEL_KEY = 'tdf26-intel';
 let intelFilter = 'all';
 let weatherStage = null; // which stage number is selected in weather view
+let DNF = {}; // DNF/DNS/OTL rider data loaded from API
 
 const INTEL_ICONS = {
   stage: '🚴', weather: '🌤️', teams: '🚴', general: '📋'
@@ -2742,21 +2753,16 @@ const TDF2026_TEAMS = [
             // Check DNF/DNS/OTL status
             let dnfData = null;
             try {
-              const dnfStore = localStorage.getItem('tdf26-dnf');
-              if (dnfStore) {
-                const dnfObj = JSON.parse(dnfStore);
-                const riders = dnfObj.riders || {};
                 // Build full name from r.n (first name) and r.s (surname, uppercased in data)
                 const fullName = r.n + ' ' + r.s.charAt(0).toUpperCase() + r.s.slice(1).toLowerCase();
                 const lastNameLower = r.s.toLowerCase();
-                if (riders[fullName]) {
-                  dnfData = riders[fullName];
+                if (DNF[fullName]) {
+                  dnfData = DNF[fullName];
                 } else {
                   // Fallback: match by surname against last word of any DNF key
-                  const match = Object.keys(riders).find(k => k.split(' ').pop().toLowerCase() === lastNameLower);
-                  if (match) dnfData = riders[match];
+                  const match = Object.keys(DNF).find(k => k.split(' ').pop().toLowerCase() === lastNameLower);
+                  if (match) dnfData = DNF[match];
                 }
-              }
             } catch(e) {}
             const isDnf = !!dnfData;
             const surnameStyle = isDnf
@@ -3299,6 +3305,7 @@ checkApiHealth(); // Check backend connectivity
 
 (async () => {
   await load(); // async — waits for API
+  await loadDNF(); // load DNF data from API
   applyDeadlines();
   calcScores();
   renderRules();
