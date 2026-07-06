@@ -2746,12 +2746,14 @@ const TDF2026_TEAMS = [
               if (dnfStore) {
                 const dnfObj = JSON.parse(dnfStore);
                 const riders = dnfObj.riders || {};
-                // Try exact match first, then last-name match
-                if (riders[r.n]) {
-                  dnfData = riders[r.n];
+                // Build full name from r.n (first name) and r.s (surname, uppercased in data)
+                const fullName = r.n + ' ' + r.s.charAt(0).toUpperCase() + r.s.slice(1).toLowerCase();
+                const lastNameLower = r.s.toLowerCase();
+                if (riders[fullName]) {
+                  dnfData = riders[fullName];
                 } else {
-                  const lastName = r.n.split(' ').pop().toLowerCase();
-                  const match = Object.keys(riders).find(k => k.split(' ').pop().toLowerCase() === lastName);
+                  // Fallback: match by surname against last word of any DNF key
+                  const match = Object.keys(riders).find(k => k.split(' ').pop().toLowerCase() === lastNameLower);
                   if (match) dnfData = riders[match];
                 }
               }
