@@ -2727,7 +2727,7 @@ const TDF2026_TEAMS = [
     return;
   }
   const posts = loadIntel();
-  const filtered = intelFilter === 'all' ? posts : posts.filter(p => p.category === intelFilter);
+  const filtered = intelFilter === 'all' ? posts.filter(p => p.category !== 'weather' && p.text && p.text.trim() !== '') : posts.filter(p => p.category === intelFilter);
   // Teams tab — PCS-style two-column grid layout
   if (intelFilter === 'teams') {
     // Split into pairs for two-column layout
