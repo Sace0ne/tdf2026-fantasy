@@ -562,7 +562,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
 <div style="font-size:14px;font-weight:600;color:#ccc;margin-bottom:8px">🗠 Interactive Elevation Profile</div>
 <div style="position:relative;width:100%;margin-bottom:4px">
-  <canvas id="elev-s7" style="width:100%;height:140px;display:block;cursor:crosshair;border-radius:6px"></canvas>
+  <canvas id="elev-s7" style="width:100%;height:140px;display:block;border-radius:6px;position:absolute;top:0;left:0"></canvas>
+  <canvas id="elev-s7-overlay" style="width:100%;height:140px;display:block;cursor:crosshair;border-radius:6px;position:absolute;top:0;left:0;background:transparent"></canvas>
   <div id="elev-s7-tip" style="display:none;position:absolute;background:#0d0d0d;border:1px solid #FFCD00;border-radius:6px;padding:6px 10px;font-size:12px;color:#ccc;pointer-events:none;white-space:nowrap;z-index:10"></div>
 </div>
 <div style="display:flex;justify-content:space-between;font-size:11px;color:#555;margin-bottom:12px;padding:0 2px">
@@ -592,6 +593,9 @@ input:disabled{opacity:.45;cursor:not-allowed}
     canvas.width = W * dpr; canvas.height = H * dpr;
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
+    // Size overlay canvas to match
+    const overlay = document.getElementById('elev-s7-overlay');
+    if (overlay) { overlay.width = W * dpr; overlay.height = H * dpr; }
 
     const minE = Math.min(...pts.map(p=>p[1])) - 10;
     const maxE = Math.max(...pts.map(p=>p[1])) + 20;
@@ -634,16 +638,27 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
   function setupTooltip() {
     const canvas = document.getElementById('elev-s7');
+    const overlay = document.getElementById('elev-s7-overlay');
     const tip = document.getElementById('elev-s7-tip');
     if (!canvas || !tip) return;
+    const evtTarget = overlay || canvas;
+
+    let _lastCx = null;
+
+    function clearOverlay() {
+      const ov = document.getElementById('elev-s7-overlay');
+      if (!ov) return;
+      const dpr = window.devicePixelRatio || 1;
+      ov.getContext('2d').clearRect(0, 0, ov.width, ov.height);
+    }
 
     function onMove(e) {
-      const rect = canvas.getBoundingClientRect();
+      const rect = (overlay || canvas).getBoundingClientRect();
       const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const {_pts,_pad,_cw,_W} = canvas;
+      const {_pts,_pad,_cw,_W,_minE,_maxE,_H} = canvas;
       if (!_pts) return;
       const km = ((cx - _pad.l) / _cw) * totalKm;
-      if (km < 0 || km > totalKm) { tip.style.display='none'; return; }
+      if (km < 0 || km > totalKm) { tip.style.display='none'; _lastCx=null; clearOverlay(); return; }
 
       // Interpolate elevation
       let el = _pts[0][1];
@@ -664,20 +679,54 @@ input:disabled{opacity:.45;cursor:not-allowed}
         }
       }
 
+      // Draw tracking line + white dot on overlay canvas only
+      _lastCx = cx;
+      const ov = document.getElementById('elev-s7-overlay');
+      if (!ov) return;
+      const dpr = window.devicePixelRatio || 1;
+      const ctx2 = ov.getContext('2d');
+      ctx2.clearRect(0, 0, ov.width, ov.height);
+      ctx2.save();
+      ctx2.scale(dpr, dpr);
+      const ch = (_H||140) - _pad.t - _pad.b;
+      const xPos = cx;
+      const yPos = _pad.t + (1 - (el - _minE) / (_maxE - _minE)) * ch;
+
+      // Vertical dashed line
+      ctx2.setLineDash([4, 3]);
+      ctx2.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx2.lineWidth = 1;
+      ctx2.beginPath();
+      ctx2.moveTo(xPos, _pad.t);
+      ctx2.lineTo(xPos, _pad.t + ch);
+      ctx2.stroke();
+      ctx2.setLineDash([]);
+
+      // White dot on profile line — same size as video
+      ctx2.beginPath();
+      ctx2.arc(xPos, yPos, 7, 0, Math.PI * 2);
+      ctx2.fillStyle = '#ffffff';
+      ctx2.fill();
+      ctx2.strokeStyle = '#FFCD00';
+      ctx2.lineWidth = 2.5;
+      ctx2.stroke();
+      ctx2.restore();
+
       const kmToGo = (totalKm - km).toFixed(1);
       tip.innerHTML = '<strong style="color:#FFCD00">' + kmToGo + ' km to go</strong><br>' +
         Math.round(el) + 'm · ' + (grad >= 0 ? '+' : '') + grad.toFixed(1) + '%';
       tip.style.display = 'block';
       let tx = cx + 12;
-      if (tx + 120 > _W) tx = cx - 130;
+      if (tx + 140 > _W) tx = cx - 150;
       tip.style.left = tx + 'px';
       tip.style.top = '10px';
     }
 
-    canvas.addEventListener('mousemove', onMove);
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); onMove(e); }, {passive:false});
-    canvas.addEventListener('mouseleave', () => tip.style.display='none');
-    canvas.addEventListener('touchend', () => tip.style.display='none');
+
+    evtTarget.addEventListener('mousemove', onMove);
+    evtTarget.addEventListener('touchmove', e => { e.preventDefault(); onMove(e); }, {passive:false});
+    evtTarget.addEventListener('mouseleave', () => { tip.style.display='none'; _lastCx=null; clearOverlay(); });
+    evtTarget.addEventListener('touchend', () => { tip.style.display='none'; clearOverlay(); });
   }
 
   function initS7() {
