@@ -1410,26 +1410,33 @@ let _gmtSource = null;        // which source succeeded
 
 // Individual fetch attempts — each returns UTC ms or throws
 async function _tryTimeapiIo() {
+  const t0 = Date.now();
   const res = await fetch('https://timeapi.io/api/time/current/zone?timeZone=Europe%2FLondon', {
     cache: 'no-cache', signal: AbortSignal.timeout(4000)
   });
+  const t1 = Date.now();
   const data = await res.json();
   // dateTime is local UK time e.g. "2026-07-04T10:03:22.123"
   // Treat as UTC timestamp to get ms value representing BST time
-  return new Date(data.dateTime + 'Z').getTime();
+  // Add half the round-trip time to compensate for network latency
+  const latencyCompensation = Math.round((t1 - t0) / 2);
+  return new Date(data.dateTime + 'Z').getTime() + latencyCompensation;
 }
 
 async function _tryWorldTimeApi() {
+  const t0 = Date.now();
   const res = await fetch('https://worldtimeapi.org/api/timezone/Europe/London', {
     cache: 'no-cache', signal: AbortSignal.timeout(4000)
   });
+  const t1 = Date.now();
   const data = await res.json();
   // datetime includes BST offset e.g. "2026-07-04T10:03:22.123+01:00"
   // Parse as local BST, store as if UTC for consistent offset calculation
+  const latencyCompensation = Math.round((t1 - t0) / 2);
   const bstDatetime = data.datetime; // "2026-07-04T10:03:22+01:00"
   const utcMs = new Date(bstDatetime).getTime(); // this IS UTC ms
   const offsetHours = 1; // BST = UTC+1
-  return utcMs + (offsetHours * 3600000); // shift to represent BST as "UTC" ms
+  return utcMs + (offsetHours * 3600000) + latencyCompensation; // shift to represent BST as "UTC", compensated for network latency ms
 }
 
 async function fetchGMT() {
