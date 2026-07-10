@@ -470,9 +470,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     <div class="media-input-wrap">
       <select class="media-sender" id="media-sender">
         <option value="Anquetil">📋 Anquetil</option>
-        <option value="Samuel">Samuel</option>
         <option value="Räikkönen">Räikkönen</option>
-        <option value="Suzanne">Suzanne</option>
         <option value="Étienne">Étienne</option>
       </select>
       <input class="media-input" id="media-input" type="text" placeholder="Type your message…" maxlength="300" onkeydown="if(event.key==='Enter')postMedia()">
@@ -3046,9 +3044,12 @@ function updateMediaBadge() {
   if (!badge) return;
   // If a reader is selected show their count; otherwise show max across all players
   // so the badge is always meaningful even before a player selects their tab
+  // Only count unread for active players — Samuel and Suzanne are not
+  // currently participating so their unread counts should not affect the badge
+  const ACTIVE_PLAYERS = ['Räikkönen', 'Étienne'];
   const count = mediaReader
     ? getUnreadCount(mediaReader)
-    : Math.max(0, ...PLAYERS.map(p => getUnreadCount(p)));
+    : Math.max(0, ...ACTIVE_PLAYERS.map(p => getUnreadCount(p)));
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'inline-flex';
