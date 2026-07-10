@@ -3451,7 +3451,18 @@ const TDF2026_TEAMS = [
   if (!feed) return;
   // Weather posts come from the Media Centre message store, not intel localStorage
   if (intelFilter === 'weather') {
-    const allMsgs = loadMessages();
+    let allMsgs = loadMessages();
+    // If localStorage is empty (fresh load, sync not yet complete), fetch from API directly
+    if (allMsgs.length === 0) {
+      feed.innerHTML = '<div style="color:#666;font-size:13px;padding:12px">Loading weather...</div>';
+      apiGet('/api/messages').then(msgs => {
+        if (Array.isArray(msgs) && msgs.length > 0) {
+          saveMessages(msgs);
+          renderIntel(); // re-render now that we have data
+        }
+      }).catch(() => {});
+      return;
+    }
     let weatherMsgs = allMsgs.filter(m => m.category === 'weather' || String(m.id).startsWith('weather-'));
     if (weatherStage !== null) {
       const prefix = 'weather-s' + weatherStage + '-';
@@ -3541,6 +3552,7 @@ const TDF2026_TEAMS = [
           </div>`;
           }).join('')}
       </div>`;
+    try {
     feed.innerHTML = `<div style="display:inline-flex;align-items:center;gap:6px;background:#1f1800;border:0.5px solid #3d3000;border-radius:6px;padding:6px 12px;font-size:13px;color:#c8a020;margin-bottom:1rem">
       ✅ Official startlist · Tour de France 2026 · 184 riders · 23 teams
     </div>
@@ -3552,7 +3564,7 @@ const TDF2026_TEAMS = [
         </div>`).join('')}
     </div>`;
     return;
-  }
+  } catch(teamErr) { console.error('Teams render error:', teamErr); feed.innerHTML = '<div style="color:#f44;padding:1rem">Teams render error: ' + teamErr.message + '</div>'; return; }
   if (filtered.length === 0) {
     feed.innerHTML = `<div class="media-empty" style="padding:3rem 0">
       ${intelFilter === 'all'
