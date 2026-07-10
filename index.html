@@ -1179,12 +1179,13 @@ input:disabled{opacity:.45;cursor:not-allowed}
       const rect = overlay.getBoundingClientRect();
       const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
       const W = rect.width;
+      const H = rect.height;
       const dpr = window.devicePixelRatio || 1;
 
       // Map x position to km
-      // Profile image has ~4% left margin and ~4% right margin
-      const leftPad = W * 0.04;
-      const rightPad = W * 0.04;
+      // PCS image profile x-axis: ~21.2% to ~86.8% of image width
+      const leftPad = W * 0.212;
+      const rightPad = W * (1 - 0.868);
       const profileWidth = W - leftPad - rightPad;
       const km = ((cx - leftPad) / profileWidth) * totalKm;
 
@@ -1193,7 +1194,13 @@ input:disabled{opacity:.45;cursor:not-allowed}
       const el = getElev(km);
       const grad = getGrad(km);
 
-      // Draw vertical line on overlay
+      // Map elevation to y position on image
+      // Y-axis: 400m at y=98.4% of height, 1640m at y=13.6% of height
+      const elevBottom = 400, elevTop = 1640;
+      const yBottom = H * 0.984, yTop = H * 0.136;
+      const yPos = yBottom - ((el - elevBottom) / (elevTop - elevBottom)) * (yBottom - yTop);
+
+      // Draw on overlay
       const ctx = overlay.getContext('2d');
       ctx.clearRect(0, 0, overlay.width, overlay.height);
       ctx.save();
@@ -1201,13 +1208,22 @@ input:disabled{opacity:.45;cursor:not-allowed}
 
       // Vertical dashed line
       ctx.setLineDash([4,3]);
-      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(cx, 0);
-      ctx.lineTo(cx, rect.height);
+      ctx.moveTo(cx, yTop);
+      ctx.lineTo(cx, yBottom);
       ctx.stroke();
       ctx.setLineDash([]);
+
+      // White dot on profile line
+      ctx.beginPath();
+      ctx.arc(cx, yPos, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#FFCD00';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
       ctx.restore();
 
       // Tooltip
@@ -1623,7 +1639,7 @@ function updateGMTIndicator() {
   if (_gmtFetchFailed) {
     el.innerHTML = '🕐 <span style="color:#c05050">BST unavailable — using device time</span>';
   } else {
-    el.innerHTML = `🕐 <span style="color:#3daa68">BST ${t.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified via ${_gmtSource}</span>`;
+    const bstDisplay = new Date(t.getTime() + 3600000); el.innerHTML = `🕐 <span style="color:#3daa68">BST ${bstDisplay.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified via ${_gmtSource}</span>`;
   }
 }
 
