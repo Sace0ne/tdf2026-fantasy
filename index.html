@@ -1451,6 +1451,12 @@ async function fetchGMT() {
       _gmtFetched = Date.now();
       _gmtFetchFailed = false;
       _gmtSource = src.name;
+      // Expose to window for debugging
+      window._dbg_gmtOffset = _gmtOffset;
+      window._dbg_gmtSource = _gmtSource;
+      window._dbg_gmtFetchFailed = false;
+      window._dbg_nowGMT = () => new Date(Date.now() + _gmtOffset);
+      window._dbg_STAGE_DL = window.STAGE_DL;
       updateGMTIndicator();
       return; // success — stop trying
     } catch(e) {
@@ -1514,6 +1520,7 @@ const STAGE_DL = {
   20: new Date('2026-07-25T10:00:00+01:00'),
   21: new Date('2026-07-26T10:00:00+01:00'),
 };
+window._dbg_STAGE_DL = STAGE_DL; // expose for debugging
 
 const ptLocked  = () => false; // Pre-Tour never locks — late entry incurs −2 penalty instead
 const ptPastDeadline = () => (typeof S !== "undefined" && S._testDeadlinePast) || nowGMT() >= PRETOUR_DL; // BST + test mode
@@ -1793,11 +1800,9 @@ function namesMatch(entry, result) {
 function applyDeadlines() {
   if (_gmtOffset === null) return; // GMT not yet verified — do not apply deadlines on unconfirmed time
   const now = nowGMT(); // GMT official clock
-  // Diagnostic: log when applyDeadlines runs near deadline time
-  const bstStr = now.toISOString().replace('T',' ').slice(0,19) + ' UTC (displayed as BST+1h)';
-  if (now.getHours() >= 8 && now.getHours() <= 11) {
-    console.log('[applyDeadlines] nowGMT =', bstStr, '| _gmtOffset =', _gmtOffset, 'ms | source =', _gmtSource);
-  }
+  // Diagnostic: always log applyDeadlines runs
+  const bstStr = now.toISOString().replace('T',' ').slice(0,19);
+  console.log('[applyDeadlines] nowGMT =', bstStr, '| _gmtOffset =', _gmtOffset, 'ms | source =', _gmtSource, '| _gmtFetchFailed =', _gmtFetchFailed);
   let changed = false;
   PLAYERS.forEach(p => {
     RACE_STAGES.forEach(st => {
