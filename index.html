@@ -1420,7 +1420,13 @@ async function _tryTimeapiIo() {
   // Treat as UTC timestamp to get ms value representing BST time
   // Add half the round-trip time to compensate for network latency
   const latencyCompensation = Math.round((t1 - t0) / 2);
-  return new Date(data.dateTime + 'Z').getTime() + latencyCompensation;
+  // timeapi.io returns BST local time WITHOUT timezone suffix
+  // e.g. "2026-07-10T14:50:27.123" means 14:50 BST = 13:50 UTC
+  // Appending 'Z' incorrectly treats it as 14:50 UTC (1hr ahead)
+  // Subtract 3600000ms to convert from BST-as-UTC back to actual UTC
+  // This makes _gmtOffset ≈ 0 (just clock drift), and nowGMT() ≈ actual UTC
+  // Deadlines stored as new Date('10:00:00+01:00') = 09:00 UTC — comparison correct
+  return new Date(data.dateTime + 'Z').getTime() - 3600000 + latencyCompensation;
 }
 
 async function _tryWorldTimeApi() {
@@ -1456,7 +1462,7 @@ async function fetchGMT() {
       window._dbg_gmtSource = _gmtSource;
       window._dbg_gmtFetchFailed = false;
       window._dbg_nowGMT = () => new Date(Date.now() + _gmtOffset);
-      window._dbg_STAGE_DL = window.STAGE_DL;
+      window._dbg_STAGE_DL = STAGE_DL;
       updateGMTIndicator();
       return; // success — stop trying
     } catch(e) {
@@ -1467,6 +1473,11 @@ async function fetchGMT() {
   _gmtFetchFailed = true;
   _gmtOffset = 0;
   _gmtSource = null;
+  window._dbg_gmtOffset = 0;
+  window._dbg_gmtSource = null;
+  window._dbg_gmtFetchFailed = true;
+  window._dbg_STAGE_DL = STAGE_DL;
+  console.warn('[fetchGMT] ALL SOURCES FAILED — falling back to device time. Premature locking may occur.');
   updateGMTIndicator();
 }
 
