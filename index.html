@@ -3449,6 +3449,15 @@ const TDF2026_TEAMS = [
 ];function renderIntel() {
   const feed = document.getElementById('intel-feed');
   if (!feed) return;
+  // Ensure stage-intel-view container is visible (intel-feed lives inside it)
+  const _sv = document.getElementById('stage-intel-view');
+  if (_sv) {
+    _sv.style.display = 'block';
+    if (intelFilter !== 'stage') {
+      _sv.querySelectorAll('.stage-intel-card').forEach(c => c.style.display = 'none');
+      feed.style.display = 'block';
+    }
+  }
   // Weather posts come from the Media Centre message store, not intel localStorage
   if (intelFilter === 'weather') {
     let allMsgs = loadMessages();
@@ -4118,7 +4127,12 @@ function setStageIntel(n, btn) {
   if (feed) feed.style.display = 'none';
 }
 function hideStageIntel() {
-  document.getElementById('stage-intel-view').style.display = 'none';
+  // Keep stage-intel-view visible (intel-feed is inside it); just hide stage cards
+  const view = document.getElementById('stage-intel-view');
+  if (view) {
+    view.style.display = 'block';
+    view.querySelectorAll('.stage-intel-card').forEach(c => c.style.display = 'none');
+  }
   document.querySelectorAll('#stage-intel-btns .ptab').forEach(b => b.classList.remove('active'));
   // Restore feed visibility
   const feed = document.getElementById('intel-feed');
