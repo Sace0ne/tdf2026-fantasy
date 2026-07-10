@@ -1793,6 +1793,11 @@ function namesMatch(entry, result) {
 function applyDeadlines() {
   if (_gmtOffset === null) return; // GMT not yet verified — do not apply deadlines on unconfirmed time
   const now = nowGMT(); // GMT official clock
+  // Diagnostic: log when applyDeadlines runs near deadline time
+  const bstStr = now.toISOString().replace('T',' ').slice(0,19) + ' UTC (displayed as BST+1h)';
+  if (now.getHours() >= 8 && now.getHours() <= 11) {
+    console.log('[applyDeadlines] nowGMT =', bstStr, '| _gmtOffset =', _gmtOffset, 'ms | source =', _gmtSource);
+  }
   let changed = false;
   PLAYERS.forEach(p => {
     RACE_STAGES.forEach(st => {
