@@ -3501,6 +3501,7 @@ const TDF2026_TEAMS = [
             // Check DNF/DNS/OTL status
             let dnfData = null;
             try {
+                if (!r.s || !r.n) { dnfData = null; } else {
                 // Build full name from r.n (first name) and r.s (surname, uppercased in data)
                 // r.s may be compound e.g. "DE LIE" — normalise to title case for matching
                 const surnameTitle = r.s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
@@ -3517,7 +3518,7 @@ const TDF2026_TEAMS = [
                   });
                   if (match) dnfData = DNF[match];
                 }
-            } catch(e) {}
+            }} catch(e) {}
             const isDnf = !!dnfData;
             const surnameStyle = isDnf
               ? 'font-weight:600;text-decoration:line-through;color:#888'
@@ -4066,6 +4067,7 @@ checkApiHealth(); // Check backend connectivity
   renderRules();
   initSpoiler(); // restore shield state from localStorage
   await syncMessages(); // sync Media Centre + read times from API on startup
+  renderIntel(); // re-render Intel tab now that messages are synced from API
   updateMediaBadge(); // show unread count after sync so badge reflects API state
   syncParticipation(); // sync registration status from API on startup
 })();
