@@ -3565,6 +3565,7 @@ const TDF2026_TEAMS = [
     </div>`;
     return;
   } catch(teamErr) { console.error('Teams render error:', teamErr); feed.innerHTML = '<div style="color:#f44;padding:1rem">Teams render error: ' + teamErr.message + '</div>'; return; }
+  }  // close if (intelFilter === 'teams')
   if (filtered.length === 0) {
     feed.innerHTML = `<div class="media-empty" style="padding:3rem 0">
       ${intelFilter === 'all'
