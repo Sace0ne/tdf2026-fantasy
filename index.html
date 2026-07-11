@@ -375,33 +375,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
     </div>
     <div class="enter-race" id="enter-race-text">✦ &nbsp; Enter the Race &nbsp; ✦</div>
   </div>
-          <div id="home-map-wrap" class="map-wrap" style="display:none;width:100%;max-width:360px;margin:0 auto;padding:1rem 1rem 0.5rem;background:#0d0d0d;position:relative;z-index:3">
-          <svg id="route-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
-            <!-- France silhouette simplified -->
-            <path d="M120,20 L155,15 L185,25 L200,18 L215,30 L210,50 L230,65 L235,85 L220,100 L230,120 L225,145 L240,165 L235,185 L215,200 L200,220 L180,240 L155,255 L130,250 L110,235 L95,215 L80,200 L70,180 L75,160 L60,140 L55,120 L65,100 L55,80 L65,60 L80,45 L100,30 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
-            <!-- Route: Barcelona(outside bottom) → Pyrenees → Bordeaux → Massif Central → Alps → Paris -->
-            <path id="route-path" class="route-path"
-              d="M175,268 L168,252 L160,240 L148,228 L138,218 L125,210 L110,205 L98,195 L90,182 L85,168 L88,155 L95,142 L100,128 L108,115 L115,102 L112,90 L105,78 L100,65 L108,52 L118,42 L130,35 L142,28 L152,22"
-              stroke="#FFCD00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <!-- City dots -->
-            <g id="route-dots">
-              <circle class="route-dot" cx="175" cy="268" r="5" fill="#E30613" style="animation-delay:1s"/>
-              <circle class="route-dot" cx="110" cy="205" r="4" fill="#FFCD00" style="animation-delay:2s"/>
-              <circle class="route-dot" cx="90" cy="182" r="4" fill="#FFCD00" style="animation-delay:2.5s"/>
-              <circle class="route-dot" cx="100" cy="128" r="4" fill="#FFCD00" style="animation-delay:3s"/>
-              <circle class="route-dot" cx="108" cy="90" r="4" fill="#FFCD00" style="animation-delay:3.5s"/>
-              <circle class="route-dot" cx="152" cy="22" r="5" fill="#FFCD00" style="animation-delay:4s"/>
-            </g>
-            <!-- City labels -->
-            <text x="183" y="272" font-size="9" fill="#E30613" font-family="sans-serif" font-weight="600">Barcelona</text>
-            <text x="78" y="203" font-size="8" fill="#888" font-family="sans-serif">Bordeaux</text>
-            <text x="62" y="178" font-size="8" fill="#888" font-family="sans-serif">Massif C.</text>
-            <text x="108" y="120" font-size="8" fill="#888" font-family="sans-serif">Alps</text>
-            <text x="156" y="20" font-size="9" fill="#FFCD00" font-family="sans-serif" font-weight="600">Paris</text>
-          </svg>
-          <div id="route-progress" style="text-align:center;font-size:12px;color:#555;margin-top:4px"></div>
-
-</div>
+          
 </div>
 
 <!-- LEADERBOARD -->
@@ -2692,7 +2666,7 @@ function animateRiders(ctx, canvas) {
     drawPeloton(ctx, pelotonX, cH - 56);
     // Seagull
     const seagullX = -200 + ((frame * 1.6) % (cW + 420));
-    const seagullY = cH * 0.04;
+    const seagullY = cH * 0.28;
     drawSeagullWithLogo(ctx, seagullX, seagullY, frame);
     // Climber
     climberPos += 0.003;
@@ -2955,17 +2929,12 @@ function updateHomeStatus() {
     const cur = getCurrentStage();
     const stageInfo = document.getElementById('home-stage-info');
     const stageDetail = document.getElementById('home-stage-detail');
-    const mapWrap = document.getElementById('home-map-wrap');
     if (cur && stageInfo) {
       stageInfo.textContent = `Stage ${cur.n} · ${cur.d}`;
       if (stageDetail) stageDetail.textContent = cur.r + ' · ' + cur.dist;
     }
     // Show map from stage 2 onwards
-    if (mapWrap) {
-      const stageNum = cur ? (typeof cur.n === 'number' ? cur.n : 1) : 1;
-      mapWrap.style.display = stageNum >= 2 ? 'block' : 'none';
-      if (stageNum >= 2) updateRouteProgress(stageNum);
-    }
+
   }
 }
 
