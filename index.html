@@ -370,7 +370,12 @@ input:disabled{opacity:.45;cursor:not-allowed}
         <div style="font-size:18px;color:#FFCD00;font-weight:700;letter-spacing:2px;margin-bottom:8px">Le Tour est parti! 🚴</div>
         <div id="home-stage-info" class="home-stage-live"></div>
         <div id="home-stage-detail" class="home-stage-detail"></div>
-        <div id="home-map-wrap" class="map-wrap" style="display:none">
+
+      </div>
+    </div>
+    <div class="enter-race" id="enter-race-text">✦ &nbsp; Enter the Race &nbsp; ✦</div>
+  </div>
+          <div id="home-map-wrap" class="map-wrap" style="display:none;width:100%;max-width:360px;margin:0 auto;padding:1rem 1rem 0.5rem;background:#0d0d0d;position:relative;z-index:3">
           <svg id="route-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
             <!-- France silhouette simplified -->
             <path d="M120,20 L155,15 L185,25 L200,18 L215,30 L210,50 L230,65 L235,85 L220,100 L230,120 L225,145 L240,165 L235,185 L215,200 L200,220 L180,240 L155,255 L130,250 L110,235 L95,215 L80,200 L70,180 L75,160 L60,140 L55,120 L65,100 L55,80 L65,60 L80,45 L100,30 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
@@ -395,11 +400,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
             <text x="156" y="20" font-size="9" fill="#FFCD00" font-family="sans-serif" font-weight="600">Paris</text>
           </svg>
           <div id="route-progress" style="text-align:center;font-size:12px;color:#555;margin-top:4px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="enter-race" id="enter-race-text">✦ &nbsp; Enter the Race &nbsp; ✦</div>
-  </div>
+
+</div>
 </div>
 
 <!-- LEADERBOARD -->
@@ -2690,7 +2692,7 @@ function animateRiders(ctx, canvas) {
     drawPeloton(ctx, pelotonX, cH - 56);
     // Seagull
     const seagullX = -200 + ((frame * 1.6) % (cW + 420));
-    const seagullY = cH * 0.10;
+    const seagullY = cH * 0.04;
     drawSeagullWithLogo(ctx, seagullX, seagullY, frame);
     // Climber
     climberPos += 0.003;
