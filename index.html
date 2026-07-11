@@ -352,7 +352,7 @@ input:disabled{opacity:.45;cursor:not-allowed}
 <!-- HOME -->
 <div id="tab-home" class="sec" style="padding:0">
   <canvas class="home-canvas" id="home-canvas"></canvas>
-  <div style="position:relative;z-index:2;width:100%;display:flex;flex-direction:column;align-items:center">
+  <div style="position:relative;z-index:2;width:100%;display:flex;flex-direction:column;align-items:center;padding-top:5rem;justify-content:flex-start">
     <div class="home-title">Le Tour de France</div>
     <div class="home-sub">Fantasy 2026</div>
     <div class="home-players">
@@ -2666,7 +2666,7 @@ function animateRiders(ctx, canvas) {
     drawPeloton(ctx, pelotonX, cH - 56);
     // Seagull
     const seagullX = -200 + ((frame * 1.6) % (cW + 420));
-    const seagullY = cH * 0.28;
+    const seagullY = cH * 0.08;
     drawSeagullWithLogo(ctx, seagullX, seagullY, frame);
     // Climber
     climberPos += 0.003;
