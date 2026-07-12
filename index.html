@@ -3636,9 +3636,8 @@ function renderCareer() {
           .filter(x => x.w > 0).sort((a,b) => b.w-a.w);
         return `<div style="background:${gt_def.bgColor};border:0.5px solid ${gt_def.borderColor};border-radius:10px;padding:.75rem;text-align:center">
           ${logo 
-            ? `<img src="${logo}" alt="${gt_def.name}" style="max-height:52px;max-width:100%;object-fit:contain;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">`
+            ? `<img src="${logo.src}" alt="${gt_def.name}" style="max-height:52px;max-width:100%;object-fit:contain;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">`
             : `<div style="font-size:11px;font-weight:700;color:${gt_def.accentColor};margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">${gt_def.name.toUpperCase()}</div>`
-          }
           }
           ${wins.length === 0
             ? `<div style="font-size:12px;color:#444;font-style:italic">No wins yet</div>`
