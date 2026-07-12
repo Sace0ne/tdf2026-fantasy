@@ -1849,9 +1849,9 @@ function showTab(tab, btn) {
   if (tab === 'pretour')     renderPT();
   if (tab === 'stages')      renderST();
   if (tab === 'picks')       renderPicks();
-  if (tab === 'media')       { renderMedia(); updateMediaBadge(); syncMessages(); }
+  if (tab === 'media')       { syncMessages().then(() => { renderMedia(); updateMediaBadge(); }); renderMedia(); updateMediaBadge(); }
   if (tab === 'results')     renderResults();
-  if (tab === 'intel')       renderIntel();
+  if (tab === 'intel')       { syncIntel().then(() => renderIntel()); renderIntel(); }
   if (tab === 'rules')       renderRules();
   if (tab === 'career')      { try { renderCareer(); } catch(e) { console.error('renderCareer error:', e); document.getElementById('career-content').innerHTML = '<div style="padding:2rem;color:#c05050">Career error: ' + e.message + '</div>'; } syncCareer(); }
   if (tab === 'archive')     { try { renderArchive(); } catch(e) { console.error('renderArchive error:', e); document.getElementById('archive-content').innerHTML = '<div style="padding:2rem;color:#c05050">Archive error: ' + e.message + '</div>'; } }
@@ -3231,6 +3231,14 @@ function loadIntel() {
 function saveIntel(posts) {
   try { localStorage.setItem(INTEL_KEY, JSON.stringify(posts)); } catch(e) {}
 }
+async function syncIntel() {
+  try {
+    const data = await apiGet('/api/intel');
+    if (data && Array.isArray(data)) {
+      saveIntel(data);
+    }
+  } catch(e) { console.warn('Intel sync failed:', e); }
+}
 
 function setIntelFilter(filter, btn) {
   intelFilter = filter;
@@ -3936,6 +3944,7 @@ checkApiHealth(); // Check backend connectivity
   renderRules();
   initSpoiler(); // restore shield state from localStorage
   await syncMessages(); // sync Media Centre + read times from API on startup
+  await syncIntel(); // sync Intel posts from API on startup
   renderIntel(); // re-render Intel tab now that messages are synced from API
   updateMediaBadge(); // show unread count after sync so badge reflects API state
   syncParticipation(); // sync registration status from API on startup
