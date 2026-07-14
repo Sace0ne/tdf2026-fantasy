@@ -2180,7 +2180,11 @@ function updateGMTIndicator() {
 function startGMTSync() {
   fetchGMT();
   setInterval(fetchGMT, 5 * 60 * 1000);
-  setInterval(updateGMTIndicator, 30 * 1000); // update display every 30s
+  setInterval(updateGMTIndicator, 10 * 1000); // update display every 10s
+  // Re-sync immediately when tab becomes visible — fixes drift in background tabs
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) fetchGMT();
+  });
 }
 
 // Deadlines
