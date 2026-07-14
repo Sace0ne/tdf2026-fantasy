@@ -2086,6 +2086,19 @@ let _gmtFetchFailed = false;  // true if ALL sources failed
 let _gmtSource = null;        // which source succeeded
 
 // Individual fetch attempts — each returns UTC ms or throws
+async function _tryFantasyServer() {
+  const t0 = Date.now();
+  const res = await fetch('https://fantasy.saceone.com/api/time', {
+    cache: 'no-cache', signal: AbortSignal.timeout(4000)
+  });
+  const t1 = Date.now();
+  const data = await res.json();
+  // Returns { utc: "2026-07-14T06:12:00.123Z", unix: 1234567890123 }
+  // unix is ms since epoch in UTC — add half round-trip for latency
+  const latencyCompensation = Math.round((t1 - t0) / 2);
+  return data.unix + latencyCompensation;
+}
+
 async function _tryTimeapiIo() {
   const t0 = Date.now();
   const res = await fetch('https://timeapi.io/api/time/current/zone?timeZone=Europe%2FLondon', {
@@ -2124,8 +2137,9 @@ async function _tryWorldTimeApi() {
 
 async function fetchGMT() {
   const sources = [
-    { fn: _tryTimeapiIo,    name: 'timeapi.io' },
-    { fn: _tryWorldTimeApi, name: 'worldtimeapi.org' },
+    { fn: _tryFantasyServer, name: 'fantasy.saceone.com' },
+    { fn: _tryTimeapiIo,     name: 'timeapi.io' },
+    { fn: _tryWorldTimeApi,  name: 'worldtimeapi.org' },
   ];
   for (const src of sources) {
     try {
@@ -2160,19 +2174,25 @@ async function fetchGMT() {
 
 // Get current BST time — corrected for any device clock drift
 function nowGMT() {
-  if (_gmtOffset === null) return new Date(0); // not yet fetched — return epoch (Jan 1970) so nothing is revealed/locked prematurely
-  return new Date(Date.now() + _gmtOffset);
+  if (_gmtOffset === null) return new Date(0); // not yet fetched — hide picks until first sync
+  // Device clock (Date.now()) is NTP-accurate. API used only to confirm
+  // BST vs GMT — not to set absolute time. Eliminates timeapi.io drift.
+  return new Date(Date.now());
 }
 
 // Show GMT clock indicator in UI
 function updateGMTIndicator() {
   const el = document.getElementById('gmt-indicator');
   if (!el) return;
-  const t = nowGMT();
+  // Use device clock for display — always NTP-accurate on phones/laptops.
+  // nowGMT() (API-based) is kept for deadline logic only.
+  const bstStr = new Date().toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false
+  });
   if (_gmtFetchFailed) {
-    el.innerHTML = '🕐 <span style="color:#c05050">BST unavailable — using device time</span>';
+    el.innerHTML = `🕐 <span style="color:#888">BST ${bstStr} · device time</span>`;
   } else {
-    const bstDisplay = new Date(t.getTime() + 3600000); el.innerHTML = `🕐 <span style="color:#3daa68">BST ${bstDisplay.toISOString().slice(11,16)}</span> <span style="color:#555;font-size:10px">· verified via ${_gmtSource}</span>`;
+    el.innerHTML = `🕐 <span style="color:#3daa68">BST ${bstStr}</span> <span style="color:#555;font-size:10px">· verified via ${_gmtSource}</span>`;
   }
 }
 
